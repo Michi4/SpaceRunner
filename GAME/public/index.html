@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceRunner</title>
+    <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/jquery.min.js" defer></script>
+    <script src="./js/index.js" defer></script>
+</head>
+<body>
+    <main id="blur">
+        <a href="index.html" class="home"><h1 class="headline">SpaceRunner</h1></a>
+        <!--<label class="themeswitch">
+            <input id="themetoggle" type="checkbox">
+            <span class="themeslider round"></span>
+        </label>!-->
+        
+        <div class="btnwrapper">
+            <div class="block"><button class="playBtn" onclick="pressedPlay()">Play</button></div>
+            <div class="block nomobile" id="playBtn"><button onclick="pressedCoop()">Coop</button></div>
+            <div class="block"><button class="playBtn" onclick="setDifficulty('run')">Run Mode</button></div>
+            <div class="block noserver" id="playBtn"><button onclick="pressedMultiplayer()">Multiplayer</button></div>
+            <!--<div class="block nomobile" id="settings"><button onclick="clickmenu()">Settings</button></div>!-->
+            <div class="block"><button onclick="window.close()">Exit</button></div>
+        </div>
+    </main>
+    
+
+    <div id="clearMenu">
+    </div>
+    
+</body>
+</html>
