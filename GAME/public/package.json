@@ -1,0 +1,20 @@
+{
+    "app_name": "SpaceRunner",
+    "domain": "michi.myddns.com/michi/index.html",
+    "main": "index.html",
+    "name": "spacerunner",
+    "node-main": "server.js",
+    "nodejs": false,
+    "webkit": {
+        "double_tap_to_zoom_enabled": false
+    },
+    "window": {
+        "frame": true,
+        "id": "public",
+        "resizable": true,
+        "show": true,
+        "show_in_taskbar": true,
+        "title": "public",
+        "visible": true
+    }
+}
