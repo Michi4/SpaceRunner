@@ -68,12 +68,17 @@ const width = innerWidth*0.8;
 const height = innerHeight*0.6;
 */
 
+
+const baseWidth = 1920;
+const baseHeight = 1080;
+
 let width = innerWidth;
 let height = innerHeight;
 const fps = 60;
 
 console.log('basewidth: ' + width)
 console.log('baseheight: ' + height)
+
 
 // lets/consts to make values
 let counter = 0;
@@ -666,14 +671,6 @@ function draw(){
             gameOver();
         }
     }*/
-    
-    
-    //document.getElementById('x').innerHTML = "curr: " + Math.round(scrollOffset);
-    //document.getElementById('y').innerHTML = "winx: " + Math.round(winx);
-    document.getElementById('z').innerHTML = "Win: " + Math.round(winx/100+lvldistance/100);
-    document.getElementById('a').innerHTML = "Distance: " + Math.round(distance/100);
-    
-    //document.getElementById('a').innerHTML = "distanceAA:" + Math.round(distance);
     //update();
 }
 let clickcount = 0;
@@ -834,7 +831,7 @@ function update(){
                     if(difficulty == 'hard') coins++;
                     if(difficulty == 'easy') coins -= 0.5;
                     lvlcoins++;
-                    if(difficulty != 'run') document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+                    if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
                     item.width = 0;
                         item.position.x = -9999;
                     item.position.y = -9999;
@@ -842,7 +839,7 @@ function update(){
         });
         if(difficulty == 'impossible'){
             coins = Math.floor(distance/300);
-            if(difficulty != 'run') document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+            if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
         } 
         if(player.position.y >= height){
             gameOver();
@@ -862,9 +859,11 @@ function update(){
         };
         socket.emit('move', data);
     }
+    
+    printScores();
 }
 if(difficulty == 'run')document.getElementById('coins').innerHTML = ' ';
-else document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+else document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
 
 coin.onload = function() {
     coinload = true;
@@ -1189,7 +1188,7 @@ function gameOver(){
         coins = 0;
         lvlcoins = 0;
     }
-    if(difficulty != 'run') document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+    if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
     if(difficulty != 'easy') levelSwitch();
     //restart();
 }
@@ -1461,3 +1460,29 @@ window.addEventListener("gamepaddisconnected", function (e) {
         e.gamepad.index, e.gamepad.id);
     gamepad = false;
 });
+
+
+
+
+function moveProgressBar(percentage) {
+    let elem = document.getElementById("myBar");   
+    elem.style.width = percentage + '%';
+    //document.getElementById("demo").innerHTML = Math.round(percentage)  + '%'; //<p id="demo">0%</p>
+    //danke w3schools oba eicha progressbar is verbuggt meine is bessa ;D
+}
+
+
+function printScores(){
+    let ratioWin = Math.round((winx/100+lvldistance/100) * (baseWidth/width));
+    let ratiolvlDistance = Math.round((winx/100) * (baseWidth/width));
+    let ratioDistance = Math.round(distance/100 * (baseWidth/width));
+    /*document.getElementById('z').innerHTML = "Win: " + ratioWin;
+    document.getElementById('a').innerHTML = "Distance: " + ratioDistance;
+    */
+    document.getElementById('a').innerHTML = "Score: " + ratioDistance;
+    
+
+    if(ratioDistance != 0){
+        moveProgressBar(((distance-lvldistance)/(winx))*100);
+    }
+}

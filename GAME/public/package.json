@@ -16,5 +16,8 @@
         "show_in_taskbar": true,
         "title": "public",
         "visible": true
+    },
+    "dependencies": {
+        "progressbar.js": "^1.1.0"
     }
 }
