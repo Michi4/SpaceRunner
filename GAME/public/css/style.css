@@ -1,6 +1,13 @@
 @font-face {
     font-family: space;
-    src: url(../font/SPACEBAR.ttf);
+    src: url(../font/Space.ttf);
+}
+@font-face {
+    font-family: space-mono;
+    src: url(../font/SpaceMono.ttf);
+}
+*{
+
 }
 html{
     background-color: #202124;
@@ -289,6 +296,7 @@ input:checked+.slider:before {
     left: 2vw;
     text-align: left;
     font-size: larger;
+    font-family: serif;
 }
 
 #coins{
@@ -594,3 +602,63 @@ input:checked+.themeslider:before {
 .themeslider.round:before {
     border-radius: 50%;
 }
+
+
+
+
+/* NEW */
+
+
+.coinDispImg{
+    height: 3vmin;
+}
+
+#coins{
+    font-size: 1.8em;
+    font-family: space-mono;
+}
+
+#scores{
+    top: 0vh;
+    font-family: space-mono;
+}
+
+#a{
+    font-family: space-mono;
+}
+
+.progressBarWrapper{
+    position: absolute;
+    top: 1%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    transition: 500ms;
+    color: #fff;
+}
+
+.progressBar{
+    background-color: #000000;
+
+    transition: 1ms;
+    border: solid #9700bd00 2px;
+    border-radius: 30px;
+    height:3vh;
+    width:1%;
+
+    box-shadow: 0 0 10px #9700bd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
