@@ -2,7 +2,8 @@
 
 ## Do
 
-- DYNAMIC CAM
+- dyn cam eventuel optimieren
+- DYNCAM (ONOFF switch)!!!!!!!!!!!!!!
 - distance + win richtig abgespeicher
 - multiplayer
 - scores
@@ -13,6 +14,7 @@
 
 
 ## Done
+- DYNAMIC CAM
 - distance responsive gemacht
 - win responsive gemacht
 - coin style
