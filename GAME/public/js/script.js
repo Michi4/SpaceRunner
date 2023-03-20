@@ -160,7 +160,7 @@ const checkpoint = new Image(); //onload zeile 652 :D
 
 // CANVAS
 const canvas = document.querySelector('canvas');
-const c = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 //SET width height (window.inner----)
 canvas.width = width;
 canvas.height = height;
@@ -248,16 +248,16 @@ class Player{
             //platshadow = `${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}`;
             platshadow = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
         }
-        c.shadowColor = `${playercolor}`;
-        c.fillStyle = `${playercolor}`;
-        c.shadowBlur = 180;
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        ctx.shadowColor = `${playercolor}`;
+        ctx.fillStyle = `${playercolor}`;
+        ctx.shadowBlur = 180;
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         //if(text.length <= 2){
-            c.shadowBlur = 0;
-            c.font = `${width/55}px`;
-            c.fillStyle = '#202124';
-            c.fillText(text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
+            ctx.shadowBlur = 0;
+            ctx.font = `${width/55}px`;
+            ctx.fillStyle = '#202124';
+            ctx.fillText(text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
         //}
     }
 
@@ -283,12 +283,12 @@ class Platform{
     }
 
     draw(){
-        //if(platrainbow)c.shadowColor = playercolor;
-        //else c.shadowColor = platshadow;
-        c.shadowColor = platshadow;
-        c.shadowBlur = 5;
-        c.fillStyle = platcolor;
-        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+        //if(platrainbow)ctx.shadowColor = playercolor;
+        //else ctx.shadowColor = platshadow;
+        ctx.shadowColor = platshadow;
+        ctx.shadowBlur = 5;
+        ctx.fillStyle = platcolor;
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 }
 
@@ -304,10 +304,10 @@ class Item{
     }
 
     draw(){
-        if(difficulty != 'impossible') c.shadowColor = 'gold';
-        else c.shadowColor = '#000';
-        c.shadowBlur = 80;
-        c.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
+        if(difficulty != 'impossible') ctx.shadowColor = 'gold';
+        else ctx.shadowColor = '#000';
+        ctx.shadowBlur = 80;
+        ctx.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
     }
 }
 /*class Text{
@@ -321,10 +321,10 @@ class Item{
     }
 
     draw(){
-        c.shadowBlur = 0;
-        c.font = `${this.width}px Cascadia Code`;
-        c.fillStyle = '#fff';
-        c.fillText(`${this.text}`, x, y);
+        ctx.shadowBlur = 0;
+        ctx.font = `${this.width}px Cascadia Code`;
+        ctx.fillStyle = '#fff';
+        ctx.fillText(`${this.text}`, x, y);
     }
 }
 */
@@ -615,11 +615,11 @@ function levelSwitch(){
 }
 
 function addText(text, x, y){
-    c.shadowBlur = 0;
-    c.fillStyle = platcolor;
-    c.font = `${width/55}px Cascadia Code`;
-    c.fillStyle = '#fff';
-    c.fillText(text, x, y);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = platcolor;
+    ctx.font = `${width/55}px Cascadia Code`;
+    ctx.fillStyle = '#fff';
+    ctx.fillText(text, x, y);
 }
 
 function draw(){
@@ -644,7 +644,9 @@ function draw(){
     }
     
 
-    c.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
 
     players.forEach(player => {
         player.draw();
@@ -672,11 +674,14 @@ function draw(){
         }
     }*/
     //update();
+
+    ctx.restore();
 }
 let clickcount = 0;
 function update(){
     if (!dead && !menu && coinload) setTimeout(update, 1000/fps);
 
+    updateCameraPosition();   
     if(!mobile && gamepad && gamepadIndex !== undefined){
         const myGamepad = navigator.getGamepads()[gamepadIndex];
         myGamepad.buttons.map(e => e.touched).forEach((isPressed, buttonIndex) => {
@@ -723,7 +728,7 @@ function update(){
                     
             }
         });
-                   
+                
     }
     
 
@@ -841,7 +846,7 @@ function update(){
             coins = Math.floor(distance/300);
             if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
         } 
-        if(player.position.y >= height){
+        if(player.position.y >= height*2){
             gameOver();
         }
         if(scrollOffset >= winx){
@@ -1073,7 +1078,7 @@ function rgb2hex(rgb) {
         ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
 }
 function componentToHex(c) {
-    var hex = c.toString(16);
+    var hex = ctx.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
 }
 
@@ -1460,6 +1465,21 @@ window.addEventListener("gamepaddisconnected", function (e) {
         e.gamepad.index, e.gamepad.id);
     gamepad = false;
 });
+
+
+// NEW MEW
+
+const camera = { x: 0, y: 0 };
+const cameraSpeed = 0.1;
+
+function updateCameraPosition() {
+    players.forEach(player => {
+        if(player.leader){
+            camera.x += (player.position.x + player.width/2     - canvas.width/2.5    - camera.x) * cameraSpeed;
+            camera.y += (player.position.y + player.height/2    - canvas.height/2   - camera.y) * cameraSpeed;
+        }
+    });
+}
 
 
 
