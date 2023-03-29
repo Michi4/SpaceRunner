@@ -650,8 +650,30 @@ input:checked+.themeslider:before {
 }
 
 
+/*LOGIN und so icons*/
 
+.icons{
+	position: absolute;
+	margin: 2vmax;
+	width: 2vmax;
+	filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(350deg) brightness(102%) contrast(102%);
+	opacity: 0.8;
+	transition: 300ms;
+}
 
+.icons:hover{
+	margin: 1.75vmax;
+	width: 2.5vmax;
+	opacity: 1;
+}
+
+.back{
+	transform: rotate(180deg);
+}
+
+.user{
+	right: 0;	
+}
 
 
 
