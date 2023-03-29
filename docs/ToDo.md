@@ -8,8 +8,10 @@
 - multiplayer
 - scores
 - progessbar
-    - set progressbar to new highscore
+    - set progressbar to new highscore (as setting)
 - elems (für random gen) = bestimmte design elemente wie zb brücke hängende brücke, ...
+- Attempt richtig schreiben (in html)
+- TUTORIAL?!
  
 
 
@@ -19,3 +21,4 @@
 - win responsive gemacht
 - coin style
 - progressbar
+- login front end with regex 
