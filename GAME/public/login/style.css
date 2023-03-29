@@ -1,0 +1,143 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono&display=swap");
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: #202124;
+	color: #ffffff;
+	font-family: "Space Mono", monospace;
+	background-image: url("../GAME/public/img/galaxyAll.gif");
+}
+
+.container {
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.form-wrapper {
+	display: flex;
+	justify-content: center;
+	width: 35vmax;
+	border-radius: 2vmin;
+	box-shadow: 0 0 1.5vmax rgba(0, 0, 0, 0.2);
+	background-color: #202124aa;
+}
+
+.form {
+	text-align: center;
+	width: 65%;
+	padding-top: 2.5vmin;
+	padding-bottom: 2.5vmin;
+}
+
+h2 {
+	font-size: 2em;
+	color: #6b1681;
+	text-align: center;
+	margin-bottom: 5vmin;
+}
+
+label {
+
+	text-align: left;
+}
+
+input {
+	border: none;
+	margin-bottom: 2.5vmin;
+	border-radius: 2vmin;
+	background-color: #484b50;
+	font-size: 1.1em;
+	width: 90%;
+	color: #ffffff;
+	font-family: "Space Mono", monospace;
+	padding: 1vmin;
+}
+
+input:focus {
+	outline: none;
+	background-color: #4d4f53;
+}
+
+label {
+	font-size: 1.2em;
+	font-weight: 600;
+	color: #ffffff;
+	margin-bottom: 1vmin;
+	display: block;
+}
+
+button[type="submit"] {
+	margin-top: 1vmin;
+	padding: 1vmin;
+	border: none;
+	border-radius: 2vmin;
+	background-color: #6b1681;
+	color: #ffffff;
+	font-size: 1.2em;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	width: 100%;
+	font-family: "Space Mono", monospace;
+}
+
+button[type="submit"]:hover {
+	background-color: #7c1d99;
+}
+
+.alert {
+	margin-top: 1vmin;
+	padding: 1vmin;
+	border-radius: 2vmin;
+	font-size: 1em;
+}
+
+.alert.error {
+	color: #d8000c;
+	background-color: #ffbaba;
+	border: 0.2vmax solid #d8000c;
+}
+
+.alert.success {
+	color: #4f8a10;
+	background-color: #dffaeb;
+	border: 0.2vmax solid #4f8a10;
+}
+
+@media (min-width: 768px) {
+	.form-wrapper {
+		padding: 2vmin;
+	}
+
+	h2 {
+		font-size: 1.8em;
+	}
+
+	input {
+		font-size: 1.1em;
+		padding: 1vmin;
+	}
+
+	label {
+		font-size: 1.1em;
+		margin-bottom: 1vmin;
+	}
+
+	button[type="submit"] {
+		margin-top: 1vmin;
+		font-size: 1.2em;
+		padding: 1vmin;
+	}
+
+	.alert {
+		font-size: 1em;
+		margin-top: 1vmin;
+		padding: 1vmin;
+	}
+}

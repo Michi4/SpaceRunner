@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Signup Page</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" defer></script>
+</head>
+<body>
+	<div class="container">
+		<div class="form-wrapper">
+
+			<form id="signup-form" class="form" action="#" method="POST">
+				<h2>Sign Up</h2>
+				<label for="username">Username</label>
+				<input type="text" id="username" name="username" placeholder="Enter your username" required pattern="^[a-zA-Z0-9_-]{3,16}$">
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" placeholder="Enter your email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" placeholder="Enter your password" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$" onkeyup='checkPasswordStrength();'>
+				<div id="password-strength"></div>
+				<label for="confirm-password">Confirm Password</label>
+				<input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required onkeyup='checkPasswordsMatch();'>
+				<div id="password-match"></div>
+				<button type="submit" id="signup-btn">Sign Up</button>
+			</form>
+			
+		</div>
+	</div>
+
+</body>
+</html>
