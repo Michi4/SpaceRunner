@@ -12,6 +12,11 @@
 - elems (für random gen) = bestimmte design elemente wie zb brücke hängende brücke, ...
 - Attempt richtig schreiben (in html)
 - TUTORIAL?!
+- Coop Sinn machen (1v1 wer als erstes stirbt) und gemeinsam mehr Möglichkeit,
+wenn leader dead mate = leader 
+- Backend implementation
+
+
  
 
 
