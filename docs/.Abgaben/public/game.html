@@ -1,0 +1,58 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceRunner</title>
+    <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/jquery.min.js" defer></script>
+    <script src="./js/script.js" defer></script>
+</head>
+<body>
+    <main id="blur">
+        <a href="index.html"><h1 class="headline">SpaceRunner</h1></a>
+        <!--<label class="themeswitch">
+            <input id="themetoggle" type="checkbox">
+            <span class="themeslider round"></span>
+        </label>!-->
+        <div id="scores">
+            <p id="coins"><img class="coinDispImg" src="./img/coin.png" alt="">  0</p>
+            <p id="x" style="color: aliceblue;"></p>
+            <p id="y" style="color: aliceblue;"></p>
+            <p id="z" style="color: aliceblue;"></p>
+            <p id="a" style="color: aliceblue;"></p>
+        </div>
+        <p id="openmenu" class="nomobile" onclick="clickmenu()">☰</p>
+        <p id="fullscreen">⛶</p>
+
+        <div id="audiotags">
+            <audio id="music"></audio>
+        </div>
+
+        <div class="progressBarWrapper">
+        <div class="w3-light-grey">
+            <div id="myBar" class="progressBar"></div>
+            </div>
+            
+        </div>
+                    
+
+        <div id="surface">
+            <div id="mobile">
+                <div class="flex">
+                    <button id="left">🡀</button>
+                    <button id="right">🡂</button>
+                </div>
+            </div>
+            <canvas></canvas>
+            <div id="mobileJump"></div>
+        </div>
+    </main>
+
+    <div id="clearMenu">
+        
+    </div>
+</body>
+</html>
