@@ -2,8 +2,8 @@
 // MySQL database connection parameters
 $_db_host = "localhost";
 $_db_database = "spacerunner";
-$_db_username = "root";
-$_db_password = "root";
+$_db_username = "spacerunner";
+$_db_password = "spacerunner";
 
 // Create a new database connection
 $conn = new mysqli($_db_host, $_db_username, $_db_password, $_db_database);

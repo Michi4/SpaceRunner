@@ -1,8 +1,8 @@
 <?php
 $_db_host = "localhost";
 $_db_datenbank = "spacerunner";
-$_db_username = "root";
-$_db_passwort = "root";
+$_db_username = "spacerunner";
+$_db_passwort = "spacerunner";
 
 // Establish a connection to the database
 $mysqli = new mysqli($_db_host, $_db_username, $_db_passwort, $_db_datenbank);
