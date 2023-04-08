@@ -20,7 +20,7 @@
 				<label for="email"><span>Email</span></label>
 				<input type="email" id="email" name="email" placeholder="Enter your email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
 				<label for="password"><span>Password</span></label>
-				<input type="password" id="password" name="password" placeholder="Enter your password" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$" onkeyup='checkPasswordStrength();'>
+				<input type="password" id="password" name="password" placeholder="Enter your password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$" onkeyup='checkPasswordStrength();'>
 				<div id="password-strength"></div>
 				<label for="confirm-password"><span>Confirm Password</span></label>
 				<input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required onkeyup='checkPasswordsMatch();'>
