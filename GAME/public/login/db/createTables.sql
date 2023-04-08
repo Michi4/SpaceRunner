@@ -4,7 +4,7 @@ CREATE TABLE sr_user (
     email VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     user_deleted TINYINT(4) NOT NULL,
-	last_login datetime NOT NULL,
+	last_login datetime NOT NULL
 );
 
 CREATE TABLE sr_score (
