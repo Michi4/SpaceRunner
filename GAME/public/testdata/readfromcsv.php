@@ -30,9 +30,7 @@ while (($score_row = fgetcsv($score_file)) !== FALSE) {
     $score_data[] = $score_row;
 }
 fclose($score_file);
-echo $user_data;
-echo $score_data;
-/*
+
 // insert sr_user data into database
 foreach ($user_data as $user_row) {
     $sql = "INSERT INTO sr_user (id, username, email, password, user_deleted, last_login) VALUES (" .
@@ -55,9 +53,6 @@ foreach ($score_data as $score_row) {
 
 // close database connection
 $conn->close();
-
-*/
-
 
 /*
 $_db_host = "localhost";
