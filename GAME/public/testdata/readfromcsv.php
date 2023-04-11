@@ -1,32 +1,62 @@
-<?php 
+<?php
+$_db_host = "localhost";
+$_db_datenbank = "spacerunner";
+$_db_username = "spacerunner";
+$_db_passwort = "spacerunner";
 
+// Establish a connection to the database
+$mysqli = new mysqli($_db_host, $_db_username, $_db_passwort, $_db_datenbank);
 
-
-//CSV and Reading stuff
-$csv_file = fopen("example_data.csv", "r");
-$header = fgetcsv($csv_file);
-$data = array();
-
-while (($row = fgetcsv($csv_file)) !== FALSE) {
-    $hashed_password = password_hash($row[3], PASSWORD_DEFAULT);    
-    $row[3] = $hashed_password;
-    
-    $data[] = $row;
+// Check for any errors in the connection
+if ($mysqli->connect_error) {
+die('Connect Error (' . $mysqli->connect_errno . ') '
+    . $mysqli->connect_error);
 }
-fclose($csv_file);
 
-// Print the data for testing purposes
-echo '<pre>';
-print_r($data);
-echo '</pre>';
+// read sr_user data from CSV file
+$user_file = fopen("medt-sr_user.csv", "r");
+$user_data = array();
+while (($user_row = fgetcsv($user_file)) !== FALSE) {
+    // hash the password
+    $user_row[3] = password_hash($user_row[3], PASSWORD_DEFAULT);
+    $user_data[] = $user_row;
+}
+fclose($user_file);
 
-// Import the data into a MySQL database using SQL commands
-// (not included in this code snippet)
+// read sr_score data from CSV file
+$score_file = fopen("medt-sr_score.csv", "r");
+$score_data = array();
+while (($score_row = fgetcsv($score_file)) !== FALSE) {
+    $score_data[] = $score_row;
+}
+fclose($score_file);
+echo $user_data;
+echo $score_data;
+/*
+// insert sr_user data into database
+foreach ($user_data as $user_row) {
+    $sql = "INSERT INTO sr_user (id, username, email, password, user_deleted, last_login) VALUES (" .
+        $user_row[0] . ", '" . $user_row[1] . "', '" . $user_row[2] . "', '" . $user_row[3] . "', " .
+        $user_row[4] . ", '" . $user_row[5] . "')";
+    if ($conn->query($sql) === FALSE) {
+        echo "Error inserting sr_user data: " . $conn->error . "\n";
+    }
+}
 
+// insert sr_score data into database
+foreach ($score_data as $score_row) {
+    $sql = "INSERT INTO sr_score (score_id, user_id, score, level_reached, date_achieved) VALUES (" .
+        $score_row[0] . ", " . $score_row[1] . ", " . $score_row[2] . ", " . $score_row[3] . ", '" .
+        $score_row[4] . "')";
+    if ($conn->query($sql) === FALSE) {
+        echo "Error inserting sr_score data: " . $conn->error . "\n";
+    }
+}
 
+// close database connection
+$conn->close();
 
-
-
+*/
 
 
 /*
@@ -81,5 +111,5 @@ if ($stmt->errno) {
 // Close the statement and database connection
 $stmt->close();
 $mysqli->close();
-?>
 */
+?>
