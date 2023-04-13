@@ -32,27 +32,31 @@ while (($score_row = fgetcsv($score_file)) !== FALSE) {
 fclose($score_file);
 
 // insert sr_user data into database
+array_shift($user_data);
 foreach ($user_data as $user_row) {
     $sql = "INSERT INTO sr_user (id, username, email, password, user_deleted, last_login) VALUES (" .
         $user_row[0] . ", '" . $user_row[1] . "', '" . $user_row[2] . "', '" . $user_row[3] . "', " .
         $user_row[4] . ", '" . $user_row[5] . "')";
-    if ($conn->query($sql) === FALSE) {
-        echo "Error inserting sr_user data: " . $conn->error . "\n";
+        echo $sql;
+    if ($mysqli->query($sql) === FALSE) {
+        echo "Error inserting sr_user data: " . $mysqli->error . "\n";
     }
 }
 
 // insert sr_score data into database
+array_shift($score_data);
 foreach ($score_data as $score_row) {
     $sql = "INSERT INTO sr_score (score_id, user_id, score, level_reached, date_achieved) VALUES (" .
         $score_row[0] . ", " . $score_row[1] . ", " . $score_row[2] . ", " . $score_row[3] . ", '" .
         $score_row[4] . "')";
-    if ($conn->query($sql) === FALSE) {
-        echo "Error inserting sr_score data: " . $conn->error . "\n";
+        echo $sql;
+    if ($mysqli->query($sql) === FALSE) {
+        echo "Error inserting sr_score data: " . $mysqli->error . "\n";
     }
 }
 
 // close database connection
-$conn->close();
+$mysqli->close();
 
 /*
 $_db_host = "localhost";
