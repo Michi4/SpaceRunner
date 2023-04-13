@@ -1,0 +1,39 @@
+body {
+    background-color: #222222;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    margin: 0;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 80%;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #444444;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #333333;
+  }
+  
+  tr:nth-child(odd) {
+    background-color: #222222;
+  }
+  
+  #scoreTable td:first-child {
+    font-weight: bold;
+  }
+  
