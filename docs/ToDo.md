@@ -16,7 +16,9 @@
 wenn leader dead mate = leader 
 - Backend implementation
 
+- mobile controlls fixen
 
+# scheiß datei upload!!!!!!
  
 
 
@@ -27,3 +29,5 @@ wenn leader dead mate = leader
 - coin style
 - progressbar
 - login front end with regex 
+- dyn cam  optimietrt
+- progessbar optimiert

@@ -48,7 +48,7 @@ else noScript = false;
 if(localStorage.getItem("charface"))let charface = localStorage.getItem("charface");
 else let charface;
 */
-let text = localStorage.getItem("charface") ?? ":)";//
+let text = localStorage.getItem("charface") ?? ""//":)";//
 let playercolor = localStorage.getItem("playercolor") ?? '#000';
 let platcolor = localStorage.getItem("platcolor") ?? '#000';
 let platshadow = localStorage.getItem("platshadow") ?? '#fff';
@@ -133,6 +133,7 @@ let reassigned = false;
 // TEXT
 
 // MUSIC && SOUNDS
+/*
 let backgroundmusic = document.getElementById('music');
 backgroundmusic.src = 'music/Space8bit.mp3';
 backgroundmusic.currentTime = 0.25;
@@ -143,7 +144,7 @@ function playMusic(){
         backgroundmusic.controls = true;
         backgroundmusic.play();
     });
-}
+}*/
 
 // coin sounds
 
@@ -886,7 +887,7 @@ checkpoint.src = "img/checkpoint.png";
 
 function imgLoaded(){
     if(coinload && checkpointload){
-        playMusic();
+        //playMusic();
         levelSwitch();
         update();
         draw();
@@ -1135,6 +1136,8 @@ function victory(){
 }
 
 function gameOver(){
+    //TODO
+    
     if(difficulty == 'easy'){
         //dead = true;
         players.forEach(player => { 
@@ -1147,8 +1150,8 @@ function gameOver(){
     }
     if(difficulty == 'normal'){
         //dead = true;
-        if(level == 2) backgroundmusic.currentTime = 10;
-        else backgroundmusic.currentTime = 0;
+        //if(level == 2) backgroundmusic.currentTime = 10;
+        //else backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
@@ -1164,7 +1167,7 @@ function gameOver(){
     if(difficulty == 'hard' || difficulty == 'run'){
         //dead = true;
         level = 0;
-        backgroundmusic.currentTime = 0;
+        //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
@@ -1180,7 +1183,7 @@ function gameOver(){
     if(difficulty == 'impossible'){
         //dead = true;
         level = 0;
-        backgroundmusic.currentTime = 0;
+        //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
@@ -1476,7 +1479,7 @@ function updateCameraPosition() {
     players.forEach(player => {
         if(player.leader){
             camera.x += (player.position.x + player.width/2     - canvas.width/2.5    - camera.x) * cameraSpeed;
-            camera.y += (player.position.y + player.height/2    - canvas.height/2   - camera.y) * cameraSpeed;
+            camera.y += (player.position.y + player.height/2    - canvas.height/1.8   - camera.y) * cameraSpeed;
         }
     });
 }
@@ -1499,7 +1502,7 @@ function printScores(){
     /*document.getElementById('z').innerHTML = "Win: " + ratioWin;
     document.getElementById('a').innerHTML = "Distance: " + ratioDistance;
     */
-    document.getElementById('a').innerHTML = "Score: " + ratioDistance;
+    document.getElementById('a').innerHTML = "  " + ratioDistance;
     
 
     if(ratioDistance != 0){
