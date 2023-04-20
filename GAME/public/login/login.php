@@ -38,8 +38,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ss", $username_email, $username_email);
             $stmt->execute();
 
-            // Redirect the user to the home page or another page
-            header("Location: home.php");
+            // Create a SQL query to retrieve data from the "sr_score" table
+            $sql = "SELECT username, id
+            FROM sr_user 
+            WHERE username LIKE '$username_email'
+            or email LIKE '$username_email';
+            ";
+            // Execute the SQL query
+            $result = mysqli_query($conn, $sql);
+
+            if (mysqli_num_rows($result) == 1) {
+                // Fetch the single row from the result set
+                $row = mysqli_fetch_assoc($result);
+                #echo $row['username'];
+                
+                
+                // Set the cookie with name, value, expiration time and path
+                setcookie('user_id', $row["id"], time() + (3 * 24 * 60 * 60), '/');
+
+                $sql = "update sr_user set last_login=NOW() where id= " . $row["id"];
+                $result = mysqli_query($conn, $sql);
+
+                // Redirect the user to the home page or another page
+                header("Location: ../index.html");
+            }else{
+                die("Something went wrong :c");
+            }
             exit();
         } else {
             die("Invalid password");
