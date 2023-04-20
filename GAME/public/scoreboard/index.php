@@ -79,8 +79,6 @@ echo '<input type="submit" name="submit" value="Submit">
 
         // Check if there are any rows returned by the query
         if (mysqli_num_rows($result) > 0) {
-            // Initialize a counter variable
-            $rank = 1;
             // Loop through each row and add the data to the HTML table
             while ($row = mysqli_fetch_assoc($result)) {
                 echo "<tr>";
@@ -90,8 +88,6 @@ echo '<input type="submit" name="submit" value="Submit">
                 echo "<td>" . $row["level_reached"] . "</td>";
                 echo "<td>" . $row["date_achieved"] . "</td>";
                 echo "</tr>";
-                // Increment the counter variable
-                $rank++;
             }
         } else {
             echo "No results found.";

@@ -1509,3 +1509,35 @@ function printScores(){
         moveProgressBar(((distance-lvldistance)/(winx))*100);
     }
 }
+
+// check login
+/*
+window.addEventListener('storage', function (event) {
+    if (event.key === 'user_id') {
+      console.log('You Changed The Data!!!');
+
+    }
+  });
+  */
+function getLoggedUser() {
+    // Split the cookie string into an array of name-value pairs
+    let cookies = document.cookie.split(';');
+
+    // Loop through the cookies to find the user_id cookie
+    let userId = null;
+    for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i].trim();
+        if (cookie.indexOf('user_id=') == 0) {
+        // Extract the user_id value from the cookie
+        userId = cookie.substring('user_id='.length, cookie.length);
+        break;
+        }
+    }
+
+    // Return the userId variable
+    console.log(userId);
+    console.log("userId");
+    console.log("userId");
+    return userId;
+}
+getLoggedUser();

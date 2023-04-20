@@ -15,6 +15,12 @@
 - Coop Sinn machen (1v1 wer als erstes stirbt) und gemeinsam mehr Möglichkeit,
 wenn leader dead mate = leader 
 - Backend implementation
+### user
+- signup cookie integration
+- php with getUser(); verbinden und sql ....
+- show user his data
+- do some with user data
+- 
 
 - mobile controlls fixen
 
@@ -23,6 +29,18 @@ wenn leader dead mate = leader
 
 
 ## Done
+- added donation
+- added login and signup
+- added backend 
+- added database
+- added scoreboard
+  - sortierbar gemacht
+  - suche hinzugefügt
+- fixed some stuff 
+- cookie integration for login
+
+
+
 - DYNAMIC CAM
 - distance responsive gemacht
 - win responsive gemacht
@@ -31,3 +49,4 @@ wenn leader dead mate = leader
 - login front end with regex 
 - dyn cam  optimietrt
 - progessbar optimiert
+
