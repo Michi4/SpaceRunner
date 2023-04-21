@@ -24,8 +24,9 @@ wenn leader dead mate = leader
 
 - mobile controlls fixen
 
-# scheiß datei upload!!!!!!
+# s datei upload!!!!!!
  
+ # setting speichern neue tabelle und image auswahl
 
 
 ## Done

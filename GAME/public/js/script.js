@@ -1519,7 +1519,8 @@ window.addEventListener('storage', function (event) {
     }
   });
   */
-function getLoggedUser() {
+
+  function getLoggedUser() {
     // Split the cookie string into an array of name-value pairs
     let cookies = document.cookie.split(';');
 
@@ -1540,4 +1541,5 @@ function getLoggedUser() {
     console.log("userId");
     return userId;
 }
+
 getLoggedUser();
