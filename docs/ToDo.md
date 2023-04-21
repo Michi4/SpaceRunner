@@ -24,7 +24,10 @@ wenn leader dead mate = leader
 
 - mobile controlls fixen
 
-# scheiß datei upload!!!!!!
+# type_id FK sr_scoretype
+  
+
+# s datei upload!!!!!!
  
 
 
