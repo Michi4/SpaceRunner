@@ -24,6 +24,12 @@ wenn leader dead mate = leader
 
 - mobile controlls fixen
 
+<<<<<<< HEAD
+=======
+# type_id FK sr_scoretype
+  
+
+>>>>>>> 949b30c944157ee4c19bf8ae0b46f2bf13dd17da
 # s datei upload!!!!!!
  
  # setting speichern neue tabelle und image auswahl
