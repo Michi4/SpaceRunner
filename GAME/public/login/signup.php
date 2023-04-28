@@ -38,16 +38,33 @@ $stmt = $mysqli->prepare("INSERT INTO sr_user (u_username, u_email, u_password, 
 $stmt->bind_param("sss", $username, $email, $password);
 
 // Execute the prepared statement
-$stmt->execute();
+try{
+    $stmt->execute();
+}catch (mysqli_sql_exception $ex) {
+    echo "Error: " . $ex;
+    
+$stmt->close();
+$mysqli->close();
+    header("Location: ./signup.html");
+    exit();
+}
 
 // Check for any errors in the execution
 if ($stmt->errno) {
-    echo "Error: " . $stmt->error;
+    //echo "Error: " . $stmt->error;
+    
+$stmt->close();
+$mysqli->close();
+    header("Location: ./signup.html");
+    exit();
 } else {
     echo "User created successfully!";
+    
+$stmt->close();
+$mysqli->close();
+    header("Location: ./login.html");
+    exit();
 }
 
 // Close the statement and database connection
-$stmt->close();
-$mysqli->close();
 ?>
