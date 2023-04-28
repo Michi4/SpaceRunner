@@ -23,11 +23,11 @@ echo '<input type="submit" name="submit" value="Submit">
 <table id="scoreTable">
     <thead>
         <tr>
-            <th data-order-by="rank">Rank</th>
-            <th data-order-by="username">Player</th>
-            <th data-order-by="score">Score</th>
-            <th data-order-by="level_reached">Level</th>
-            <th data-order-by="date_achieved">Date</th>
+            <th data-order-by="s_rank">Rank</th>
+            <th data-order-by="u_username">Player</th>
+            <th data-order-by="s_score">Score</th>
+            <th data-order-by="s_level_reached">Level</th>
+            <th data-order-by="s_date_achieved">Date</th>
         </tr>
     </thead>
     <tbody>
@@ -47,7 +47,7 @@ echo '<input type="submit" name="submit" value="Submit">
         }
 
         // Set the default order
-        $order = "score";
+        $order = "s_score";
         $sort_order = "DESC";
         $search_username = "%";
 
@@ -63,14 +63,14 @@ echo '<input type="submit" name="submit" value="Submit">
         }
 
         // Create a SQL query to retrieve data from the "sr_score" table
-        $sql = "SELECT u.username, s.score, s.level_reached, s.date_achieved, 
-            (SELECT COUNT(*)+1 FROM sr_score s2 WHERE s2.score > s.score) AS rank
-            FROM sr_score s
-            INNER JOIN sr_user u ON s.user_id = u.id
-            WHERE u.username LIKE '$search_username'
-            ORDER BY $order $sort_order
-            LIMIT 100;
-        ";
+        $sql = "SELECT u.u_username, s.s_score, s.s_level_reached, s.s_date_achieved, 
+                (SELECT COUNT(*)+1 FROM sr_score s2 WHERE s2.s_score > s.s_score) AS s_rank, st.st_scoretype
+                FROM sr_score s
+                INNER JOIN sr_user u ON s.s_user_id = u.u_id
+                INNER JOIN sr_scoretype st ON s.s_scoretype_id = st.st_id
+                WHERE u.u_username LIKE '$search_username'
+                ORDER BY $order $sort_order
+                LIMIT 100;";
          //   echo $sort_order . "<br>";//woa bissl ass mit ganz viele verwirrer
         //echo $sql;
 
@@ -82,11 +82,11 @@ echo '<input type="submit" name="submit" value="Submit">
             // Loop through each row and add the data to the HTML table
             while ($row = mysqli_fetch_assoc($result)) {
                 echo "<tr>";
-                echo "<td>" . $row["rank"] . "</td>";
-                echo "<td>" . $row["username"] . "</td>";
-                echo "<td>" . $row["score"] . "</td>";
-                echo "<td>" . $row["level_reached"] . "</td>";
-                echo "<td>" . $row["date_achieved"] . "</td>";
+                echo "<td>" . $row["s_rank"] . "</td>";
+                echo "<td>" . $row["u_username"] . "</td>";
+                echo "<td>" . $row["s_score"] . "</td>";
+                echo "<td>" . $row["s_level_reached"] . "</td>";
+                echo "<td>" . $row["s_date_achieved"] . "</td>";
                 echo "</tr>";
             }
         } else {
