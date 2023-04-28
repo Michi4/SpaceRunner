@@ -1,17 +1,30 @@
 CREATE TABLE sr_user (
-    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(30) NOT NULL,
-    email VARCHAR(50) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    user_deleted TINYINT(4) NOT NULL,
-	last_login datetime NOT NULL
+    u_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    u_username VARCHAR(30) NOT NULL UNIQUE,
+    u_email VARCHAR(50) NOT NULL UNIQUE,
+    u_password VARCHAR(255) NOT NULL,
+    us_id INT(11) UNSIGNED NOT NULL PRIMARY KEY,
+    u_user_deleted TINYINT(1) NOT NULL DEFAULT 0,
+    u_last_login DATETIME NOT NULL
+);
+
+CREATE TABLE sr_usersetting (
+    us_id INT(11) UNSIGNED NOT NULL PRIMARY KEY,
+    us_setting VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE sr_scoretype (
+    st_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    st_scoretype VARCHAR(30) NOT NULL UNIQUE
 );
 
 CREATE TABLE sr_score (
-    score_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) UNSIGNED NOT NULL,
-    score INT(11) NOT NULL,
-    level_reached INT(11),
-    date_achieved DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES sr_user(id)
+    s_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    s_user_id INT(11) UNSIGNED NOT NULL,
+    s_scoretype_id INT(11) NOT NULL UNIQUE,
+    s_score INT(11) NOT NULL,
+    s_level_reached INT(11),
+    s_date_achieved DATETIME NOT NULL,
+    FOREIGN KEY (s_user_id) REFERENCES sr_user(u_id),
+    FOREIGN KEY (s_scoretype_id) REFERENCES sr_scoretype(st_id)
 );

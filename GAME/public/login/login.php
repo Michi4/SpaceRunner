@@ -55,6 +55,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 // Set the cookie with name, value, expiration time and path
                 setcookie('user_id', $row["id"], time() + (3 * 24 * 60 * 60), '/');
+                
+                session_start(); // Start the session
+                $_SESSION['user_id'] = $row["id"];
+                
 
                 $sql = "update sr_user set last_login=NOW() where id= " . $row["id"];
                 $result = mysqli_query($conn, $sql);
@@ -63,6 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: ../index.html");
             }else{
                 die("Something went wrong :c");
+                session_abort();
             }
             exit();
         } else {
