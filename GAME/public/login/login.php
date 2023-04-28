@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["login-password"];
 
     // Prepare a SQL statement to retrieve the user's password hash from the database
-    $stmt = $conn->prepare("SELECT password FROM sr_user WHERE username = ? OR email = ?");
+    $stmt = $conn->prepare("SELECT u_password FROM sr_user WHERE u_username = ? OR u_email = ?");
     $stmt->bind_param("ss", $username_email, $username_email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -29,47 +29,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows == 1) {
         // Get the password hash from the database
         $row = $result->fetch_assoc();
-        $password_hash = $row["password"];
+        $password_hash = $row["u_password"];
 
         // Verify the password hash using the password_verify() function
         if (password_verify($password, $password_hash)) {
             // Update the user's last login time in the database
-            $stmt = $conn->prepare("UPDATE sr_user SET last_login = NOW() WHERE username = ? OR email = ?");
+            $stmt = $conn->prepare("UPDATE sr_user SET u_last_login = NOW() WHERE u_username = ? OR u_email = ?");
             $stmt->bind_param("ss", $username_email, $username_email);
             $stmt->execute();
 
-            // Create a SQL query to retrieve data from the "sr_score" table
-            $sql = "SELECT username, id
-            FROM sr_user 
-            WHERE username LIKE '$username_email'
-            or email LIKE '$username_email';
-            ";
-            // Execute the SQL query
-            $result = mysqli_query($conn, $sql);
+            // Create a SQL query to retrieve data from the "sr_user" table
+            $sql = "SELECT u_id, u_username FROM sr_user WHERE u_username = ? OR u_email = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ss", $username_email, $username_email);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-            if (mysqli_num_rows($result) == 1) {
+            if ($result->num_rows == 1) {
                 // Fetch the single row from the result set
-                $row = mysqli_fetch_assoc($result);
-                #echo $row['username'];
-                
-                
-                // Set the cookie with name, value, expiration time and path
-                setcookie('user_id', $row["id"], time() + (3 * 24 * 60 * 60), '/');
-                
-                session_start(); // Start the session
-                $_SESSION['user_id'] = $row["id"];
-                
+                $row = $result->fetch_assoc();
 
-                $sql = "update sr_user set last_login=NOW() where id= " . $row["id"];
-                $result = mysqli_query($conn, $sql);
+                // Set the cookie with name, value, expiration time and path
+                setcookie('user_id', $row["u_id"], time() + (3 * 24 * 60 * 60), '/');
+                
+                // Start the session and set the user ID
+                session_start();
+                $_SESSION['user_id'] = $row["u_id"];
+
+                // Update the user's last login time in the database
+                $stmt = $conn->prepare("UPDATE sr_user SET u_last_login = NOW() WHERE u_id = ?");
+                $stmt->bind_param("i", $row["u_id"]);
+                $stmt->execute();
 
                 // Redirect the user to the home page or another page
                 header("Location: ../index.html");
-            }else{
+                exit();
+            } else {
                 die("Something went wrong :c");
-                session_abort();
             }
-            exit();
         } else {
             die("Invalid password");
         }
