@@ -31,8 +31,17 @@ if (!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/", $_POST[
     die("Error: Invalid password");
 }
 
+u_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+u_username VARCHAR(30) NOT NULL UNIQUE,
+u_email VARCHAR(50) NOT NULL UNIQUE,
+u_password VARCHAR(255) NOT NULL,
+u_data_id INT(11) UNSIGNED,
+u_user_deleted TINYINT(1) NOT NULL DEFAULT 0,
+u_last_login DATETIME NOT NULL,
+
+
 // Prepare a SQL statement to insert the data into the database
-$stmt = $mysqli->prepare("INSERT INTO sr_user (username, email, password, user_deleted, last_login) VALUES (?, ?, ?, 0, NOW())");
+$stmt = $mysqli->prepare("INSERT INTO sr_user (u_username, u_email, u_password, , , u_user_deleted, u_last_login) VALUES (?, ?, ?, 0, NOW())");
 
 // Bind the variables to the prepared statement as parameters
 $stmt->bind_param("sss", $username, $email, $password);

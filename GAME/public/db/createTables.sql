@@ -13,7 +13,7 @@ CREATE TABLE sr_user (
     u_username VARCHAR(30) NOT NULL UNIQUE,
     u_email VARCHAR(50) NOT NULL UNIQUE,
     u_password VARCHAR(255) NOT NULL,
-    u_data_id INT(11) UNSIGNED NOT NULL,
+    u_data_id INT(11) UNSIGNED,
     u_user_deleted TINYINT(1) NOT NULL DEFAULT 0,
     u_last_login DATETIME NOT NULL,
     FOREIGN KEY (u_data_id) REFERENCES sr_userdata(ud_id)
