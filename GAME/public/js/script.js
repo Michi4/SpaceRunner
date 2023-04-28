@@ -344,13 +344,23 @@ if(localStorage.getItem("players") != undefined){
 
 
 let platforms = [];
+let oldplatforms = [];
 let items = [];
+let olditems = [];
 let alltext;
+
+function fixOldOffsetLevels(objArr){
+    objArr.forEach(obj => {
+        obj.position.x += width;
+        console.log(obj.position.x);
+    });
+    return objArr;
+}
 
 function level0(){
     winx = width*1.5;
     platforms = [
-        new Platform(0, height*0.8, width*2, height*0.2),
+        new Platform(0, height*0.8, width*1.4, height*0.3),
         
         
         new Platform(width*0.05, height*0.4, width*0.05),
@@ -360,8 +370,8 @@ function level0(){
 
 
         new Platform(width*0.7, height*0.6, width*0.2),
-        new Platform(width*1.2, height*0.6, width*0.2),
-        new Platform(width*1.7, height*0.6, width*0.2)
+        //new Platform(width*1.2, height*0.6, width*0.2),
+        //new Platform(width*1.7, height*0.6, width*0.2)
         /*
         new Platform(width*0.5, height*0.7, width*0.05),
         new Platform(width*0.6, height*0.6, width*0.05),
@@ -391,20 +401,24 @@ function level0(){
         new Item(width*0.81, height*0.3, coin, innerWidth/48, innerWidth/48)
         */
     ];
+
 }
 function level1(){
-    winx = width*3;
+    winx = width*3 - width;
+
+    oldplatforms = platforms;
     platforms = [
         new Platform(0, height*0.8, width*0.5 , height*0.2),
         new Platform(width, height*0.8, width*0.5, height*0.2),
         new Platform(width*2, height*0.8, width*0.5, height*0.2),
         new Platform(width*3, height*0.8, width*0.5, height*0.2),
-
+         
         new Platform(width*0.6, height*0.75, width*0.3),
         new Platform(width*1.6, height*0.75, width*0.3),
         new Platform(width*2.6, height*0.75, width*0.3),
     ];
 
+    olditems = items;
     items = [
         new Item(width*0.95, height*0.45, coin, innerWidth/48, innerWidth/48),
 
@@ -416,10 +430,16 @@ function level1(){
         new Item(width*2.51, height*0.45, coin, innerWidth/48, innerWidth/48),
         new Item(width*2.95, height*0.45, coin, innerWidth/48, innerWidth/48),
     ];
+
+    
+    platforms = fixOldOffsetLevels(platforms);
+    items = fixOldOffsetLevels(items);
 }
 // hi C:D
 function level2(){
-    winx = width*3;
+    winx = width*3 - width;
+    
+    oldplatforms = platforms;
     platforms = [
         new Platform(0, height*0.8, width*0.5 , height*0.2),
         new Platform(width, height*0.8, width*0.5, height*0.2),     // base platform - do over 15 when not let thru IS FALSCH IWIE klar is des falsch retard
@@ -433,6 +453,7 @@ function level2(){
         new Platform(width*2.6, height*0.75, width*0.3)
     ];
 
+    olditems = items;
     items = [
         new Item(width*0.51, height*0.45, coin, innerWidth/48, innerWidth/48),
         new Item(width*0.95, height*0.45, coin, innerWidth/48, innerWidth/48),
@@ -445,10 +466,16 @@ function level2(){
         new Item(width*2.51, height*0.45, coin, innerWidth/48, innerWidth/48),
         new Item(width*2.95, height*0.45, coin, innerWidth/48, innerWidth/48),
     ];
+
+    
+    platforms = fixOldOffsetLevels(platforms);
+    items = fixOldOffsetLevels(items);
 }
 
 function level3(){
-    winx = width*3.5;
+    winx = width*3.5 - width;
+    
+    oldplatforms = platforms;
     platforms = [
         new Platform(0, height*0.8, width*0.5 , height*0.2),
 
@@ -475,6 +502,7 @@ function level3(){
         new Platform(width*3.3, height*0.8, width*0.7, height*0.2)
     ];
 
+    olditems = items;
     items = [
         new Item(width*0.69, height*0.6, coin, innerWidth/48, innerWidth/48),
         new Item(width*0.94, height*0.4, coin, innerWidth/48, innerWidth/48),
@@ -486,6 +514,10 @@ function level3(){
         new Item(width*2.1, height*0.5, coin, innerWidth/48, innerWidth/48),
         new Item(width*2.4, height*0.74, coin, innerWidth/48, innerWidth/48),
     ];
+
+    
+    platforms = fixOldOffsetLevels(platforms);
+    items = fixOldOffsetLevels(items);
 }
 
 function randomGen(){// test
@@ -513,81 +545,88 @@ function randomGen(){// test
     
     //working best aber halt ohne gewichter
     items.length = 0;
+    
+    oldplatforms = platforms;
+    olditems = items;
     if(Math.random() > 0.5){
-    const platpos = {
-        x: 0,
-        y: 0.8
-    };
-    const coinpos = {
-        x: 0,
-        y: 0
-    };
-    const platdim = {
-        x: 0.5,
-        y: 0.2
-    };
+        const platpos = {
+            x: 0,
+            y: 0.8
+        };
+        const coinpos = {
+            x: 0,
+            y: 0
+        };
+        const platdim = {
+            x: 0.5,
+            y: 0.2
+        };
 
-    platforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
-    for(let i = 1; i < 9; i++){
-        platpos.x = Math.random() * ((platpos.x  + platdim.x)+ 0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
-        platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
+        platforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
+        for(let i = 1; i < 9; i++){
+            platpos.x = Math.random() * ((platpos.x  + platdim.x)+ 0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
+            platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
 
-        platdim.x = Math.random() * (1 - 0.2) + 0.2;
-        platdim.y = Math.random() * (1 - 0.015) + 0.015;
+            platdim.x = Math.random() * (1 - 0.2) + 0.2;
+            platdim.y = Math.random() * (1 - 0.015) + 0.015;
 
-        platforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
+            platforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
 
-        //COINS man
-        if(difficulty != 'run'){
-            for(let j = 0; j < Math.floor(Math.random()*5); j++){
-                coinpos.x = Math.random() * (platforms[i].width+platforms[i].position.x - platforms[i].position.x) + platforms[i].position.x;
-                coinpos.y = Math.random() * (platforms[i].position.y-0.06*height - (platforms[i].position.y-0.3*height)) +  (platforms[i].position.y-0.3*height);
-                items[i+j] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
+            //COINS man
+            if(difficulty != 'run'){
+                for(let j = 0; j < Math.floor(Math.random()*5); j++){
+                    coinpos.x = Math.random() * (platforms[i].width+platforms[i].position.x - platforms[i].position.x) + platforms[i].position.x;
+                    coinpos.y = Math.random() * (platforms[i].position.y-0.06*height - (platforms[i].position.y-0.3*height)) +  (platforms[i].position.y-0.3*height);
+                    items[i+j] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
+                }
             }
         }
-    }
-    platforms[9] = new Platform(platforms[8].position.x+platforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
+        platforms[9] = new Platform(platforms[8].position.x+platforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
 
-    winx = platforms[9].position.x;
+        winx = platforms[9].position.x;
     }else{
-    //gewichter try
-    const platpos = {
-        x: 0,
-        y: 0.8
-    };
-    const coinpos = {
-        x: 0,
-        y: 0
-    };
-    const platdim = {
-        x: 0.5,
-        y: 0.2
-    };
+        //gewichter try
+        const platpos = {
+            x: 0,
+            y: 0.8
+        };
+        const coinpos = {
+            x: 0,
+            y: 0
+        };
+        const platdim = {
+            x: 0.5,
+            y: 0.2
+        };
 
-    platforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
-    for(let i = 1; i < 9; i++){
-        platpos.x = Math.random() * ((platpos.x  + platdim.x)+0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
-        platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
+        platforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
+        for(let i = 1; i < 9; i++){
+            platpos.x = Math.random() * ((platpos.x  + platdim.x)+0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
+            platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
 
-        platdim.x = Math.random() * (0.3 - 0.1) + 0.1;
-        platdim.y = Math.random() * (0.025 - 0.015) + 0.015; 
-        platforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
+            platdim.x = Math.random() * (0.3 - 0.1) + 0.1;
+            platdim.y = Math.random() * (0.025 - 0.015) + 0.015; 
+            platforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
 
-        //COINS man
-        if(difficulty != 'run' && Math.random() > 0.5){
-            coinpos.x = Math.random() * (platforms[i].width+platforms[i].position.x - platforms[i].position.x) + platforms[i].position.x;
-            coinpos.y = Math.random() * (platforms[i].position.y-0.06*height - (platforms[i].position.y-0.3*height)) +  (platforms[i].position.y-0.3*height);
-            items[i] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
-        } 
-    }
-    platforms[9] = new Platform(platforms[8].position.x+platforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
+            //COINS man
+            if(difficulty != 'run' && Math.random() > 0.5){
+                coinpos.x = Math.random() * (platforms[i].width+platforms[i].position.x - platforms[i].position.x) + platforms[i].position.x;
+                coinpos.y = Math.random() * (platforms[i].position.y-0.06*height - (platforms[i].position.y-0.3*height)) +  (platforms[i].position.y-0.3*height);
+                items[i] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
+            } 
+        }
+        platforms[9] = new Platform(platforms[8].position.x+platforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
 
-    winx = platforms[9].position.x;
+        winx = platforms[9].position.x;
     }
     //items impimentieren wandom auf plat iwo in bestimmter höhe und random anzahl pro platform (?je nach breite)
     /*    items = [
         new Item(width*0.365, height*0.6, coin, innerWidth/48, innerWidth/48)
     ];*/
+
+    
+    platforms = fixOldOffsetLevels(platforms);
+    items = fixOldOffsetLevels(items);
 }
 
 function levelSwitch(){
@@ -656,8 +695,14 @@ function draw(){
     platforms.forEach(platform => {
         platform.draw();
     });
+    oldplatforms.forEach(platform => {
+        platform.draw();
+    });
     
     items.forEach(item => {
+        item.draw();
+    });
+    olditems.forEach(item => {
         item.draw();
     });
     /*alltext.forEach(item => {
@@ -769,8 +814,14 @@ function update(){
                     platforms.forEach(platform => {
                         platform.position.x -= speed;
                     });
+                    oldplatforms.forEach(platform => {
+                        platform.position.x -= speed;
+                    });
                     
                     items.forEach(item => {
+                        item.position.x -= speed;
+                    });
+                    olditems.forEach(item => {
                         item.position.x -= speed;
                     });
 
@@ -783,8 +834,14 @@ function update(){
                     platforms.forEach(platform => {
                         platform.position.x += speed;
                     });
+                    oldplatforms.forEach(platform => {
+                        platform.position.x += speed;
+                    });
                     
                     items.forEach(item => {
+                        item.position.x += speed;
+                    });
+                    olditems.forEach(item => {
                         item.position.x += speed;
                     });
 
@@ -823,10 +880,35 @@ function update(){
                 player.velocity.y = 0;
             }
         });
+        oldplatforms.forEach(platform => {
+            if(player.position.y + player.height <= platform.position.y 
+                && player.position.y + player.height + player.velocity.y >= platform.position.y
+                && player.position.x + player.width >= platform.position.x 
+                && player.position.x <= platform.position.x + platform.width){
+                player.velocity.y = 0;
+            }
+        });
 
         
         // full Item collision
         items.forEach(item => {
+            if(player.position.y + player.height >= item.position.y
+                && player.position.y<= item.position.y + item.height
+                && player.position.x + player.width >= item.position.x
+                && player.position.x<= item.position.x + item.width){
+                    coinCollect.play();
+                    if(difficulty == 'impossible') gameOver();
+                    coins++;
+                    if(difficulty == 'hard') coins++;
+                    if(difficulty == 'easy') coins -= 0.5;
+                    lvlcoins++;
+                    if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
+                    item.width = 0;
+                        item.position.x = -9999;
+                    item.position.y = -9999;
+            }
+        });
+        olditems.forEach(item => {
             if(player.position.y + player.height >= item.position.y
                 && player.position.y<= item.position.y + item.height
                 && player.position.x + player.width >= item.position.x
@@ -850,7 +932,7 @@ function update(){
         if(player.position.y >= height*2){
             gameOver();
         }
-        if(scrollOffset >= winx){
+        if(scrollOffset >= winx-width){
             victory();
         }
     });
@@ -1519,7 +1601,7 @@ window.addEventListener('storage', function (event) {
     }
   });
   */
-
+/*
   function getLoggedUser() {
     // Split the cookie string into an array of name-value pairs
     let cookies = document.cookie.split(';');
@@ -1543,3 +1625,27 @@ window.addEventListener('storage', function (event) {
 }
 
 getLoggedUser();
+*/
+
+function getUserData(){
+    // Make the GET request to getUserData.php
+fetch('getUserData.php', {
+    method: 'GET'
+  })
+  .then(response => {
+    // Handle the response from the server
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // Do something with the data returned from the server
+    console.log(data);
+  })
+  .catch(error => {
+    // Handle any errors that occurred during the request
+    console.error('There was a problem with the fetch operation:', error);
+  });
+  
+}

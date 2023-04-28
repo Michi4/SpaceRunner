@@ -57,3 +57,9 @@ wenn leader dead mate = leader
 - dyn cam  optimietrt
 - progessbar optimiert
 
+
+
+# Stopped last time
+- database remake (neu durchdenken! grundprinzip is drin)
+- userchecking
+- save scores
