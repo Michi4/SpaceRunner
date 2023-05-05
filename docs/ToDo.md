@@ -35,6 +35,12 @@ wenn leader dead mate = leader
  # setting speichern neue tabelle und image auswahl
 
 
+# in progress
+- level generierung optimieren (kein apruptes spawning)
+- speicherung von scores
+- login 
+- datenbank
+
 ## Done
 - added donation
 - added login and signup

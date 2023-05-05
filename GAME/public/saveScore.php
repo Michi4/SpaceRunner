@@ -1,4 +1,10 @@
 <?php
+session_start(); // Start the session
+if (!isset($_SESSION['user_id'])) {
+    exit;
+}
+
+
 // MySQL database connection parameters
 $_db_host = "localhost";
 $_db_database = "spacerunner";
@@ -14,17 +20,18 @@ if ($conn->connect_error) {
 }
 
 
-session_start(); // Start the session
-if (!isset($_SESSION['user_id'])) {
-    echo "Login first!";
-}
+
 $user_id = $_SESSION['user_id'];
-$sql = "SELECT * FROM sr_user WHERE id = $user_id;";
+$sql = "SELECT * FROM sr_user WHERE u_id = $user_id;";
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) == 1) {
     $row = mysqli_fetch_assoc($result);
     echo $row["username"];
+}else{
+    echo "Login first!";
+    sleep(5);
+    header("Location: ./login/login.html");
 }
 /*if($_GET["user_id"] != $_SESSION['user_id']){
 
