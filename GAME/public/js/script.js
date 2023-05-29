@@ -155,6 +155,7 @@ coinCollect.volume = 0.4;
 // ITEMS
 let coinload = false;
 const coin = new Image(); //onload zeile 437 :D
+let musicload = false;
 
 let checkpointload = false;
 const checkpoint = new Image(); //onload zeile 652 :D
@@ -294,7 +295,7 @@ class Platform{
 }
 
 class Item{
-    constructor(x, y, img, width, height){
+    constructor(x, y, img, width, height, music){
         this.position = {
             x,
             y,
@@ -302,6 +303,7 @@ class Item{
         this.img = img ?? coin;
         this.width = width ?? innerWidth/48;
         this.height = height ?? innerWidth/48;
+        this.music = music ?? new Audio('music/CoinCollect.mp3');
     }
 
     draw(){
@@ -382,6 +384,8 @@ if(localStorage.getItem("players") != undefined){
 
 let platforms = [];
 let items = [];
+let levels = [];
+let game = new Game(players, levels);
 let alltext;
 
 function level0(){
@@ -868,7 +872,10 @@ function update(){
                 && player.position.y<= item.position.y + item.height
                 && player.position.x + player.width >= item.position.x
                 && player.position.x<= item.position.x + item.width){
-                    coinCollect.play();
+                    if(item.music){
+                        item.music.play();
+                    }
+                    //coinCollect.play();
                     if(difficulty == 'impossible') gameOver();
                     coins++;
                     if(difficulty == 'hard') coins++;
@@ -876,7 +883,7 @@ function update(){
                     lvlcoins++;
                     if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
                     item.width = 0;
-                        item.position.x = -9999;
+                    item.position.x = -9999;
                     item.position.y = -9999;
             }
         });
@@ -921,9 +928,12 @@ checkpoint.onload = function() {
     imgLoaded();
 };
 checkpoint.src = "img/checkpoint.png";
+if(game.levels.forEach(item.music.canplaythrough == true)){
+    musicload = true;
+}
 
 function imgLoaded(){
-    if(coinload && checkpointload){
+    if(coinload && checkpointload && musicload){
         //playMusic();
         levelSwitch();
         update();
