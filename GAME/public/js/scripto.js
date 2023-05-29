@@ -366,11 +366,11 @@ function fixOldOffsetLevels(objArr){
     objArr.forEach(obj => {
         let maxPlat = 0;
         platforms.forEach(platform =>{
-            if(platform.position.x+platform.width > maxPlat) maxPlat = platform.position.x;//+platform.width //+ width*0.1; 
+            if(platform.position.x+platform.width > maxPlat) maxPlat = platform.position.x+platform.width + width*0.1; 
         });
         obj.position.x += maxPlat;
-        //console.log(objArr)
-        //console.log(obj.position.x);
+        console.log(objArr)
+        console.log(obj.position.x);
     });
     return objArr;
 }
@@ -387,7 +387,7 @@ function calcWinx(objArr){
 function level0(){
     winx = width;
     platforms = [
-        new Platform(0, height*0.8, width*2.2, height*0.2),
+        new Platform(0, height*0.8, width*2, height*0.2),
         
         
         new Platform(width*0.05, height*0.4, width*0.05),
@@ -435,7 +435,7 @@ function level1(){
     //winx = width*3;
     
     tempplatforms = [
-        //new Platform(0, height*0.8, width*0.5, height*0.2),
+        new Platform(0, height*0.8, width*0.5 , height*0.2),
         new Platform(width, height*0.8, width*0.5, height*0.2),
         new Platform(width*2, height*0.8, width*0.5, height*0.2),
         new Platform(width*3, height*0.8, width*0.5, height*0.2),
@@ -652,8 +652,6 @@ function levelSwitch(){
         randomGen();
         return;
     }
-    
-    //level3();
     switch(level){
         case 0:
             level0();
@@ -1261,11 +1259,7 @@ function gameOver(){
         lvlcoins = 0;
     }
     if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
-    if(difficulty != 'easy'){
-        platforms = [];
-        items = [];
-        levelSwitch();
-    }
+    if(difficulty != 'easy') levelSwitch();
     //restart();
 }
 
