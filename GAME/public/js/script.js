@@ -1,53 +1,5 @@
-let socket;
 let multiplayer = false;
-let ratio;
 
-$.get(`/socket.io/socket.io.min.js`)
-    .done(function () {
-        let sc = document.createElement("script");
-        sc.setAttribute("src", "/socket.io/socket.io.min.js");
-        sc.setAttribute("type", "text/javascript");
-        document.head.appendChild(sc);
-
-        socket = io();
-        socket.on('connect', () =>{
-            console.log(socket);
-        });
-        multiplayer = localStorage.getItem("multiplayer") ?? false;
-        socket.on('playerdata', (data) =>{
-            /*
-            ratio = {
-                "width": width/data.width,
-                "height": height/data.height
-            };
-            players[1].position.y = data.player.y*ratio.height;
-            players[1].position.x = data.player.x*ratio.width + data.offset*ratio.width - scrollOffset;
-            */
-            players[1].position.y = data.player.y;
-            players[1].position.x = data.player.x + data.offset - scrollOffset;
-            console.log(players)
-            if(level < data.level){
-                level = data.level;
-                players[0].position.x = startscrollR;
-                players[0].position.y = height/10;
-                levelSwitch();
-            }
-        });
-    }).fail(function () {
-        multiplayer = false;
-    });
-/*
-console.log(window.location)
-let locationString = `${window.location}`;
-let noScript = false;                                                                                         //baba seiten detection
-if(locationString.substring(locationString.length-10, locationString.length) == 'index.html')noScript = true;
-else noScript = false;
-*/
-// CUSTOMIZEABLE
-/*localStorage.setItem('charface', ':D');
-if(localStorage.getItem("charface"))let charface = localStorage.getItem("charface");
-else let charface;
-*/
 let text = localStorage.getItem("charface") ?? ""//":)";//
 let playercolor = localStorage.getItem("playercolor") ?? '#000';
 let platcolor = localStorage.getItem("platcolor") ?? '#000';
@@ -62,11 +14,6 @@ let buttonpressed = false;
 let gamepad = false;
 let gamepadIndex;
 let pcounter = 0;
-// --------------- //
-/*                                                  add locallocalStorage speicherung bitte wär wild (coins + lvl??)
-const width = innerWidth*0.8;
-const height = innerHeight*0.6;
-*/
 
 
 const baseWidth = 1920;
