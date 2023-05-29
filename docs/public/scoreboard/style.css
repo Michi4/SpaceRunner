@@ -1,0 +1,72 @@
+* {
+
+  text-align: center;
+  
+  }
+body {
+    background-color: #222222;
+    color: #FFFFFF;
+    font-family: monospace;
+    font-size: 16px;
+    margin: 0;
+    background-image: url('../img/galaxyAll.gif');
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 80%;
+    background-color: #22222200;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #444444cc;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #333333cc;
+  }
+  
+  tr:nth-child(odd) {
+    background-color: #222222cc;
+  }
+  
+  #scoreTable td:first-child {
+    font-weight: bold;
+  }
+  
+
+  /*ICONS*/
+
+  .icons{
+    position: absolute;
+    margin: 2vmax;
+    width: 2vmax;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(350deg) brightness(102%) contrast(102%);
+    opacity: 0.8;
+    transition: 300ms;
+  }
+  
+  .icons:hover{
+    margin: 1.75vmax;
+    width: 2.5vmax;
+    opacity: 1;
+  }
+  
+  .back{
+    transform: rotate(180deg);
+    left: 0;
+  }
+  
+  .user{
+    right: 0;	
+  }

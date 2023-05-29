@@ -48,7 +48,7 @@ else noScript = false;
 if(localStorage.getItem("charface"))let charface = localStorage.getItem("charface");
 else let charface;
 */
-let text = localStorage.getItem("charface") ?? ":)";//
+let text = localStorage.getItem("charface") ?? ""//":)";//
 let playercolor = localStorage.getItem("playercolor") ?? '#000';
 let platcolor = localStorage.getItem("platcolor") ?? '#000';
 let platshadow = localStorage.getItem("platshadow") ?? '#fff';
@@ -68,12 +68,17 @@ const width = innerWidth*0.8;
 const height = innerHeight*0.6;
 */
 
+
+const baseWidth = 1920;
+const baseHeight = 1080;
+
 let width = innerWidth;
 let height = innerHeight;
 const fps = 60;
 
 console.log('basewidth: ' + width)
 console.log('baseheight: ' + height)
+
 
 // lets/consts to make values
 let counter = 0;
@@ -128,6 +133,7 @@ let reassigned = false;
 // TEXT
 
 // MUSIC && SOUNDS
+/*
 let backgroundmusic = document.getElementById('music');
 backgroundmusic.src = 'music/Space8bit.mp3';
 backgroundmusic.currentTime = 0.25;
@@ -138,7 +144,7 @@ function playMusic(){
         backgroundmusic.controls = true;
         backgroundmusic.play();
     });
-}
+}*/
 
 // coin sounds
 
@@ -155,7 +161,7 @@ const checkpoint = new Image(); //onload zeile 652 :D
 
 // CANVAS
 const canvas = document.querySelector('canvas');
-const c = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 //SET width height (window.inner----)
 canvas.width = width;
 canvas.height = height;
@@ -243,16 +249,16 @@ class Player{
             //platshadow = `${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}`;
             platshadow = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
         }
-        c.shadowColor = `${playercolor}`;
-        c.fillStyle = `${playercolor}`;
-        c.shadowBlur = 180;
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        ctx.shadowColor = `${playercolor}`;
+        ctx.fillStyle = `${playercolor}`;
+        ctx.shadowBlur = 180;
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         //if(text.length <= 2){
-            c.shadowBlur = 0;
-            c.font = `${width/55}px`;
-            c.fillStyle = '#202124';
-            c.fillText(text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
+            ctx.shadowBlur = 0;
+            ctx.font = `${width/55}px`;
+            ctx.fillStyle = '#202124';
+            ctx.fillText(text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
         //}
     }
 
@@ -278,12 +284,12 @@ class Platform{
     }
 
     draw(){
-        //if(platrainbow)c.shadowColor = playercolor;
-        //else c.shadowColor = platshadow;
-        c.shadowColor = platshadow;
-        c.shadowBlur = 5;
-        c.fillStyle = platcolor;
-        c.fillRect(this.position.x, this.position.y, this.width, this.height);
+        //if(platrainbow)ctx.shadowColor = playercolor;
+        //else ctx.shadowColor = platshadow;
+        ctx.shadowColor = platshadow;
+        ctx.shadowBlur = 5;
+        ctx.fillStyle = platcolor;
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 }
 
@@ -299,10 +305,10 @@ class Item{
     }
 
     draw(){
-        if(difficulty != 'impossible') c.shadowColor = 'gold';
-        else c.shadowColor = '#000';
-        c.shadowBlur = 80;
-        c.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
+        if(difficulty != 'impossible') ctx.shadowColor = 'gold';
+        else ctx.shadowColor = '#000';
+        ctx.shadowBlur = 80;
+        ctx.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
     }
 }
 /*class Text{
@@ -316,10 +322,10 @@ class Item{
     }
 
     draw(){
-        c.shadowBlur = 0;
-        c.font = `${this.width}px Cascadia Code`;
-        c.fillStyle = '#fff';
-        c.fillText(`${this.text}`, x, y);
+        ctx.shadowBlur = 0;
+        ctx.font = `${this.width}px Cascadia Code`;
+        ctx.fillStyle = '#fff';
+        ctx.fillText(`${this.text}`, x, y);
     }
 }
 */
@@ -610,11 +616,11 @@ function levelSwitch(){
 }
 
 function addText(text, x, y){
-    c.shadowBlur = 0;
-    c.fillStyle = platcolor;
-    c.font = `${width/55}px Cascadia Code`;
-    c.fillStyle = '#fff';
-    c.fillText(text, x, y);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = platcolor;
+    ctx.font = `${width/55}px Cascadia Code`;
+    ctx.fillStyle = '#fff';
+    ctx.fillText(text, x, y);
 }
 
 function draw(){
@@ -639,7 +645,9 @@ function draw(){
     }
     
 
-    c.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
 
     players.forEach(player => {
         player.draw();
@@ -666,20 +674,15 @@ function draw(){
             gameOver();
         }
     }*/
-    
-    
-    //document.getElementById('x').innerHTML = "curr: " + Math.round(scrollOffset);
-    //document.getElementById('y').innerHTML = "winx: " + Math.round(winx);
-    document.getElementById('z').innerHTML = "Win: " + Math.round(winx/100+lvldistance/100);
-    document.getElementById('a').innerHTML = "Distance: " + Math.round(distance/100);
-    
-    //document.getElementById('a').innerHTML = "distanceAA:" + Math.round(distance);
     //update();
+
+    ctx.restore();
 }
 let clickcount = 0;
 function update(){
     if (!dead && !menu && coinload) setTimeout(update, 1000/fps);
 
+    updateCameraPosition();   
     if(!mobile && gamepad && gamepadIndex !== undefined){
         const myGamepad = navigator.getGamepads()[gamepadIndex];
         myGamepad.buttons.map(e => e.touched).forEach((isPressed, buttonIndex) => {
@@ -726,7 +729,7 @@ function update(){
                     
             }
         });
-                   
+                
     }
     
 
@@ -834,7 +837,7 @@ function update(){
                     if(difficulty == 'hard') coins++;
                     if(difficulty == 'easy') coins -= 0.5;
                     lvlcoins++;
-                    if(difficulty != 'run') document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+                    if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
                     item.width = 0;
                         item.position.x = -9999;
                     item.position.y = -9999;
@@ -842,9 +845,9 @@ function update(){
         });
         if(difficulty == 'impossible'){
             coins = Math.floor(distance/300);
-            if(difficulty != 'run') document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+            if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
         } 
-        if(player.position.y >= height){
+        if(player.position.y >= height*2){
             gameOver();
         }
         if(scrollOffset >= winx){
@@ -862,9 +865,11 @@ function update(){
         };
         socket.emit('move', data);
     }
+    
+    printScores();
 }
 if(difficulty == 'run')document.getElementById('coins').innerHTML = ' ';
-else document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+else document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
 
 coin.onload = function() {
     coinload = true;
@@ -882,7 +887,7 @@ checkpoint.src = "img/checkpoint.png";
 
 function imgLoaded(){
     if(coinload && checkpointload){
-        playMusic();
+        //playMusic();
         levelSwitch();
         update();
         draw();
@@ -1074,7 +1079,7 @@ function rgb2hex(rgb) {
         ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
 }
 function componentToHex(c) {
-    var hex = c.toString(16);
+    var hex = ctx.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
 }
 
@@ -1131,6 +1136,8 @@ function victory(){
 }
 
 function gameOver(){
+    //TODO
+    
     if(difficulty == 'easy'){
         //dead = true;
         players.forEach(player => { 
@@ -1143,8 +1150,8 @@ function gameOver(){
     }
     if(difficulty == 'normal'){
         //dead = true;
-        if(level == 2) backgroundmusic.currentTime = 10;
-        else backgroundmusic.currentTime = 0;
+        //if(level == 2) backgroundmusic.currentTime = 10;
+        //else backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
@@ -1160,7 +1167,7 @@ function gameOver(){
     if(difficulty == 'hard' || difficulty == 'run'){
         //dead = true;
         level = 0;
-        backgroundmusic.currentTime = 0;
+        //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
@@ -1176,7 +1183,7 @@ function gameOver(){
     if(difficulty == 'impossible'){
         //dead = true;
         level = 0;
-        backgroundmusic.currentTime = 0;
+        //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
@@ -1189,7 +1196,7 @@ function gameOver(){
         coins = 0;
         lvlcoins = 0;
     }
-    if(difficulty != 'run') document.getElementById('coins').innerHTML = `Coins: ${coins}`;
+    if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
     if(difficulty != 'easy') levelSwitch();
     //restart();
 }
@@ -1461,3 +1468,78 @@ window.addEventListener("gamepaddisconnected", function (e) {
         e.gamepad.index, e.gamepad.id);
     gamepad = false;
 });
+
+
+// NEW MEW
+
+const camera = { x: 0, y: 0 };
+const cameraSpeed = 0.1;
+
+function updateCameraPosition() {
+    players.forEach(player => {
+        if(player.leader){
+            camera.x += (player.position.x + player.width/2     - canvas.width/2.5    - camera.x) * cameraSpeed;
+            camera.y += (player.position.y + player.height/2    - canvas.height/1.8   - camera.y) * cameraSpeed;
+        }
+    });
+}
+
+
+
+
+function moveProgressBar(percentage) {
+    let elem = document.getElementById("myBar");   
+    elem.style.width = percentage + '%';
+    //document.getElementById("demo").innerHTML = Math.round(percentage)  + '%'; //<p id="demo">0%</p>
+    //danke w3schools oba eicha progressbar is verbuggt meine is bessa ;D
+}
+
+
+function printScores(){
+    let ratioWin = Math.round((winx/100+lvldistance/100) * (baseWidth/width));
+    let ratiolvlDistance = Math.round((winx/100) * (baseWidth/width));
+    let ratioDistance = Math.round(distance/100 * (baseWidth/width));
+    /*document.getElementById('z').innerHTML = "Win: " + ratioWin;
+    document.getElementById('a').innerHTML = "Distance: " + ratioDistance;
+    */
+    document.getElementById('a').innerHTML = "  " + ratioDistance;
+    
+
+    if(ratioDistance != 0){
+        moveProgressBar(((distance-lvldistance)/(winx))*100);
+    }
+}
+
+// check login
+/*
+window.addEventListener('storage', function (event) {
+    if (event.key === 'user_id') {
+      console.log('You Changed The Data!!!');
+
+    }
+  });
+  */
+
+  function getLoggedUser() {
+    // Split the cookie string into an array of name-value pairs
+    let cookies = document.cookie.split(';');
+
+    // Loop through the cookies to find the user_id cookie
+    let userId = null;
+    for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i].trim();
+        if (cookie.indexOf('user_id=') == 0) {
+        // Extract the user_id value from the cookie
+        userId = cookie.substring('user_id='.length, cookie.length);
+        break;
+        }
+    }
+
+    // Return the userId variable
+    console.log(userId);
+    console.log("userId");
+    console.log("userId");
+    return userId;
+}
+
+getLoggedUser();
