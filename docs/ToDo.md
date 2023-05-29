@@ -51,6 +51,7 @@ wenn leader dead mate = leader
   - suche hinzugefügt
 - fixed some stuff 
 - cookie integration for login
+- database remake (neu durchdenken! grundprinzip is drin)
 
 
 
@@ -66,6 +67,6 @@ wenn leader dead mate = leader
 
 
 # Stopped last time
-- database remake (neu durchdenken! grundprinzip is drin)
+- fixxing COIN SPAWNING (items)!!!
 - userchecking
 - save scores
