@@ -311,6 +311,23 @@ class Item{
         ctx.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
     }
 }
+
+class Level{
+    constructor(num, platforms, items){
+        this.num = num;
+        this.platforms = platforms ?? [];
+        this.items = items ?? [];
+    }
+
+    draw(){
+        platforms.forEach(platform => {
+            platform.draw();
+        });
+        items.forEach(item => {
+            item.draw();
+        });
+    }
+}
 /*class Text{
     constructor(text, x, y, width){
         this.position = {
