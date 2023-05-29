@@ -328,6 +328,26 @@ class Level{
         });
     }
 }
+
+class Game{
+    constructor(players, levels){
+        this.players = players ?? [new Player(true)];
+        this.levels = levels ?? [];
+    }
+
+    addLevel(level){
+        this.levels += level;
+    }
+
+    draw(){
+        players.forEach(player => {
+            player.draw();
+        });
+        levels.forEach(level => {
+            level.draw();
+        });
+    }
+}
 /*class Text{
     constructor(text, x, y, width){
         this.position = {
