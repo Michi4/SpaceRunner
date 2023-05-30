@@ -2,6 +2,7 @@ let socket;
 let multiplayer = false;
 let ratio;
 
+<<<<<<< Updated upstream
 $.get(`/socket.io/socket.io.min.js`)
     .done(function () {
         let sc = document.createElement("script");
@@ -48,7 +49,8 @@ else noScript = false;
 if(localStorage.getItem("charface"))let charface = localStorage.getItem("charface");
 else let charface;
 */
-let text = localStorage.getItem("charface") ?? ""//":)";//
+=======
+>>>>>>> Stashed changes
 let playercolor = localStorage.getItem("playercolor") ?? '#000';
 let platcolor = localStorage.getItem("platcolor") ?? '#000';
 let platshadow = localStorage.getItem("platshadow") ?? '#fff';
@@ -206,10 +208,10 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
     document.body.addEventListener('mousedown', mobileJump);
     */
 }
-
+let playercount = 1;
 //OOP because OP for this
 class Player{
-    constructor(leader){
+    constructor(leader, text){
         this.position = {
             x: width/15,
             y: height/10
@@ -230,6 +232,9 @@ class Player{
         this.dead = false;
         this.width = width/38.4;
         this.height = width/38.4;
+        let playercolor = localStorage.getItem("playercolor") ?? '#000';
+        this.text = text ?? "";
+        this.id = playercount++;
     }
 
     draw(){
@@ -255,12 +260,10 @@ class Player{
         ctx.shadowBlur = 180;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
-        //if(text.length <= 2){
-            ctx.shadowBlur = 0;
-            ctx.font = `${width/55}px`;
-            ctx.fillStyle = '#202124';
-            ctx.fillText(text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
-        //}
+        ctx.shadowBlur = 0;
+        ctx.font = `${width/55}px`;
+        ctx.fillStyle = '#202124';
+        ctx.fillText(this.text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
     }
 
     update(){
@@ -1163,7 +1166,9 @@ function saveSettings(){
     localStorage.setItem("platshadow", platshadow);
     localStorage.setItem("playerrainbow", JSON.stringify(playerrainbow));
     localStorage.setItem("platrainbow", JSON.stringify(platrainbow));
-    if(text) localStorage.setItem("charface", text);
+    players.forEach(player => { 
+        localStorage.setItem("charface"+player.id, player.text);
+    });
 }
 
 function changeFace(){
