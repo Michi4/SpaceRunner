@@ -1,6 +1,4 @@
 let multiplayer = false;
-
-let text = localStorage.getItem("charface") ?? ""//":)";//
 let playercolor = localStorage.getItem("playercolor") ?? '#000';
 let platcolor = localStorage.getItem("platcolor") ?? '#000';
 let platshadow = localStorage.getItem("platshadow") ?? '#fff';
@@ -102,6 +100,7 @@ coinCollect.volume = 0.4;
 // ITEMS
 let coinload = false;
 const coin = new Image(); //onload zeile 437 :D
+let musicload = false;
 
 let checkpointload = false;
 const checkpoint = new Image(); //onload zeile 652 :D
@@ -152,10 +151,10 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
     document.body.addEventListener('mousedown', mobileJump);
     */
 }
-
+let playercount = 1;
 //OOP because OP for this
 class Player{
-    constructor(leader){
+    constructor(leader, text){
         this.position = {
             x: width/15,
             y: height/10
@@ -176,6 +175,9 @@ class Player{
         this.dead = false;
         this.width = width/38.4;
         this.height = width/38.4;
+        let playercolor = localStorage.getItem("playercolor") ?? '#000';
+        this.text = text ?? "";
+        this.id = playercount++;
     }
 
     draw(){
@@ -201,12 +203,10 @@ class Player{
         ctx.shadowBlur = 180;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
-        //if(text.length <= 2){
-            ctx.shadowBlur = 0;
-            ctx.font = `${width/55}px`;
-            ctx.fillStyle = '#202124';
-            ctx.fillText(text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
-        //}
+        ctx.shadowBlur = 0;
+        ctx.font = `${width/55}px`;
+        ctx.fillStyle = '#202124';
+        ctx.fillText(this.text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
     }
 
     update(){
@@ -241,7 +241,7 @@ class Platform{
 }
 
 class Item{
-    constructor(x, y, img, width, height){
+    constructor(x, y, img, width, height, music){
         this.position = {
             x,
             y,
@@ -249,6 +249,7 @@ class Item{
         this.img = img ?? coin;
         this.width = width ?? innerWidth/48;
         this.height = height ?? innerWidth/48;
+        this.music = music ?? new Audio('music/CoinCollect.mp3');
     }
 
     draw(){
@@ -256,6 +257,43 @@ class Item{
         else ctx.shadowColor = '#000';
         ctx.shadowBlur = 80;
         ctx.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
+    }
+}
+
+class Level{
+    constructor(num, platforms, items){
+        this.num = num;
+        this.platforms = platforms ?? [];
+        this.items = items ?? [];
+    }
+
+    draw(){
+        platforms.forEach(platform => {
+            platform.draw();
+        });
+        items.forEach(item => {
+            item.draw();
+        });
+    }
+}
+
+class Game{
+    constructor(players, levels){
+        this.players = players ?? [new Player(true)];
+        this.levels = levels ?? [];
+    }
+
+    addLevel(level){
+        this.levels += level;
+    }
+
+    draw(){
+        players.forEach(player => {
+            player.draw();
+        });
+        levels.forEach(level => {
+            level.draw();
+        });
     }
 }
 /*class Text{
@@ -292,6 +330,8 @@ if(localStorage.getItem("players") != undefined){
 
 let platforms = [];
 let items = [];
+let levels = [];
+let game = new Game(players, levels);
 let alltext;
 
 function level0(){
@@ -778,7 +818,10 @@ function update(){
                 && player.position.y<= item.position.y + item.height
                 && player.position.x + player.width >= item.position.x
                 && player.position.x<= item.position.x + item.width){
-                    coinCollect.play();
+                    if(item.music){
+                        item.music.play();
+                    }
+                    //coinCollect.play();
                     if(difficulty == 'impossible') gameOver();
                     coins++;
                     if(difficulty == 'hard') coins++;
@@ -786,7 +829,7 @@ function update(){
                     lvlcoins++;
                     if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
                     item.width = 0;
-                        item.position.x = -9999;
+                    item.position.x = -9999;
                     item.position.y = -9999;
             }
         });
@@ -831,9 +874,12 @@ checkpoint.onload = function() {
     imgLoaded();
 };
 checkpoint.src = "img/checkpoint.png";
+if(game.levels.forEach(item.music.canplaythrough == true)){
+    musicload = true;
+}
 
 function imgLoaded(){
-    if(coinload && checkpointload){
+    if(coinload && checkpointload && musicload){
         //playMusic();
         levelSwitch();
         update();
@@ -1063,7 +1109,9 @@ function saveSettings(){
     localStorage.setItem("platshadow", platshadow);
     localStorage.setItem("playerrainbow", JSON.stringify(playerrainbow));
     localStorage.setItem("platrainbow", JSON.stringify(platrainbow));
-    if(text) localStorage.setItem("charface", text);
+    players.forEach(player => { 
+        localStorage.setItem("charface"+player.id, player.text);
+    });
 }
 
 function changeFace(){
