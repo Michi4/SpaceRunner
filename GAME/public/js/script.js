@@ -109,14 +109,14 @@ class Platform{
         this.shadow = shadow ?? '#ffffff';
     }
 
-    draw(){
+    draw(startx){
         if(platrainbow){
             this.shadow = rgbColor;
         }
         ctx.shadowColor = this.shadow;
         ctx.shadowBlur = 5;
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+        ctx.fillRect(this.position.x+(startx ?? 0), this.position.y, this.width, this.height);
     }
 }
 
@@ -142,12 +142,12 @@ class Item{
         this.music = music ?? new Audio('music/CoinCollect.mp3');
     }
 
-    draw(){
+    draw(startx){
         if(game.difficulty != 'impossible') ctx.shadowColor = 'gold';
         else ctx.shadowColor = '#000';
         ctx.shadowBlur = 80;
         //bad - coin TODO!
-        ctx.drawImage(coin, this.position.x, this.position.y, this.width, this.height);
+        ctx.drawImage(coin, this.position.x+(startx ?? 0), this.position.y, this.width, this.height);
     }
 }
 
@@ -161,12 +161,12 @@ class Level{
         this.winx = winx ?? calcWinx(platforms);
     }
 
-    draw(){
+    draw(startx){
         this.platforms.forEach(platform => {
-            platform.draw();
+            platform.draw(startx);
         });
         this.items.forEach(item => {
-            item.draw();
+            item.draw(startx);
         });
     }
 }
@@ -217,7 +217,31 @@ class Game{
         players.forEach(player => {
             player.draw();
         });
-        this.levels[this.level].draw();
+        /*this.levels.forEach(level => {
+            level.draw();
+        });*/
+        this.levels[this.level].draw(0);
+        /*if(this.levels[this.level-1]){
+            let startx = 0;
+            if(this.levels[this.level-2]) startx = this.levels[this.level-2].winx;
+            this.levels[this.level-1].platforms.forEach(platform =>{
+                platform += startx;
+            });
+            this.levels[this.level-1].items.forEach(item =>{
+                item += startx;
+            });
+            this.levels[this.level-1].draw(startx);
+        }
+        if(this.levels[this.level+1]){
+            let startx = this.levels[this.level].winx+width;
+            this.levels[this.level+1].platforms.forEach(platform =>{
+                platform += startx;
+            });
+            this.levels[this.level+1].items.forEach(item =>{
+                item += startx;
+            });
+            this.levels[this.level+1].draw(startx);
+        }*/
     }
 }
 
@@ -282,7 +306,6 @@ function calcWinx(objArr){
     objArr.forEach(obj => {
             if(obj.position.x+obj.width > calcw) calcw = obj.position.x+obj.width; 
     });
-    console.log(calcw);
     return calcw;
 }
 
@@ -738,7 +761,7 @@ function update(){
         if(player.position.y >= height*2){
             gameOver();
         }
-        if(game.scrollOffset >= game.getCurrentLevel().winx -width){
+        if(game.scrollOffset >= game.getCurrentLevel().winx -width/2){//- width){
             victory();
         }
     });
