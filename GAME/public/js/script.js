@@ -376,6 +376,7 @@ function fixOldOffsetLevels(objArr){
 }
 
 function calcWinx(objArr){
+    if(empty(objArr)) return -1;
     let calcw = 0;
     objArr.forEach(obj => {
             if(obj.position.x+obj.width > calcw) calcw = obj.position.x+obj.width; 
