@@ -1,109 +1,20 @@
-let multiplayer = false;
-let playercolor = localStorage.getItem("playercolor") ?? '#000';
-let platcolor = localStorage.getItem("platcolor") ?? '#000';
-let platshadow = localStorage.getItem("platshadow") ?? '#fff';
-let playerrainbow = JSON.parse(localStorage.getItem("playerrainbow")) ?? true;
-let platrainbow = JSON.parse(localStorage.getItem("platrainbow")) ?? false;
-let speedmode = localStorage.getItem("speedmode") ?? false;
-let darktheme = localStorage.getItem("darktheme") ?? false;
-let difficulty = localStorage.getItem("difficulty") ?? 'normal';
-let playernum = parseInt(localStorage.getItem("playernum")) ?? 1;
-let buttonpressed = false;
-let gamepad = false;
-let gamepadIndex;
-let pcounter = 0;
-
-
+//const defined once/onchange
 const baseWidth = 1920;
 const baseHeight = 1080;
 
 let width = innerWidth;
 let height = innerHeight;
+
+let startScrollR = width*0.4;
+let startScrollL = width*0.15;
 const fps = 60;
 
-console.log('basewidth: ' + width)
-console.log('baseheight: ' + height)
+const playerCount= parseInt(localStorage.getItem("playernum") ?? 1);
 
+//gamepaddi
 
-// lets/consts to make values
-let counter = 0;
-
-let startscrollR = width*0.4;
-let startscrollL = width*0.15;
-let scrollOffset = 0;
-let distance = 0;
-let lvldistance = 0;
-let winx = width*3;
-
-
-let multi = 0.0025*2;//0.0025
-
-
-let gravity = height / 1700*5;
-let speed = width*multi;
-let jumpforce = height*(multi-0.0005)*10;
-
-/*
-let multi = 0.006875;//0.006875
-
-let gravity = 4.5;//4.5
-let speed = 0.275;//0.275
-let jumpforce = 55;//55
-*/   
-/*
-let multi = 0.006875;//0.006875
-
-let gravity = 4.5;//4.5
-let speed = 0.275;//0.275
-let jumpforce = 55;//55
-*/
-if(speedmode){
-    multi = 0.006875;//0.006875
-
-    gravity = 4.5;//4.5
-    speed = 0.275;//0.275
-    jumpforce = 55;//55
-}
-
-let level = localStorage.getItem("level") ?? 0;
-let lvlcoins = 0;
-let coins = localStorage.getItem("coins") ?? 0;
-let attempt = localStorage.getItem("attempts") ?? 1;
-let allattempts = localStorage.getItem("allattempts") ?? 1;
-//let tempcoin;
-let dead = false;
-let menu = false;
-let reassigned = false;
-
-// TEXT
-
-// MUSIC && SOUNDS
-/*
-let backgroundmusic = document.getElementById('music');
-backgroundmusic.src = 'music/Space8bit.mp3';
-backgroundmusic.currentTime = 0.25;
-//const backgroundmusic = new Audio('../music/Space8bit.mp3');
-function playMusic(){
-    backgroundmusic.addEventListener("canplay", event => {  // zu einzelnen lvls?
-        backgroundmusic.volume = 0.8;
-        backgroundmusic.controls = true;
-        backgroundmusic.play();
-    });
-}*/
-
-// coin sounds
-
-coinCollect = new Audio('music/CoinCollect.mp3');
-coinCollect.volume = 0.4;
-
-
-// ITEMS
-let coinload = false;
-const coin = new Image(); //onload zeile 437 :D
-let musicload = false;
-
-let checkpointload = false;
-const checkpoint = new Image(); //onload zeile 652 :D
+let gamepad = false;
+let gamepadIndex;
 
 // CANVAS
 const canvas = document.querySelector('canvas');
@@ -111,9 +22,228 @@ const ctx = canvas.getContext('2d');
 //SET width height (window.inner----)
 canvas.width = width;
 canvas.height = height;
-// KEY stuff
+
+
+//global changer
+let playerrainbow = JSON.parse(localStorage.getItem("playerrainbow")) ?? true;
+let platrainbow = JSON.parse(localStorage.getItem("platrainbow")) ?? false;
+
+
+//Classes n Stuff
+//OOP because OP for this
+
+// needed for Player
+let rgbCounter = 0;
+let playerCounter = 1;
+let rgbColor = "";
+class Player{
+    constructor(leader, color, shadow, text, reassigned){//if true rgb = on
+        this.id = playerCounter++;
+        this.position = {
+            x: width/15,
+            y: height/10
+        };
+        this.velocity = {
+            x: 0,
+            y: 0
+        }
+        this.keys = {
+            right: false,
+            left: false,
+            jump: false,
+            sprint: false,
+            sneak: false
+        };
+        this.reassign={jump: 32, left: 65, right: 68, down: 83, sneak: 17, sprint: 16};//{down: 83, jump: 32, left: 65, right: 68, sneak: 17, sprint: 16};
+        this.leader = leader ?? false;
+        //TODO maybe delete completely
+        this.dead = false;
+        
+        this.width = width/38.4;
+        this.height = width/38.4;
+
+        this.text = text ?? "";
+        this.color = color ?? true;
+        this.shadow = shadow ?? true;
+        this.reassigned = reassigned ?? false;
+    }
+
+    draw(){
+        rgbCounter ++;
+        if(this.color == true && rgbCounter >= (100*players.length)){
+            rgbCounter = 0;
+            //playercolor = `${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}`;
+            rgbColor = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
+            this.color = rgbColor;
+        }
+        ctx.shadowColor = `${this.color}`;
+        ctx.fillStyle = `${this.color}`;
+        ctx.shadowBlur = 180;
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+        ctx.shadowBlur = 0;
+        ctx.font = `${width/55}px`;
+        ctx.fillStyle = '#202124';
+        ctx.fillText(this.text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
+    }
+
+    update(){
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+
+        if((this.position.y + this.height + this.velocity.y) <= canvas.height){
+            this.velocity.y += game.gravity;
+        }
+    }
+}
+
+class Platform{
+    constructor(x, y, width, height, color, shadow){//if true rgb = on
+        this.position = {
+            x,
+            y
+        };
+        this.width = width ?? innerWidth*0.2;
+        this.height = height ?? innerHeight*0.02;
+        this.color = color ?? '#000000';
+        this.shadow = shadow ?? '#ffffff';
+    }
+
+    draw(){
+        if(platrainbow){
+            this.shadow = rgbColor;
+        }
+        ctx.shadowColor = this.shadow;
+        ctx.shadowBlur = 5;
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+    }
+}
+
+// TODO
+//maybe better solution in future
+let coinLoad = false;
+const coin = new Image(); //onload zeile 437 :D
+let musicLoad = false;
+
+let checkpointLoad = false;
+const checkpoint = new Image(); //onload zeile 652 :D
+
+
+class Item{
+    constructor(x, y, width, height, img, music){
+        this.position = {
+            x,
+            y,
+        };
+        this.img = img ?? coin;
+        this.width = width ?? innerWidth/48;
+        this.height = height ?? innerWidth/48;
+        this.music = music ?? new Audio('music/CoinCollect.mp3');
+    }
+
+    draw(){
+        if(game.difficulty != 'impossible') ctx.shadowColor = 'gold';
+        else ctx.shadowColor = '#000';
+        ctx.shadowBlur = 80;
+        //bad - coin TODO!
+        ctx.drawImage(coin, this.position.x, this.position.y, this.width, this.height);
+    }
+}
+
+// needed for Level
+let levelCount = 1;
+class Level{
+    constructor(platforms, items, winx){
+        this.id = levelCount++;
+        this.platforms = platforms ?? [];
+        this.items= items ?? [];
+        this.winx = winx ?? calcWinx(platforms);
+    }
+
+    draw(){
+        this.platforms.forEach(platform => {
+            platform.draw();
+        });
+        this.items.forEach(item => {
+            item.draw();
+        });
+    }
+}
+// TODO
+/*
+if(speedMode){
+    game.multiplier = 0.006875;//0.006875
+
+    game.gravity = 4.5;//4.5
+    speed = 0.275;//0.275
+    jumpforce = 55;//55
+}*/
+class Game{
+    constructor(levels, difficulty, multiplayer, speedMode){
+        this.levels = levels ?? [];
+        this.difficulty = difficulty ?? 'normal';
+        this.multiplayer = multiplayer ?? false;
+        this.speedMode = speedMode ?? false;
+        this.buttonpressed = false;
+
+        this.level = 0;
+        this.attempts = 1; //attempts now = allattempts no more level attempts
+
+        //distance
+        this.scrollOffset = 0;
+        this.distance = 0;
+        this.lvlDistance = 0;
+        
+        //coins
+        this.coins = 0;
+        this.lvlCoins = 0;
+
+        this.multiplier = 0.0025*2;//0.0025
+        this.gravity = height / 1700*5;
+        this.speed = width*this.multiplier;
+        this.jumpforce = height*(this.multiplier-0.0005)*10;
+    }
+
+    getCurrentLevel(){
+        return this.levels[this.level];
+    }
+
+    addLevel(level){
+        this.levels.push(level);
+    }
+
+    draw(){
+        players.forEach(player => {
+            player.draw();
+        });
+        this.levels[this.level].draw();
+    }
+}
+
+
+
+// Game Objects
+//creating players for playerCount
+let players = [new Player(true)];
+for(let i = 1; i < playerCount; i++){
+    players[i] = new Player();
+}
+if(localStorage.getItem("players") != undefined){
+    let max;
+    if(players.length < JSON.parse(localStorage.getItem("players")).length) max = players.length;
+    else max = JSON.parse(localStorage.getItem("players")).length;
+    for(let i = 0; i < max; i++){
+        players[i].reassign = JSON.parse(localStorage.getItem("players"))[i].reassign;
+    }
+}
+// plus preload with levels
+let game = new Game([level0(), level1(), level2(), level3()], localStorage.getItem("difficulty") ?? 'normal', false, localStorage.getItem("speedMode") ?? false);
+// for later:
+game.addLevel(randomGen());
 
 //listenersis
+let menu = false;
 function clickmenu(){
     if(menu) closeMenu();
     else userMenu();
@@ -141,247 +271,54 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
     });
 }else{
     document.getElementById('mobile').innerHTML = '';
-    /*
-    document.getElementById('right').addEventListener("mousedown", mobileRight);
-    document.getElementById('right').addEventListener("mouseup", mobileStop);
-    
-    document.getElementById('left').addEventListener("mousedown", mobileLeft);
-    document.getElementById('left').addEventListener("mouseup", mobileStop);
-    
-    document.body.addEventListener('mousedown', mobileJump);
-    */
-}
-let playercount = 1;
-//OOP because OP for this
-class Player{
-    constructor(leader, text){
-        this.position = {
-            x: width/15,
-            y: height/10
-        };
-        this.velocity = {
-            x: 0,
-            y: 0
-        }
-        this.keys = {
-            right: false,
-            left: false,
-            jump: false,
-            sprint: false,
-            sneak: false
-        };
-        this.reassign={jump: 32, left: 65, right: 68, down: 83, sneak: 17, sprint: 16};//{down: 83, jump: 32, left: 65, right: 68, sneak: 17, sprint: 16};
-        this.leader = leader ?? false;
-        this.dead = false;
-        this.width = width/38.4;
-        this.height = width/38.4;
-        let playercolor = localStorage.getItem("playercolor") ?? '#000';
-        this.text = text ?? "";
-        this.id = playercount++;
-    }
-
-    draw(){
-        counter ++;
-        if(platrainbow && playerrainbow && counter >= (100*players.length)){
-            counter = 0;
-            //playercolor = `${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}`;
-            playercolor = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
-            platshadow = playercolor;
-        }
-        if(!platrainbow && playerrainbow && counter >= (100*players.length)){
-            counter = 0;
-            //playercolor = `${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}`;
-            playercolor = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
-        }
-        if(!playerrainbow && platrainbow && counter >= (100*players.length)){
-            counter = 0;
-            //platshadow = `${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}`;
-            platshadow = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
-        }
-        ctx.shadowColor = `${playercolor}`;
-        ctx.fillStyle = `${playercolor}`;
-        ctx.shadowBlur = 180;
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
-
-        ctx.shadowBlur = 0;
-        ctx.font = `${width/55}px`;
-        ctx.fillStyle = '#202124';
-        ctx.fillText(this.text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
-    }
-
-    update(){
-        //this.draw();
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-
-        if((this.position.y + this.height + this.velocity.y) <= canvas.height){
-            this.velocity.y += gravity;
-        }
-    }
-}
-
-class Platform{
-    constructor(x, y, width, height){
-        this.position = {
-            x,
-            y
-        };
-        this.width = width ?? innerWidth*0.2;
-        this.height = height ?? innerHeight*0.02;
-    }
-
-    draw(){
-        //if(platrainbow)ctx.shadowColor = playercolor;
-        //else ctx.shadowColor = platshadow;
-        ctx.shadowColor = platshadow;
-        ctx.shadowBlur = 5;
-        ctx.fillStyle = platcolor;
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-    }
-}
-
-class Item{
-    constructor(x, y, img, width, height, music){
-        this.position = {
-            x,
-            y,
-        };
-        this.img = img ?? coin;
-        this.width = width ?? innerWidth/48;
-        this.height = height ?? innerWidth/48;
-        this.music = music ?? new Audio('music/CoinCollect.mp3');
-    }
-
-    draw(){
-        if(difficulty != 'impossible') ctx.shadowColor = 'gold';
-        else ctx.shadowColor = '#000';
-        ctx.shadowBlur = 80;
-        ctx.drawImage(this.img, this.position.x, this.position.y, this.width, this.height);
-    }
-}
-
-class Level{
-    constructor(num, platforms, items){
-        this.num = num;
-        this.platforms = platforms ?? [];
-        this.items = items ?? [];
-    }
-
-    draw(){
-        platforms.forEach(platform => {
-            platform.draw();
-        });
-        items.forEach(item => {
-            item.draw();
-        });
-    }
-}
-
-class Game{
-    constructor(players, levels){
-        this.players = players ?? [new Player(true)];
-        this.levels = levels ?? [];
-    }
-
-    addLevel(level){
-        this.levels += level;
-    }
-
-    draw(){
-        players.forEach(player => {
-            player.draw();
-        });
-        levels.forEach(level => {
-            level.draw();
-        });
-    }
-}
-/*class Text{
-    constructor(text, x, y, width){
-        this.position = {
-            x,
-            y,//jwnejgfkhqwurghqwuiropghoeuiprwghuoeirgherughpu
-        };
-        this.text = text ?? 'placeholder gays';
-        this.width = width ?? innerWidth/48;
-    }
-
-    draw(){
-        ctx.shadowBlur = 0;
-        ctx.font = `${this.width}px Cascadia Code`;
-        ctx.fillStyle = '#fff';
-        ctx.fillText(`${this.text}`, x, y);
-    }
-}
-*/
-let players = [new Player(true)];
-for(let i = 1; i < playernum; i++){
-    players[i] = new Player();
-}
-if(localStorage.getItem("players") != undefined){
-    let max;
-    if(players.length < JSON.parse(localStorage.getItem("players")).length) max = players.length;
-    else max = JSON.parse(localStorage.getItem("players")).length;
-    for(let i = 0; i < max; i++){
-        players[i].reassign = JSON.parse(localStorage.getItem("players"))[i].reassign;
-    }
 }
 
 
-let platforms = [];
-let items = [];
-let levels = [];
-let game = new Game(players, levels);
-let alltext;
+//LEVELS
+
+function calcWinx(objArr){
+    if(!objArr) return -1;
+    let calcw = 0;
+    objArr.forEach(obj => {
+            if(obj.position.x+obj.width > calcw) calcw = obj.position.x+obj.width; 
+    });
+    console.log(calcw);
+    return calcw;
+}
 
 function level0(){
-    winx = width*1.5;
-    platforms = [
+    //winx = width*1.5;
+    let lvlplatforms = [
         new Platform(0, height*0.8, width*2, height*0.2),
-        
         
         new Platform(width*0.05, height*0.4, width*0.05),
         new Platform(width*0.15, height*0.5, width*0.05),
         new Platform(width*0.25, height*0.6, width*0.05),
         new Platform(width*0.35, height*0.7, width*0.05),
 
-
         new Platform(width*0.7, height*0.6, width*0.2),
         new Platform(width*1.2, height*0.6, width*0.2),
         new Platform(width*1.7, height*0.6, width*0.2)
-        /*
-        new Platform(width*0.5, height*0.7, width*0.05),
-        new Platform(width*0.6, height*0.6, width*0.05),
-        new Platform(width*0.7, height*0.5, width*0.05),
-        new Platform(width*0.8, height*0.4, width*0.05)
-        */
     ];
 
+    //TODO - TUTORIAL maybe not using this but example --> use REASSIGN!!!!!!!
     //addText(width*1.7, height*0.6);
     /*alltext = [
         new Text(`${reassign.sprint} to Sprint`, width*0.6, height*0.5),
 
     ];*/
 
-    items = [
-        
-        //new Item(width*0.165, height*0.3, checkpoint, innerWidth/48, innerWidth/48),
-
+    let lvlitems = [
         new Item(width*0.165, height*0.4, coin, innerWidth/48, innerWidth/48),
         new Item(width*0.265, height*0.5, coin, innerWidth/48, innerWidth/48),
         new Item(width*0.365, height*0.6, coin, innerWidth/48, innerWidth/48)
-
-        /*
-        new Item(width*0.51, height*0.6, coin, innerWidth/48, innerWidth/48),
-        new Item(width*0.61, height*0.5, coin, innerWidth/48, innerWidth/48),
-        new Item(width*0.71, height*0.4, coin, innerWidth/48, innerWidth/48),
-        new Item(width*0.81, height*0.3, coin, innerWidth/48, innerWidth/48)
-        */
     ];
+
+    return new Level(lvlplatforms, lvlitems);
 }
 function level1(){
-    winx = width*3;
-    platforms = [
+    //winx = width*3;
+    let lvlplatforms = [
         new Platform(0, height*0.8, width*0.5 , height*0.2),
         new Platform(width, height*0.8, width*0.5, height*0.2),
         new Platform(width*2, height*0.8, width*0.5, height*0.2),
@@ -392,7 +329,7 @@ function level1(){
         new Platform(width*2.6, height*0.75, width*0.3),
     ];
 
-    items = [
+    let lvlitems = [
         new Item(width*0.95, height*0.45, coin, innerWidth/48, innerWidth/48),
 
         new Item(width*1.25, height*0.74, coin, innerWidth/48, innerWidth/48),
@@ -403,16 +340,17 @@ function level1(){
         new Item(width*2.51, height*0.45, coin, innerWidth/48, innerWidth/48),
         new Item(width*2.95, height*0.45, coin, innerWidth/48, innerWidth/48),
     ];
+    
+    return new Level(lvlplatforms, lvlitems);
 }
 // hi C:D
 function level2(){
-    winx = width*3;
-    platforms = [
+    //winx = width*3;
+    let lvlplatforms = [
         new Platform(0, height*0.8, width*0.5 , height*0.2),
         new Platform(width, height*0.8, width*0.5, height*0.2),     // base platform - do over 15 when not let thru IS FALSCH IWIE klar is des falsch retard
         new Platform(width*2, height*0.8, width*0.5, height*0.2),
         new Platform(width*3, height*0.8, width*0.5, height*0.2),
-
         
         new Platform(width*0.6, height*0.45, width*0.3),
         new Platform(width*0.6, height*0.75, width*0.3),
@@ -420,7 +358,7 @@ function level2(){
         new Platform(width*2.6, height*0.75, width*0.3)
     ];
 
-    items = [
+    let lvlitems = [
         new Item(width*0.51, height*0.45, coin, innerWidth/48, innerWidth/48),
         new Item(width*0.95, height*0.45, coin, innerWidth/48, innerWidth/48),
 
@@ -432,11 +370,13 @@ function level2(){
         new Item(width*2.51, height*0.45, coin, innerWidth/48, innerWidth/48),
         new Item(width*2.95, height*0.45, coin, innerWidth/48, innerWidth/48),
     ];
+    
+    return new Level(lvlplatforms, lvlitems);
 }
 
 function level3(){
-    winx = width*3.5;
-    platforms = [
+    //winx = width*3.5;
+    let lvlplatforms = [
         new Platform(0, height*0.8, width*0.5 , height*0.2),
 
         new Platform(width*0.65, height*0.7, width*0.1, height*0.015),
@@ -453,8 +393,6 @@ function level3(){
         new Platform(width*2, height*0.8, width*0.5 , height*0.05),
         /*-------*/
 
-
-
         new Platform(width*2.6, height*0.9, width*0.1, height*0.015),
         new Platform(width*2.75, height*0.995, width*0.1, height*0.015),
         new Platform(width*3.05, height*0.85, width*0.1, height*0.015),
@@ -462,7 +400,7 @@ function level3(){
         new Platform(width*3.3, height*0.8, width*0.7, height*0.2)
     ];
 
-    items = [
+    let lvlitems = [
         new Item(width*0.69, height*0.6, coin, innerWidth/48, innerWidth/48),
         new Item(width*0.94, height*0.4, coin, innerWidth/48, innerWidth/48),
         
@@ -473,33 +411,14 @@ function level3(){
         new Item(width*2.1, height*0.5, coin, innerWidth/48, innerWidth/48),
         new Item(width*2.4, height*0.74, coin, innerWidth/48, innerWidth/48),
     ];
+    
+    return new Level(lvlplatforms, lvlitems);
 }
 
-function randomGen(){// test
-    //import in loop mach vllt doch ned ned so gut ig
-    //if(distance >= width*14,5) level = 69; // wandom lvls
-
-    
-    //work kinda
-    /*const platpos = {
-        x: 0,
-        y: 0
-    };
-    
-    platforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
-    for(let i = 1; i < 9; i++){
-        let b4x = platpos.x;
-        platpos.x += Math.random() * (0.9 - 0.5) + 0.5;
-        if(platpos > 0.86)platpos.y = Math.random() * (0.99 - 0.8) + 0.8;
-        else platpos.y = Math.random() * (0.99 - 0.47) + 0.47;
-        
-        platforms[i] = new Platform(width * platpos.x, height * platpos.y, width*Math.random() * (1 - 0.2) + 0.2, height*Math.random() * (1 - 0.015) + 0.015);
-    }
-    platforms[9] = new Platform(width*3.3, height*0.8, width*0.9, height*0.2);
-    */
-    
-    //working best aber halt ohne gewichter
-    items.length = 0;
+function randomGen(){
+    let lvlplatforms = [];
+    let lvlitems = [];
+    //lvlitems.length = 0;
     if(Math.random() > 0.5){
     const platpos = {
         x: 0,
@@ -514,7 +433,7 @@ function randomGen(){// test
         y: 0.2
     };
 
-    platforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
+    lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
     for(let i = 1; i < 9; i++){
         platpos.x = Math.random() * ((platpos.x  + platdim.x)+ 0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
         platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
@@ -522,20 +441,20 @@ function randomGen(){// test
         platdim.x = Math.random() * (1 - 0.2) + 0.2;
         platdim.y = Math.random() * (1 - 0.015) + 0.015;
 
-        platforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
+        lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
 
         //COINS man
-        if(difficulty != 'run'){
+        if(game.difficulty != 'run'){
             for(let j = 0; j < Math.floor(Math.random()*5); j++){
-                coinpos.x = Math.random() * (platforms[i].width+platforms[i].position.x - platforms[i].position.x) + platforms[i].position.x;
-                coinpos.y = Math.random() * (platforms[i].position.y-0.06*height - (platforms[i].position.y-0.3*height)) +  (platforms[i].position.y-0.3*height);
-                items[i+j] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
+                coinpos.x = Math.random() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
+                coinpos.y = Math.random() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
+                lvlitems[i+j] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
             }
         }
     }
-    platforms[9] = new Platform(platforms[8].position.x+platforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
+    lvlplatforms[9] = new Platform(lvlplatforms[8].position.x+lvlplatforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
 
-    winx = platforms[9].position.x;
+    //winx = lvlplatforms[9].position.x;
     }else{
     //gewichter try
     const platpos = {
@@ -551,35 +470,35 @@ function randomGen(){// test
         y: 0.2
     };
 
-    platforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
+    lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
     for(let i = 1; i < 9; i++){
         platpos.x = Math.random() * ((platpos.x  + platdim.x)+0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
         platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
 
         platdim.x = Math.random() * (0.3 - 0.1) + 0.1;
         platdim.y = Math.random() * (0.025 - 0.015) + 0.015; 
-        platforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
+        lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
 
         //COINS man
-        if(difficulty != 'run' && Math.random() > 0.5){
-            coinpos.x = Math.random() * (platforms[i].width+platforms[i].position.x - platforms[i].position.x) + platforms[i].position.x;
-            coinpos.y = Math.random() * (platforms[i].position.y-0.06*height - (platforms[i].position.y-0.3*height)) +  (platforms[i].position.y-0.3*height);
-            items[i] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
+        if(game.difficulty != 'run' && Math.random() > 0.5){
+            coinpos.x = Math.random() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
+            coinpos.y = Math.random() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
+            lvlitems[i] = new Item(coinpos.x, coinpos.y, coin, innerWidth/48, innerWidth/48);
         } 
     }
-    platforms[9] = new Platform(platforms[8].position.x+platforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
+    lvlplatforms[9] = new Platform(lvlplatforms[8].position.x+lvlplatforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
 
-    winx = platforms[9].position.x;
+    //winx = lvlplatforms[9].position.x;
     }
-    //items impimentieren wandom auf plat iwo in bestimmter höhe und random anzahl pro platform (?je nach breite)
-    /*    items = [
-        new Item(width*0.365, height*0.6, coin, innerWidth/48, innerWidth/48)
-    ];*/
+
+    return new Level(lvlplatforms, lvlitems);
 }
 
+//TODO NOW
 function levelSwitch(){
+    return;
     //randomGen();
-    if(difficulty == "run"){
+    if(game.difficulty == "run"){
         randomGen();
         return;
     }
@@ -602,6 +521,8 @@ function levelSwitch(){
     }
 }
 
+//TODO
+//maybe doch class? WIRKLICH NICHT SICHER is aber dann eh nur für tutorial
 function addText(text, x, y){
     ctx.shadowBlur = 0;
     ctx.fillStyle = platcolor;
@@ -611,30 +532,32 @@ function addText(text, x, y){
 }
 
 function draw(){
-    if (!dead && !menu && coinload) requestAnimationFrame(draw);
+    if (!players.every(player => {
+        return player.dead;
+    }) && !menu && coinLoad) requestAnimationFrame(draw);
         
-    if(innerWidth != width /*&& !multiplayer*/){
+    if(innerWidth != width /*&& !game.multiplayer*/){
         width = innerWidth;
         console.log('width: ' + width)
-        startscrollR = width*0.4;
-        startscrollL = width*0.15;
+        startScrollR = width*0.4;
+        startScrollL = width*0.15;
         canvas.width = width;
         //winx = width*3;
-        speed = width*multi;
+        speed = width*game.multiplier;
         levelSwitch();
     }                                                           //mach änderererer
-    if(innerHeight!= height /*&& !multiplayer*/){
+    if(innerHeight!= height /*&& !game.multiplayer*/){
         console.log('height: ' + height)
         height = innerHeight;
         canvas.height = height;
-        jumpforce = height*(multi-0.0005)*10;
+        game.jumpforce = height*(game.multiplier-0.0005)*10;
         levelSwitch();
     }
     
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
+/*
 
     players.forEach(player => {
         player.draw();
@@ -647,33 +570,23 @@ function draw(){
     items.forEach(item => {
         item.draw();
     });
-    /*alltext.forEach(item => {
-        item.draw();
-    });*/
-    addText(`Attempt: ${attempt}`, width*0.8, height*0.9);
-    
-
-    /*for(let i = 0; i < players.length; i++){
-        if(!players[i].dead){
-            break;
-        }
-        if(i == players.length-1){//uhuwropvhöierhjpviohewrvupoerhjfiojewiof!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            gameOver();
-        }
-    }*/
-    //update();
+*/
+    game.draw();
+    //TODO
+    console.log(`Attempt: ${game.attempts}`);
 
     ctx.restore();
 }
 let clickcount = 0;
 function update(){
-    if (!dead && !menu && coinload) setTimeout(update, 1000/fps);
+    if (!players.every(player => {
+        return player.dead;
+    })&& !menu && coinLoad) setTimeout(update, 1000/fps);
 
     updateCameraPosition();   
     if(!mobile && gamepad && gamepadIndex !== undefined){
         const myGamepad = navigator.getGamepads()[gamepadIndex];
         myGamepad.buttons.map(e => e.touched).forEach((isPressed, buttonIndex) => {
-            
             if (isPressed) {
                 // button is pressed; indicate this on the page
                 console.log(`Button ${buttonIndex} is pressed`);
@@ -694,15 +607,9 @@ function update(){
                 if(buttonIndex === 14){
                     players[0].keys.left = true;
                 }
-                /*if(!menu && buttonIndex === 8){
-                    setTimeout(userMenu(), 500);
-                }else if(buttonIndex === 8){
-                    setTimeout(closeMenu(), 500);
-                }*/
                 if(buttonIndex === 9){
                     window.location.assign('index.html');
                 }
-
             }
             if(!isPressed){
                 setTimeout(function(){
@@ -715,49 +622,42 @@ function update(){
                 }, 0); 
                     
             }
-        });
-                
+        });      
     }
-    
-
-    /*if(Gamepad.pressed(0, "FACE_1")) {
-        console.log('Pressed!');
-    }else{
-        console.log('0');
-    }*/
 
     players.forEach(player => {
-        if(difficulty == 'run') player.keys.left = false;
-        if(difficulty == 'run') player.keys.right = true;
+        if(game.difficulty == 'run') player.keys.left = false;
+        if(game.difficulty == 'run') player.keys.right = true;
         player.update();
     });
     players.forEach(player => {
         if(player.leader){
-            if(player.keys.jump && player.velocity.y == gravity){
-                player.velocity.y -= jumpforce; // double jump mit counter <= 2 ig
+            if(player.keys.jump && player.velocity.y == game.gravity){
+                player.velocity.y -= game.jumpforce; // double jump mit counter <= 2 ig
             }
             if(player.keys.sprint){
-                speed = width*(multi*2.24); //                                                             inc
+                speed = width*(game.multiplier*2.24); //                                                             inc
             }else if(player.keys.sneak){
-                speed = width*(multi*0.1);
+                speed = width*(game.multiplier*0.1);
             }else{
-                speed = width*multi;
+                speed = width*game.multiplier;
             }
-            if(player.keys.right && player.position.x < startscrollR){
+            if(player.keys.right && player.position.x < startScrollR){
                 player.velocity.x = speed;
-            }else if(player.keys.left && player.position.x > startscrollL){
+            }else if(player.keys.left && player.position.x > startScrollL){
                 player.velocity.x = speed *-1;
             }else if(player.leader){
                 player.velocity.x = 0;
                 if(player.keys.right){
                     //console.log(speed)
-                    scrollOffset += speed;
-                    distance += speed;
-                    platforms.forEach(platform => {
+                    game.scrollOffset += speed;
+                    game.distance += speed;
+
+                    game.getCurrentLevel().platforms.forEach(platform => {
                         platform.position.x -= speed;
                     });
                     
-                    items.forEach(item => {
+                    game.getCurrentLevel().items.forEach(item => {
                         item.position.x -= speed;
                     });
 
@@ -765,13 +665,13 @@ function update(){
                         if(!player.leader) player.position.x -= speed;
                     });
                 }else if(player.keys.left){
-                    scrollOffset -= speed;
-                    distance -= speed;
-                    platforms.forEach(platform => {
+                    game.scrollOffset -= speed;
+                    game.distance -= speed;
+                    game.getCurrentLevel().platforms.forEach(platform => {
                         platform.position.x += speed;
                     });
                     
-                    items.forEach(item => {
+                    game.getCurrentLevel().items.forEach(item => {
                         item.position.x += speed;
                     });
 
@@ -783,15 +683,15 @@ function update(){
         }
         
         if(!player.leader){
-            if(player.keys.jump && player.velocity.y == gravity){
-                player.velocity.y -= jumpforce; // double jump mit counter <= 2 ig
+            if(player.keys.jump && player.velocity.y == game.gravity){
+                player.velocity.y -= game.jumpforce; // double jump mit counter <= 2 ig
             }
             if(player.keys.sprint){
-                speed = width*(multi*2.24); //                                                             inc
+                speed = width*(game.multiplier*2.24); //                                                             inc
             }else if(player.keys.sneak){
-                speed = width*(multi*0.1);
+                speed = width*(game.multiplier*0.1);
             }else{
-                speed = width*multi;
+                speed = width*game.multiplier;
             }
             if(player.keys.right){
                 player.velocity.x = speed;
@@ -800,9 +700,8 @@ function update(){
             }else player.velocity.x = 0;
         }
         
-
         // full platform collision (jump up from underneath)
-        platforms.forEach(platform => {
+        game.getCurrentLevel().platforms.forEach(platform => {
             if(player.position.y + player.height <= platform.position.y 
                 && player.position.y + player.height + player.velocity.y >= platform.position.y
                 && player.position.x + player.width >= platform.position.x 
@@ -811,9 +710,8 @@ function update(){
             }
         });
 
-        
         // full Item collision
-        items.forEach(item => {
+        game.getCurrentLevel().items.forEach(item => {
             if(player.position.y + player.height >= item.position.y
                 && player.position.y<= item.position.y + item.height
                 && player.position.x + player.width >= item.position.x
@@ -822,64 +720,72 @@ function update(){
                         item.music.play();
                     }
                     //coinCollect.play();
-                    if(difficulty == 'impossible') gameOver();
+                    if(game.difficulty == 'impossible') gameOver();
                     coins++;
-                    if(difficulty == 'hard') coins++;
-                    if(difficulty == 'easy') coins -= 0.5;
-                    lvlcoins++;
-                    if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
+                    if(game.difficulty == 'hard') coins++;
+                    if(game.difficulty == 'easy') coins -= 0.5;
+                    game.lvlcoins++;
+                    if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
                     item.width = 0;
                     item.position.x = -9999;
                     item.position.y = -9999;
             }
         });
-        if(difficulty == 'impossible'){
-            coins = Math.floor(distance/300);
-            if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
+        if(game.difficulty == 'impossible'){
+            coins = Math.floor(game.distance/300);
+            if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
         } 
         if(player.position.y >= height*2){
             gameOver();
         }
-        if(scrollOffset >= winx){
+        if(game.scrollOffset >= game.getCurrentLevel().winx -width){
             victory();
         }
     });
 
-    if(multiplayer == 'true'){
+    if(game.multiplayer == 'true'){
         let data = {
             "player": players[0].position,
-            "offset": scrollOffset,
+            "offset": game.scrollOffset,
             "level": level,
             "width": width,
             "height": height
         };
         socket.emit('move', data);
     }
-    
     printScores();
 }
-if(difficulty == 'run')document.getElementById('coins').innerHTML = ' ';
+if(game.difficulty == 'run')document.getElementById('coins').innerHTML = ' ';
 else document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
 
+//TODO
+if(game.difficulty != 'impossible')coin.src = "img/coin.png";
+else coin.src = "img/skull.png";
 coin.onload = function() {
-    coinload = true;
+    coinLoad = true;
     console.log("coinloaded");
     imgLoaded();
-};
-if(difficulty != 'impossible')coin.src = "img/coin.png";
-else coin.src = "img/skull.png";
+};/*
 checkpoint.onload = function() {
-    checkpointload = true;
+    checkpointLoad = true;
     console.log("checkpointloaded");
     imgLoaded();
 };
 checkpoint.src = "img/checkpoint.png";
-if(game.levels.forEach(item.music.canplaythrough == true)){
-    musicload = true;
-}
+*/
+//TODO
+/*if(game.levels.every(level => {
+    return level.items.every(item => {
+        return item.music.canplaythrough === true;
+    });
+})){
+    musicLoad = true;
+    imgLoaded();
+}*/
 
+//TODO
 function imgLoaded(){
-    if(coinload && checkpointload && musicload){
+    if(coinLoad /*&& checkpointLoad*/ /*&& musicLoad*/){
         //playMusic();
         levelSwitch();
         update();
@@ -1092,15 +998,12 @@ function closeMenu(){
 function clearMenu() {
     document.getElementById('clearMenu').innerHTML = ``;
 }
-//userMenu();
-
 
 // CUSTOMSTUFF
-
 function saveGame(){
-    localStorage.setItem("coins", coins);
-    localStorage.setItem("level", level);
-    localStorage.setItem("attempts", attempt);
+    localStorage.setItem("coins", game.coins);
+    localStorage.setItem("level", game.level);
+    localStorage.setItem("attempts", game.attempts);
 }
 function saveSettings(){
     localStorage.setItem("players", JSON.stringify(players));
@@ -1120,87 +1023,79 @@ function changeFace(){
 }
 
 function victory(){
-    scrollOffset = 0;
-    lvldistance = distance;
-    level++;
-    attempt = 1;
-    //if(difficulty == 'impossible') coins += level*10+5;
-    lvlcoins = 0;
-    console.log(level);
+    game.scrollOffset = 0;
+    game.lvldistance = game.distance;
+    game.level++;
+    game.attempt = 1;
+    //if(game.difficulty == 'impossible') coins += level*10+5;
+    game.lvlcoins = 0;
+    console.log(game.level);
     levelSwitch();
 }
 
 function gameOver(){
     //TODO
     
-    if(difficulty == 'easy'){
+    if(game.difficulty == 'easy'){
         //dead = true;
         players.forEach(player => { 
             player.position.y = -200;
-            player.position.x = startscrollL;//
-            player.velocity.y = gravity*20;
+            player.position.x = startScrollL;//
+            player.velocity.y = game.gravity*20;
         });
-        allattempts++;
-        attempt++;
+        //allattempts++;
+        game.attempt++;
     }
-    if(difficulty == 'normal'){
+    if(game.difficulty == 'normal'){
         //dead = true;
         //if(level == 2) backgroundmusic.currentTime = 10;
         //else backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
-            player.velocity.y = gravity;
+            player.velocity.y = game.gravity;
         });
-        scrollOffset = 0;
-        distance = lvldistance;
-        allattempts++;
-        attempt++;
-        coins -= lvlcoins;
-        lvlcoins = 0;
+        game.scrollOffset = 0;
+        game.distance = game.lvldistance;
+        //allattempts++;
+        game.attempt++;
+        game.coins -= game.lvlcoins;
+        game.lvlcoins = 0;
     }
-    if(difficulty == 'hard' || difficulty == 'run'){
+    if(game.difficulty == 'hard' || game.difficulty == 'run'){
         //dead = true;
         level = 0;
         //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
-            player.velocity.y = gravity;
+            player.velocity.y = game.gravity;
         });
-        scrollOffset = 0;
-        distance = 0;
-        allattempts++;
-        attempt++;
-        coins = 0;
-        lvlcoins = 0;
+        game.scrollOffset = 0;
+        game.distance = 0;
+        //allattempts++;
+        game.attempt++;
+        game.coins = 0;
+        game.lvlcoins = 0;
     }
-    if(difficulty == 'impossible'){
+    if(game.difficulty == 'impossible'){
         //dead = true;
         level = 0;
         //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
             player.position.y = 100;
-            player.velocity.y = gravity;
+            player.velocity.y = game.gravity;
         });
-        scrollOffset = 0;
-        //distance = 0;
-        allattempts++;
-        attempt++;
+        game.scrollOffset = 0;
+        //game.distance = 0;
+        //allattempts++;
+        game.attempt++;
         coins = 0;
-        lvlcoins = 0;
+        game.lvlcoins = 0;
     }
-    if(difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
-    if(difficulty != 'easy') levelSwitch();
-    //restart();
-}
-
-function restart(){
-    location.reload();
-
-    /*
-   */
+    if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
+    if(game.difficulty != 'easy') levelSwitch();
 }
 
 document.getElementById('fullscreen').addEventListener('click', fullScreen);
@@ -1224,7 +1119,6 @@ function keyListenerDown(e) {
     console.log(e);
     console.log(e.keyCode);
     */
-   
     if(!menu){
         players.forEach(player => { 
             switch (e.keyCode){
@@ -1327,18 +1221,6 @@ function stopJump(){
 
 
 //reassign stuff
-/*if(localStorage.getItem("players") != undefined) players = JSON.parse(localStorage.getItem("players"));
-else{
-    let asdfghjkl = 0;
-    players.forEach(player =>{
-        if(asdfghjkl > 1){
-            player.reassign = {down: 40, jump: 38, left: 37, right: 39, sneak: 18, sprint: 13};
-        }else{
-            player.reassign = {down: 83, jump: 32, left: 65, right: 68, sneak: 17, sprint: 16};
-        }
-    })
-}*/
-
 function remapKeys(x){
     if(!mobile){   
         //remap keys https://codepen.io/jdoleary/pen/NqdmOM
@@ -1346,17 +1228,8 @@ function remapKeys(x){
             8: "BCKSP", 13: "ENTER", 16: "SHIFT", 17: "ALTRIGHT", 18: "ALT", 27: "ESC", 32: "SPACE", 37: "LEFT", 38: "UP", 39: "RIGHT", 40: "DOWN", 46: "DEL", 91: "MAC", 112: "F1", 113: "F2", 114: "F3", 115: "F4", 116: "F5", 117: "F6", 118: "F7", 119: "F8", 120: "F9", 121: "F10", 122: "F11", 123: "F12", 8: "backspace", 9: "tab", 13: "enter", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause_break", 20: "caps_lock", 27: "escape", 33: "page_up", 34: "page down", 35: "end", 36: "home", 37: "left_arrow", 38: "up_arrow", 39: "right_arrow", 40: "down_arrow", 45: "insert", 46: "delete", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 65: "a", 66: "b", 67: "c", 68: "d", 69: "e", 70: "f", 71: "g", 72: "h", 73: "i", 74: "j", 75: "k", 76: "l", 77: "m", 78: "n", 79: "o", 80: "p", 81: "q", 82: "r", 83: "s", 84: "t", 85: "u", 86: "v", 87: "w", 88: "x", 89: "y", 90: "z", 91: "left_window key", 92: "right_window key", 93: "select_key", 96: "numpad 0", 97: "numpad 1", 98: "numpad 2", 99: "numpad 3", 100: "numpad 4", 101: "numpad 5", 102: "numpad 6", 103: "numpad 7", 104: "numpad 8", 105: "numpad 9", 106: "multiply", 107: "add", 109: "subtract", 110: "decimal point", 111: "divide", 112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8", 120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "num_lock", 145: "scroll_lock", 186: "semi_colon", 187: "equal_sign", 188: "comma", 189: "dash", 190: "period", 191: "forward_slash", 192: "grave_accent", 219: "open_bracket", 220: "backslash", 221: "closebracket", 222: "single_quote"
         }
 
-        let actions = players[x].reassign;/*{
-            'jump': 32, 'left': 65, 'down': 83,  'right': 68, 'sprint': 16, 'sneak': 17
-        };*/
+        let actions = players[x].reassign;
         tempHtml = $("#whatplayer");
-        /*
-        tempHtml = `<select id="whatplayer" name="player">`;
-        for(let i = 0; i < players.length; i++){
-            tempHtml += `<option value="${i}">Player ${i+1}</option>`;
-        }
-        tempHtml += `</select>`;
-*/
         $(document).ready(function() {
             $('#keybindbox').empty();
             $('#keybindbox').append(`<h2>Keybindings</h2>
@@ -1384,13 +1257,6 @@ function remapKeys(x){
                 $('input').blur();
             });
 
-        /*for(let i = 0; i < players.length; i++){
-            if(i != x)$('#playerholder').append(`<h3 onclick="remapKeys(${i})">Player ${i+1}</h3>`);
-        }*/
-
-        /*for(let i = 0; i < players.length; i++){
-            $('#whatplayer').append(`<option value="${i}" >Player ${i+1}</option>`);
-        }*/
             $('#whatplayer').replaceWith(tempHtml);
             $("#whatplayer").change(function () {
                 //$('#keybindbox').empty();
@@ -1405,7 +1271,7 @@ function remapKeys(x){
 }
 if(players.length > 1)players[1].reassign = {jump: 38, left: 37, right: 39, down: 40, sneak: 17, sprint: 13};
 
-if(difficulty == 'run' && !buttonpressed) pressAnyButton();
+if(game.difficulty == 'run' && !buttonpressed) pressAnyButton();
 function pressAnyButton(){
     $(document).ready(function () {
         $("body").append(`<h2 id="buttonpressed" >PRESS ANY BUTTON</h2>`);
@@ -1422,33 +1288,6 @@ function pressAnyButton(){
         });
     });
 }
-/*
-$('#themetoggle').click(function () {
-    if (this.checked) {
-        darktheme = true;
-    } else {
-        darktheme = false;
-    } 
-    changeTheme();
-});
-
-function changeTheme(){
-    if(darktheme){
-        document.body.style.backgroundImage = "url('../img/galaxyNega.gif')";
-        platrainbow = false;
-        platshadow = '#000';
-        platcolor = '#000';
-    }
-    else{
-        document.body.style.backgroundImage = "url('../img/galaxyAll.gif')";
-        platshadow = '#fff';
-        platcolor = '#000';
-    } 
-    localStorage.setItem("darktheme", JSON.stringify(darktheme));
-}
-*/
-
-
 
 window.addEventListener("gamepadconnected", function (e) {
     console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
@@ -1466,7 +1305,6 @@ window.addEventListener("gamepaddisconnected", function (e) {
 
 
 // NEW MEW
-
 const camera = { x: 0, y: 0 };
 const cameraSpeed = 0.1;
 
@@ -1479,9 +1317,6 @@ function updateCameraPosition() {
     });
 }
 
-
-
-
 function moveProgressBar(percentage) {
     let elem = document.getElementById("myBar");   
     elem.style.width = percentage + '%';
@@ -1489,45 +1324,33 @@ function moveProgressBar(percentage) {
     //danke w3schools oba eicha progressbar is verbuggt meine is bessa ;D
 }
 
-
 function printScores(){
-    let ratioWin = Math.round((winx/100+lvldistance/100) * (baseWidth/width));
-    let ratiolvlDistance = Math.round((winx/100) * (baseWidth/width));
-    let ratioDistance = Math.round(distance/100 * (baseWidth/width));
+    let ratioWin = Math.round((game.getCurrentLevel().winx/100+game.lvldistance/100) * (baseWidth/width));
+    let ratiolvlDistance = Math.round((game.getCurrentLevel().winx/100) * (baseWidth/width));
+    let ratioDistance = Math.round(game.distance/100 * (baseWidth/width));
     /*document.getElementById('z').innerHTML = "Win: " + ratioWin;
     document.getElementById('a').innerHTML = "Distance: " + ratioDistance;
     */
     document.getElementById('a').innerHTML = "  " + ratioDistance;
     
-
     if(ratioDistance != 0){
-        moveProgressBar(((distance-lvldistance)/(winx))*100);
+        moveProgressBar(((game.distance-game.lvldistance)/(game.getCurrentLevel().winx))*100);
     }
 }
 
-// check login
-/*
-window.addEventListener('storage', function (event) {
-    if (event.key === 'user_id') {
-      console.log('You Changed The Data!!!');
-
-    }
-  });
-  */
-
-  function getLoggedUser() {
+function getLoggedUser() {
     // Split the cookie string into an array of name-value pairs
-    let cookies = document.cookie.split(';');
+    let cookies = document.cookie.split(";");
 
     // Loop through the cookies to find the user_id cookie
     let userId = null;
     for (let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i].trim();
-        if (cookie.indexOf('user_id=') == 0) {
+      let cookie = cookies[i].trim();
+      if (cookie.indexOf("user_id=") == 0) {
         // Extract the user_id value from the cookie
-        userId = cookie.substring('user_id='.length, cookie.length);
+        userId = cookie.substring("user_id=".length, cookie.length);
         break;
-        }
+      }
     }
 
     // Return the userId variable
@@ -1536,5 +1359,4 @@ window.addEventListener('storage', function (event) {
     console.log("userId");
     return userId;
 }
-
 getLoggedUser();
