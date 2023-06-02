@@ -33,7 +33,7 @@ let platrainbow = JSON.parse(localStorage.getItem("platrainbow")) ?? false;
 //OOP because OP for this
 
 // needed for Player
-let rgbCounter = 0;
+let rgbCounter = 100;
 let playerCounter = 1;
 let rgbColor = "";
 class Player{
@@ -70,11 +70,12 @@ class Player{
 
     draw(){
         rgbCounter ++;
-        if(this.color == true && rgbCounter >= (100*players.length)){
+        if(this.color == true && rgbCounter >= 10){
             rgbCounter = 0;
             //playercolor = `${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}`;
             rgbColor = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
             this.color = rgbColor;
+            console.log(this.color);
         }
         ctx.shadowColor = `${this.color}`;
         ctx.fillStyle = `${this.color}`;
@@ -161,6 +162,28 @@ class Level{
         this.winx = winx ?? calcWinx(platforms);
     }
 
+    resetPlatforms(){
+        let temp = Infinity;
+        this.platforms.forEach(platform => {
+            if(platform.position.x < temp) temp = platform.position.x; 
+        });
+        this.platforms.forEach(platform => {
+            platform.position.x -= temp; 
+        });
+    }
+
+    firstPlatform(){
+        let temp = Infinity;
+        let plat;
+        this.platforms.forEach(platform => {
+            if(platform.position.x < temp){
+                temp = platform.position.x;
+                plat = platform;
+            }  
+        });
+        return plat;
+    }
+
     draw(startx){
         this.platforms.forEach(platform => {
             platform.draw(startx);
@@ -188,6 +211,7 @@ class Game{
         this.buttonpressed = false;
 
         this.level = 0;
+        this.lvlSwitcher = 0;
         this.attempts = 1; //attempts now = allattempts no more level attempts
 
         //distance
@@ -206,7 +230,7 @@ class Game{
     }
 
     getCurrentLevel(){
-        return this.levels[this.level];
+        return this.levels[this.lvlSwitcher];
     }
 
     addLevel(level){
@@ -217,31 +241,31 @@ class Game{
         players.forEach(player => {
             player.draw();
         });
-        /*this.levels.forEach(level => {
-            level.draw();
-        });*/
-        this.levels[this.level].draw(0);
-        /*if(this.levels[this.level-1]){
+        //TODOOO
+        this.levels[this.lvlSwitcher].draw();//TODOOO
+        ///*
+        if(this.levels[this.lvlSwitcher-1]){
             let startx = 0;
-            if(this.levels[this.level-2]) startx = this.levels[this.level-2].winx;
-            this.levels[this.level-1].platforms.forEach(platform =>{
+            if(this.levels[this.lvlSwitcher-2]) startx = this.levels[this.lvlSwitcher-2].winx;
+            this.levels[this.lvlSwitcher-1].platforms.forEach(platform =>{
                 platform += startx;
             });
-            this.levels[this.level-1].items.forEach(item =>{
+            this.levels[this.lvlSwitcher-1].items.forEach(item =>{
                 item += startx;
             });
-            this.levels[this.level-1].draw(startx);
+            this.levels[this.lvlSwitcher-1].draw(startx);
         }
-        if(this.levels[this.level+1]){
-            let startx = this.levels[this.level].winx+width;
-            this.levels[this.level+1].platforms.forEach(platform =>{
+        if(this.levels[this.lvlSwitcher+1]){
+            let startx = this.levels[this.lvlSwitcher].winx-width/2;
+            this.levels[this.lvlSwitcher+1].platforms.forEach(platform =>{
                 platform += startx;
             });
-            this.levels[this.level+1].items.forEach(item =>{
+            this.levels[this.lvlSwitcher+1].items.forEach(item =>{
                 item += startx;
             });
-            this.levels[this.level+1].draw(startx);
-        }*/
+            this.levels[this.lvlSwitcher+1].draw(startx);
+        }
+        //*/
     }
 }
 
@@ -321,7 +345,7 @@ function level0(){
 
         new Platform(width*0.7, height*0.6, width*0.2),
         new Platform(width*1.2, height*0.6, width*0.2),
-        new Platform(width*1.7, height*0.6, width*0.2)
+        //new Platform(width*1.7, height*0.6, width*0.2)
     ];
 
     //TODO - TUTORIAL maybe not using this but example --> use REASSIGN!!!!!!!
@@ -342,7 +366,7 @@ function level0(){
 function level1(){
     //winx = width*3;
     let lvlplatforms = [
-        new Platform(0, height*0.8, width*0.5 , height*0.2),
+        new Platform(0, height*0.8, width*0.5, height*0.2),//, '#000000', '#00000000'),
         new Platform(width, height*0.8, width*0.5, height*0.2),
         new Platform(width*2, height*0.8, width*0.5, height*0.2),
         new Platform(width*3, height*0.8, width*0.5, height*0.2),
@@ -455,8 +479,9 @@ function randomGen(){
         x: 0.5,
         y: 0.2
     };
-
     lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
+    //if(game.level <= 4) lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2, '#00000000', '#00000000');
+    //else lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
     for(let i = 1; i < 9; i++){
         platpos.x = Math.random() * ((platpos.x  + platdim.x)+ 0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
         platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
@@ -595,8 +620,6 @@ function draw(){
     });
 */
     game.draw();
-    //TODO
-    console.log(`Attempt: ${game.attempts}`);
 
     ctx.restore();
 }
@@ -654,6 +677,11 @@ function update(){
         player.update();
     });
     players.forEach(player => {
+        //border
+        if(player.position.x <= game.getCurrentLevel().firstPlatform().position.x){
+            player.position.x = game.getCurrentLevel().firstPlatform().position.x;
+            player.keys.left = false;
+        }
         if(player.leader){
             if(player.keys.jump && player.velocity.y == game.gravity){
                 player.velocity.y -= game.jumpforce; // double jump mit counter <= 2 ig
@@ -680,6 +708,21 @@ function update(){
                         platform.position.x -= speed;
                     });
                     
+                    // fake previous plat
+                    if(game.levels[game.lvlSwitcher-1]){
+                        game.levels[game.lvlSwitcher-1].platforms.forEach(platform => {
+                            platform.position.x -= speed;
+                        });
+                    }
+
+                    // fake next plat
+                    if(game.levels[game.lvlSwitcher+1]){
+                        game.levels[game.lvlSwitcher+1].platforms.forEach(platform => {
+                            platform.position.x -= speed;
+                        });
+                    }
+                   
+
                     game.getCurrentLevel().items.forEach(item => {
                         item.position.x -= speed;
                     });
@@ -693,6 +736,19 @@ function update(){
                     game.getCurrentLevel().platforms.forEach(platform => {
                         platform.position.x += speed;
                     });
+
+                    // fake previous plat
+                    if(game.levels[game.lvlSwitcher-1]){
+                        game.levels[game.lvlSwitcher-1].platforms.forEach(platform => {
+                            platform.position.x += speed;
+                        });
+                    }
+                    // fake next plat
+                    if(game.levels[game.lvlSwitcher+1]){
+                        game.levels[game.lvlSwitcher+1].platforms.forEach(platform => {
+                            platform.position.x += speed;
+                        });
+                    }
                     
                     game.getCurrentLevel().items.forEach(item => {
                         item.position.x += speed;
@@ -722,7 +778,6 @@ function update(){
                 player.velocity.x = speed *-1; //iohwrughseruighjpriughrhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
             }else player.velocity.x = 0;
         }
-        
         // full platform collision (jump up from underneath)
         game.getCurrentLevel().platforms.forEach(platform => {
             if(player.position.y + player.height <= platform.position.y 
@@ -1025,7 +1080,7 @@ function clearMenu() {
 // CUSTOMSTUFF
 function saveGame(){
     localStorage.setItem("coins", game.coins);
-    localStorage.setItem("level", game.level);
+    localStorage.setItem("level", game.lvlSwitcher);
     localStorage.setItem("attempts", game.attempts);
 }
 function saveSettings(){
@@ -1046,13 +1101,22 @@ function changeFace(){
 }
 
 function victory(){
+    game.lvlSwitcher++;
+    if(game.lvlSwitcher == 2){
+        game.addLevel(randomGen());
+        game.levels.shift();
+        console.log(game.levels);
+
+        game.lvlSwitcher = 1;
+    }
+    game.getCurrentLevel().resetPlatforms();
+
     game.scrollOffset = 0;
     game.lvldistance = game.distance;
-    game.level++;
-    game.attempt = 1;
+    //game.attempts = 1;
     //if(game.difficulty == 'impossible') coins += level*10+5;
     game.lvlcoins = 0;
-    console.log(game.level);
+    console.log(game.lvlSwitcher);
     levelSwitch();
 }
 
@@ -1067,7 +1131,7 @@ function gameOver(){
             player.velocity.y = game.gravity*20;
         });
         //allattempts++;
-        game.attempt++;
+        game.attempts++;
     }
     if(game.difficulty == 'normal'){
         //dead = true;
@@ -1081,13 +1145,19 @@ function gameOver(){
         game.scrollOffset = 0;
         game.distance = game.lvldistance;
         //allattempts++;
-        game.attempt++;
+        game.attempts++;
         game.coins -= game.lvlcoins;
         game.lvlcoins = 0;
+        game.levels.forEach(level =>{
+            level.resetPlatforms();
+        });
+        game.lvlSwitcher = 0;
+        game.levels.shift();
     }
     if(game.difficulty == 'hard' || game.difficulty == 'run'){
         //dead = true;
-        level = 0;
+        game.level = 0;
+        game.lvlSwitcher = 0;
         //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
@@ -1097,13 +1167,19 @@ function gameOver(){
         game.scrollOffset = 0;
         game.distance = 0;
         //allattempts++;
-        game.attempt++;
+        game.attempts++;
         game.coins = 0;
         game.lvlcoins = 0;
+        game.levels.forEach(level =>{
+            level.resetPlatforms();
+        });
+        game.levels = [level0(), level1(), level2(), level3()];
+        game.addLevel(randomGen());
     }
     if(game.difficulty == 'impossible'){
         //dead = true;
-        level = 0;
+        game.level = 0;
+        game.lvlSwitcher = 0;
         //backgroundmusic.currentTime = 0;
         players.forEach(player => { 
             player.position.x = 100;
@@ -1111,14 +1187,18 @@ function gameOver(){
             player.velocity.y = game.gravity;
         });
         game.scrollOffset = 0;
-        //game.distance = 0;
+        game.distance = 0;
         //allattempts++;
-        game.attempt++;
-        coins = 0;
+        game.attempts++;
+        game.coins = 0;
         game.lvlcoins = 0;
+        game.levels = [level0(), level1(), level2(), level3()];
+        game.addLevel(randomGen());
     }
     if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${coins}`;
     if(game.difficulty != 'easy') levelSwitch();
+    
+    document.getElementById('attemptcount').innerHTML = `Attempt: ${game.attempts}`;
 }
 
 document.getElementById('fullscreen').addEventListener('click', fullScreen);
@@ -1329,13 +1409,23 @@ window.addEventListener("gamepaddisconnected", function (e) {
 
 // NEW MEW
 const camera = { x: 0, y: 0 };
-const cameraSpeed = 0.1;
+let cameraSpeed = 0.1;
 
 function updateCameraPosition() {
     players.forEach(player => {
         if(player.leader){
             camera.x += (player.position.x + player.width/2     - canvas.width/2.5    - camera.x) * cameraSpeed;
-            camera.y += (player.position.y + player.height/2    - canvas.height/1.8   - camera.y) * cameraSpeed;
+            if(camera.y <= height*0.25){
+                cameraSpeed = 0.1;
+                camera.y += (player.position.y + player.height/2    - canvas.height/1.8   - camera.y) * cameraSpeed;
+            }else{
+                cameraSpeed *= 0.99;
+                if(cameraSpeed <= 0.01){
+                    cameraSpeed = 0.1;    
+                }
+                camera.y += (player.position.y + player.height/2    - canvas.height/1.8   - camera.y) * cameraSpeed*0.5;
+            }
+            
         }
     });
 }

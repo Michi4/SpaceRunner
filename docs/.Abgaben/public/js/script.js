@@ -54,10 +54,10 @@ let platcolor = localStorage.getItem("platcolor") ?? '#000';
 let platshadow = localStorage.getItem("platshadow") ?? '#fff';
 let playerrainbow = JSON.parse(localStorage.getItem("playerrainbow")) ?? true;
 let platrainbow = JSON.parse(localStorage.getItem("platrainbow")) ?? false;
-let speedmode = localStorage.getItem("speedmode") ?? false;
+let speedMode = localStorage.getItem("speedMode") ?? false;
 let darktheme = localStorage.getItem("darktheme") ?? false;
 let difficulty = localStorage.getItem("difficulty") ?? 'normal';
-let playernum = parseInt(localStorage.getItem("playernum")) ?? 1;
+let playerCount = parseInt(localStorage.getItem("playerCount")) ?? 1;
 let buttonpressed = false;
 let gamepad = false;
 let gamepadIndex;
@@ -112,7 +112,7 @@ let gravity = 4.5;//4.5
 let speed = 0.275;//0.275
 let jumpforce = 55;//55
 */
-if(speedmode){
+if(speedMode){
     multi = 0.006875;//0.006875
 
     gravity = 4.5;//4.5

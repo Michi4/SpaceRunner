@@ -303,6 +303,20 @@ input:checked+.slider:before {
     font-family: 'Cascadia Code';
 }
 
+.attempts{
+    position: absolute;
+    bottom: 10vh;
+    right: 5vw;
+    text-align: left;
+    font-size: 4vmin;
+    color: lightcyan;
+}
+.attempts p{
+    
+    font-family: 'Cascadia Code';
+}
+
+
 #openmenu{
     position: absolute;
     right: 2vw;
