@@ -27,6 +27,10 @@ const ctx = canvas.getContext('2d');
 canvas.width = width;
 canvas.height = height;
 
+let keycodes = { // https://codepen.io/jdoleary/pen/NqdmOM
+    8: "BCKSP", 13: "ENTER", 16: "SHIFT", 17: "ALTRIGHT", 18: "ALT", 27: "ESC", 32: "SPACE", 37: "LEFT", 38: "UP", 39: "RIGHT", 40: "DOWN", 46: "DEL", 91: "MAC", 112: "F1", 113: "F2", 114: "F3", 115: "F4", 116: "F5", 117: "F6", 118: "F7", 119: "F8", 120: "F9", 121: "F10", 122: "F11", 123: "F12", 8: "backspace", 9: "tab", 13: "enter", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause_break", 20: "caps_lock", 27: "escape", 33: "page_up", 34: "page down", 35: "end", 36: "home", 37: "left_arrow", 38: "up_arrow", 39: "right_arrow", 40: "down_arrow", 45: "insert", 46: "delete", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 65: "a", 66: "b", 67: "c", 68: "d", 69: "e", 70: "f", 71: "g", 72: "h", 73: "i", 74: "j", 75: "k", 76: "l", 77: "m", 78: "n", 79: "o", 80: "p", 81: "q", 82: "r", 83: "s", 84: "t", 85: "u", 86: "v", 87: "w", 88: "x", 89: "y", 90: "z", 91: "left_window key", 92: "right_window key", 93: "select_key", 96: "numpad 0", 97: "numpad 1", 98: "numpad 2", 99: "numpad 3", 100: "numpad 4", 101: "numpad 5", 102: "numpad 6", 103: "numpad 7", 104: "numpad 8", 105: "numpad 9", 106: "multiply", 107: "add", 109: "subtract", 110: "decimal point", 111: "divide", 112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8", 120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "num_lock", 145: "scroll_lock", 186: "semi_colon", 187: "equal_sign", 188: "comma", 189: "dash", 190: "period", 191: "forward_slash", 192: "grave_accent", 219: "open_bracket", 220: "backslash", 221: "closebracket", 222: "single_quote"
+}
+
 //Classes n Stuff
 //OOP because OP for this
 
@@ -152,13 +156,39 @@ class Item{
     }
 }
 
+class GameText{
+    constructor(text, color, shadow, x, y, size, maxWidth){
+        this.text = text;
+        this.position = {
+            x,
+            y,
+        };
+        this.size = size;
+        this.shadow = shadow;
+        this.maxWidth = maxWidth;
+        this.color = color ?? '#ffffff';
+    }
+
+    draw(){
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.shadow ?? "#ffffff00";
+        if(this.color == "rgbColor") ctx.fillStyle = rgbColor;
+        else ctx.fillStyle = this.color;
+        ctx.font = `${(this.size ?? width/55)}px space-mono, monospace`;
+        ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
+        ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
+        ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
+    }
+}
+
 // needed for Level
 let levelCount = 1;
 class Level{
-    constructor(platforms, items){//, winx){
+    constructor(platforms, items, texts){//, winx){
         this.id = levelCount++;
         this.platforms = platforms ?? [];
         this.items = items ?? [];
+        this.texts = texts ?? [];
         this.winx = /*winx ??*/ calcWinx(platforms);
     }
 
@@ -181,6 +211,8 @@ class Level{
             item.position.x -= temp; 
         });
 
+        //text
+
         return new Level(tempPlatforms, tempItems);
     }
 
@@ -200,6 +232,9 @@ class Level{
         this.items.forEach(item => {
             item.position.x -= temp;
         });
+        this.texts.forEach(text => {
+            text.position.x -= temp;
+        });
 
         this.winx = calcWinx(this.platforms);
     }
@@ -210,6 +245,9 @@ class Level{
         });
         this.items.forEach(item => {
             item.position.x += startx;
+        });
+        this.texts.forEach(text => {
+            text.position.x += startx;
         });
     }
 
@@ -243,6 +281,9 @@ class Level{
         });
         this.items.forEach(item => {
             item.draw();
+        });
+        this.texts.forEach(text => {
+            text.draw();
         });
     }
 }
@@ -416,7 +457,14 @@ function level0(){
         new Item(width*0.365, height*0.6, innerWidth/48, innerWidth/48)
     ];
 
-    return new Level(lvlplatforms, lvlitems);
+    let lvltexts = [
+        //new GameText("Welcome to SpaceRunner", "rgbColor", -width*0.3, height*0.3, width*0.05),
+        new GameText("press", "#000000", "#9700bd", 0, height*0.15, width*0.025),
+        new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#000000", "#9700bd", 0, height*0.25, width*0.025),
+        new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#000000", "#9700bd", width*0.95, height*0.5, width*0.025),
+    ];
+
+    return new Level(lvlplatforms, lvlitems, lvltexts);
 }
 function level1(){
     //winx = width*3;
@@ -474,8 +522,12 @@ function level2(){
         new Item(width*2.51, height*0.45, innerWidth/48, innerWidth/48),
         new Item(width*2.95, height*0.45, innerWidth/48, innerWidth/48),
     ];
+
+    let lvltexts = [
+        new GameText(keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint,", "#000000", "#9700bd", width*0.125, height*0.65, width*0.025),
+    ];
     
-    return new Level(lvlplatforms, lvlitems);
+    return new Level(lvlplatforms, lvlitems, lvltexts);
 }
 
 function level3(){
@@ -517,7 +569,12 @@ function level3(){
         new Item(width*2.4, height*0.74, innerWidth/48, innerWidth/48),
     ];
     
-    return new Level(lvlplatforms, lvlitems);
+    let lvltexts = [
+        new GameText(keycodes[players[0].reassign.sneak].toUpperCase() + " to sneak,", "#000000", "#9700bd", width*0.125, height*0.65, width*0.025),
+        new GameText("ESC to open the menu.", "#000000", "#9700bd", width*2.1, height*0.65, width*0.025),
+    ];
+    
+    return new Level(lvlplatforms, lvlitems, lvltexts);
 }
 
 function randomGen(){
@@ -650,6 +707,9 @@ function addText(text, x, y){
     ctx.fillStyle = '#fff';
     ctx.fillText(text, x, y);
 }
+
+
+
 
 function draw(){
     if (!players.every(player => {
@@ -815,6 +875,9 @@ function update(){
                         game.levels[1].items.forEach(item => {
                             item.position.x -= speed;
                         });
+                        game.levels[1].texts.forEach(text => {
+                            text.position.x -= speed;
+                        });
                     }
                    
 
@@ -823,6 +886,9 @@ function update(){
                     });
                     game.getCurrentLevel().items.forEach(item => {
                         item.position.x -= speed;
+                    });
+                    game.getCurrentLevel().texts.forEach(text => {
+                        text.position.x -= speed;
                     });
 
                     players.forEach(player => {
@@ -847,6 +913,10 @@ function update(){
                         game.levels[1].items.forEach(item => {
                             item.position.x += speed;
                         });
+                        
+                        game.levels[1].texts.forEach(text => {
+                            text.position.x += speed;
+                        });
                     }
                     
                     game.getCurrentLevel().platforms.forEach(platform => {
@@ -854,6 +924,9 @@ function update(){
                     });
                     game.getCurrentLevel().items.forEach(item => {
                         item.position.x += speed;
+                    });
+                    game.getCurrentLevel().texts.forEach(text => {
+                        text.position.x += speed;
                     });
 
                     players.forEach(player => {
@@ -993,10 +1066,10 @@ function userMenu(){
         </div>
         <div class="menu-box">
             <h2>Customs</h2>
-            /*<div class="customholder">
+            <!--<div class="customholder">
                 <h3>Name: </h3>
                 <input id="charface" type="text" maxlength="2" placeholder="Name">
-            </div>
+            </div>!-->
             <div class="customholder">
                 <h3>RGB: </h3>
                 <label class="switch">
@@ -1052,14 +1125,14 @@ function userMenu(){
     //$('#playerholder').append(``);
             
     //remapKeys(0);
-    charface = document.getElementById('charface');
+    /*charface = document.getElementById('charface');
     charface.addEventListener("keyup", function (event) {
         if (event.keyCode === 13) {
             event.preventDefault();
             changeFace();
         }
     });
-
+*/
     //from CUSTOM SETTINGS
     console.log(document.getElementById('whatplayer').value ?? 0);
     console.log(players[document.getElementById('whatplayer').value ?? 0].color == true);
@@ -1170,7 +1243,7 @@ function componentToHex(c) {
 }
 
 function closeMenu(){
-    changeFace();
+    //changeFace();
     document.getElementById('blur').style.filter = "blur(0px)";
     document.getElementById('clearMenu').style.opacity = 0;
     setTimeout(clearMenu, "501")
@@ -1211,10 +1284,12 @@ function saveSettings(){
     });
 }
 
+/*
 function changeFace(){
     console.log(charface.value);
     if(charface.value && charface.value != '[object HTMLInputElement]') text = charface?.value;
 }
+*/
 
 function victory(){
     game.scrollOffset = 0;
@@ -1414,9 +1489,6 @@ function stopJump(){
 function remapKeys(x){
     if(!mobile){   
         //remap keys https://codepen.io/jdoleary/pen/NqdmOM
-        let keycodes = { // https://codepen.io/jdoleary/pen/NqdmOM
-            8: "BCKSP", 13: "ENTER", 16: "SHIFT", 17: "ALTRIGHT", 18: "ALT", 27: "ESC", 32: "SPACE", 37: "LEFT", 38: "UP", 39: "RIGHT", 40: "DOWN", 46: "DEL", 91: "MAC", 112: "F1", 113: "F2", 114: "F3", 115: "F4", 116: "F5", 117: "F6", 118: "F7", 119: "F8", 120: "F9", 121: "F10", 122: "F11", 123: "F12", 8: "backspace", 9: "tab", 13: "enter", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause_break", 20: "caps_lock", 27: "escape", 33: "page_up", 34: "page down", 35: "end", 36: "home", 37: "left_arrow", 38: "up_arrow", 39: "right_arrow", 40: "down_arrow", 45: "insert", 46: "delete", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 65: "a", 66: "b", 67: "c", 68: "d", 69: "e", 70: "f", 71: "g", 72: "h", 73: "i", 74: "j", 75: "k", 76: "l", 77: "m", 78: "n", 79: "o", 80: "p", 81: "q", 82: "r", 83: "s", 84: "t", 85: "u", 86: "v", 87: "w", 88: "x", 89: "y", 90: "z", 91: "left_window key", 92: "right_window key", 93: "select_key", 96: "numpad 0", 97: "numpad 1", 98: "numpad 2", 99: "numpad 3", 100: "numpad 4", 101: "numpad 5", 102: "numpad 6", 103: "numpad 7", 104: "numpad 8", 105: "numpad 9", 106: "multiply", 107: "add", 109: "subtract", 110: "decimal point", 111: "divide", 112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8", 120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "num_lock", 145: "scroll_lock", 186: "semi_colon", 187: "equal_sign", 188: "comma", 189: "dash", 190: "period", 191: "forward_slash", 192: "grave_accent", 219: "open_bracket", 220: "backslash", 221: "closebracket", 222: "single_quote"
-        }
 
         let actions = players[x].reassign;
         tempHtml = $("#whatplayer");
