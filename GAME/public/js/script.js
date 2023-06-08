@@ -102,7 +102,7 @@ class Platform{
         this.width = width ?? innerWidth*0.2;
         this.height = height ?? innerHeight*0.02;
         this.color = color ?? null;
-        this.shadow = shadow ?? '#ffffff';
+        this.shadow = shadow;
     }
 
     draw(){
@@ -993,7 +993,7 @@ function userMenu(){
         </div>
         <div class="menu-box">
             <h2>Customs</h2>
-            <div class="customholder">
+            /*<div class="customholder">
                 <h3>Name: </h3>
                 <input id="charface" type="text" maxlength="2" placeholder="Name">
             </div>
