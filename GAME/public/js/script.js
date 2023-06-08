@@ -1142,7 +1142,7 @@ function colorInput(){
         $( "#Player-Color" ).prop( "disabled", false );
         $( "#Player-Color" ).css('cursor', 'pointer');
     }
-    if(game.platformColor == true){
+    if(game.platformShadow == true){
         $('#Platform-Shadow').fadeTo( "slow", 0.33 );
         $( "#Platform-Shadow" ).prop( "disabled", true );
         $( "#Platform-Shadow" ).css('cursor', 'not-allowed');
