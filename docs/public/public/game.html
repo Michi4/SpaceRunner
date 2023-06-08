@@ -1,0 +1,83 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceRunner</title>
+    <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/jquery.min.js" defer></script>
+    <script src="./js/script.js" defer></script>
+</head>
+<body>
+    
+    <main id="blur">
+        <a href="index.html"><h1 class="headline">SpaceRunner</h1></a>
+        <!--<label class="themeswitch">
+            <input id="themetoggle" type="checkbox">
+            <span class="themeslider round"></span>
+        </label>!-->
+        <div id="scores">
+            <p id="coins"><img class="coinDispImg" src="./img/coin.png" alt="">  0</p>
+            <div class="flex">
+                <a href="./scoreboard/index.php"><svg class="icons scorerocket" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg></a>
+                <p id="a" class="score" style="color: aliceblue;"></p>
+            </div>
+        </div>
+        
+        <div class="flex attempts">
+            <p id="attemptcount">Attempt: 1</p>    
+        </div>
+
+
+        <p id="openmenu" class="nomobile" onclick="clickmenu()">☰</p>
+        <p id="fullscreen">⛶</p>
+        
+
+        <div id="audiotags">
+            <!--<audio id="music"></audio>!-->
+            <!--
+            <div id="donate-button-container">
+                <div id="donate-button"></div>
+                <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
+                <script>
+                    PayPal.Donation.Button({
+                        env: 'production',
+                        hosted_button_id: '5K8VCUZB7KCQS',
+                        image: {
+                            src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
+                            alt: 'Donate with PayPal button',
+                            title: 'PayPal - The safer, easier way to pay online!',
+                        }
+                    }).render('#donate-button');
+                </script>
+            </div>
+        !-->
+        </div>
+
+        <div class="progressBarWrapper">
+        <div class="w3-light-grey">
+            <div id="myBar" class="progressBar"></div>
+            </div>
+            
+        </div>
+                    
+
+        <div id="surface">
+            <div id="mobile">
+                <div class="flex">
+                    <button id="left"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></button><!--🡀🡂-->
+                    <button id="right"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></button><!--🡀🡂-->
+                </div>
+            </div>
+            <canvas></canvas>
+            <div id="mobileJump"></div>
+        </div>
+    </main>
+
+    <div id="clearMenu">
+        
+    </div>
+</body>
+</html>
