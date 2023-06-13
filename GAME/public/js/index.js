@@ -1,4 +1,9 @@
-window.open('', '_self', '');
+const indexWindow = window.open('', '_self', '');
+
+function closeWindow(){
+    indexWindow.close();
+}
+
 $.get(`/socket.io/socket.io.min.js`)
     .done(function () {
 
@@ -45,8 +50,8 @@ function genBtns(slider){
     document.getElementsByClassName('btnwrapper')[0].innerHTML += `
     <div class="block"><button class="playBtn" onclick="setDifficulty('easy')" style="color:green;">Easy</button></div>
     <div class="block" id="settings"><button onclick="setDifficulty('normal')" style="color:lightgrey;">Normal</button></div>
-    <div class="block" id="settings"><button onclick="setDifficulty('hard')" style="color:red;">Hard</button></div>
-    <div class="block" id="settings"><button onclick="setDifficulty('impossible')" style="color:purple;">Impossible</button></div>`;
+    <div class="block" id="settings"><button onclick="setDifficulty('hard')" style="color:red;"><p class="tiny-info">SCORE</p>Hard</button></div>
+    <div class="block" id="settings"><button onclick="setDifficulty('impossible')" style="color:purple;"><p class="tiny-info">SCORE</p>Impossible</button></div>`;
 }
 
 function updateTextInput(value){

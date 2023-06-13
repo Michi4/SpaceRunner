@@ -728,4 +728,13 @@ input:checked+.themeslider:before {
 }
 
 
+.tiny-info{
+    position: relative;
+    top: 0.1vh;
+    right: 16vw;
+
+    font-size: 0.25em;
+    color: gold;
+}
+
 

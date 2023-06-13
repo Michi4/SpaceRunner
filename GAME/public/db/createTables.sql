@@ -34,3 +34,8 @@ CREATE TABLE sr_score (
     FOREIGN KEY (s_user_id) REFERENCES sr_user(u_id),
     FOREIGN KEY (s_scoretype_id) REFERENCES sr_scoretype(st_id)
 );
+
+INSERT INTO sr_scoretype (st_scoretype) VALUES
+('hard'),
+('impossible'),
+('run');

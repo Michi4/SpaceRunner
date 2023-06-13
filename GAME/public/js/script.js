@@ -78,7 +78,7 @@ class Player{
             ctx.shadowColor = `${this.color}`;
             ctx.fillStyle = `${this.color}`;
         }
-        ctx.shadowBlur = 180;
+        ctx.shadowBlur = width*0.9;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         ctx.shadowBlur = 0;
@@ -114,10 +114,12 @@ class Platform{
             ctx.shadowColor = `${rgbColor}`;
         }else if (this.shadow){
             ctx.shadowColor = `${this.shadow}`;
-        }else{
+        }else if(game.platformShadow){
             ctx.shadowColor = `${game.platformShadow}`;
+        }else{
+            ctx.shadowColor = `#ffffff`;
         }
-        ctx.shadowBlur = 5;
+        ctx.shadowBlur = width/384;
         ctx.fillStyle = this.color ?? game.platformColor;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
@@ -150,7 +152,7 @@ class Item{
     draw(){
         if(game.difficulty != 'impossible') ctx.shadowColor = 'gold';
         else ctx.shadowColor = '#000';
-        ctx.shadowBlur = 80;
+        ctx.shadowBlur = width*0.04;
         //bad - coin TODO!
         ctx.drawImage(coin, this.position.x, this.position.y, this.width, this.height);
     }
@@ -170,7 +172,7 @@ class GameText{
     }
 
     draw(){
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = width/128;
         ctx.shadowColor = this.shadow ?? "#ffffff00";
         if(this.color == "rgbColor") ctx.fillStyle = rgbColor;
         else ctx.fillStyle = this.color;
@@ -311,6 +313,8 @@ class Game{
         this.scrollOffset = 0;
         this.distance = 0;
         this.lvlDistance = 0;
+        //ratio
+        this.ratioDistance = 0;
         
         //coins
         this.coins = 0;
@@ -459,6 +463,7 @@ function level0(){
 
     let lvltexts = [
         //new GameText("Welcome to SpaceRunner", "rgbColor", -width*0.3, height*0.3, width*0.05),
+        new GameText("Home ->", "#000000", "#FFFfff99", -width*0.09, -height*0.075, width*0.03),
         new GameText("press", "#000000", "#9700bd", 0, height*0.15, width*0.025),
         new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#000000", "#9700bd", 0, height*0.25, width*0.025),
         new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#000000", "#9700bd", width*0.95, height*0.5, width*0.025),
@@ -669,6 +674,7 @@ function levelSwitch(victory){
     if(game.levels.length >= 2 && victory) game.levels.shift();
     if(game.difficulty == "run"){
         game.addLevel(randomGen());
+        if(game.levels.length <= 1) game.addLevel(randomGen());
         return;
     }
     console.log("LEvel: " + game.level);
@@ -752,7 +758,7 @@ function draw(){
         levelSwitch();
     }
 
-    if(game.platformShadow == true && rgbCounter >= 25 || players.some(player => player.color === true) && rgbCounter >= 25){
+    if(game.platformShadow == true && rgbCounter >= 100 || players.some(player => player.color === true) && rgbCounter >= 100){
         rgbCounter = 0;
         rgbColor = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
     }
@@ -775,6 +781,12 @@ function draw(){
         item.draw();
     });
 */
+    if(game.difficulty == 'impossible'){
+        game.coins = Math.floor(game.ratioDistance/3);
+        if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
+    } 
+
+
     game.draw();
 
     ctx.restore();
@@ -984,10 +996,6 @@ function update(){
                     item.position.y = -9999;
             }
         });
-        if(game.difficulty == 'impossible'){
-            coins = Math.floor(game.distance/300);
-            if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
-        } 
         if(player.position.y >= height*2){
             gameOver();
         }
@@ -1097,7 +1105,7 @@ function userMenu(){
             </div>
             <div class="customholder" id="platshadowcolor">
                 <h3>Platform-Shadow: </h3>
-                <input class="colorinput" type="color" id="Platform-Shadow" name="platform-shadow" value="#ff0000"><br><br>
+                <input class="colorinput" type="color" id="Platform-Shadow" name="platform-shadow" value="#ffffff"><br><br>
             </div>
             <div class="customholder">
                 <h3>Platform-Color: </h3>
@@ -1117,7 +1125,8 @@ function userMenu(){
     console.log(game.platformShadow);
     console.log(game.platformColor);
     document.getElementById("Player-Color").value = "" + players[0].color;
-    document.getElementById("Platform-Shadow").value = "" + game.platformShadow;
+    if(game.platformShadow) document.getElementById("Platform-Shadow").value = "" + game.platformShadow;
+    else document.getElementById("Platform-Shadow").value = '#ffffff';
     document.getElementById("Platform-Color").value = "" + game.platformColor;
     
     colorInput();
@@ -1302,6 +1311,8 @@ function victory(){
 function gameOver(){
     //TODO
     
+    if(game.difficulty == 'hard' || game.difficulty == 'impossible' || game.difficulty == 'run') saveScore(game);
+
     if(game.difficulty == 'easy'){
         players.forEach(player => { 
             player.position.y = -200;
@@ -1312,7 +1323,7 @@ function gameOver(){
     }
     if(game.difficulty == 'normal'){
         players.forEach(player => { 
-            player.position.x = 100;
+            player.position.x = 120;
             player.position.y = 100;
             player.velocity.y = game.gravity;
         });
@@ -1325,7 +1336,7 @@ function gameOver(){
     if(game.difficulty == 'hard' || game.difficulty == 'run'){
         game.level = 0;
         players.forEach(player => { 
-            player.position.x = 100;
+            player.position.x = 120;
             player.position.y = 100;
             player.velocity.y = game.gravity;
         });
@@ -1341,7 +1352,7 @@ function gameOver(){
     if(game.difficulty == 'impossible'){
         game.level = 0;
         players.forEach(player => { 
-            player.position.x = 100;
+            player.position.x = 120;
             player.position.y = 100;
             player.velocity.y = game.gravity;
         });
@@ -1601,6 +1612,7 @@ function printScores(){
     /*document.getElementById('z').innerHTML = "Win: " + ratioWin;
     document.getElementById('a').innerHTML = "Distance: " + ratioDistance;
     */
+    game.ratioDistance = ratioDistance;
     document.getElementById('a').innerHTML = "  " + ratioDistance;
     
     if(ratioDistance != 0){
@@ -1630,3 +1642,26 @@ function getLoggedUser() {
     return userId;
 }
 getLoggedUser();
+
+
+function saveScore(score) {
+    const data = new FormData();
+    data.append('difficulty', score.difficulty ?? 'hard');
+    data.append('score', score.ratioDistance ?? 0);
+    data.append('level', score.level ?? 0);
+    console.log(...data);
+    
+    fetch('save_score.php', {
+      method: 'POST',
+      body: data,
+    })
+    .then(response => response.text())
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+  
