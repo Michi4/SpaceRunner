@@ -23,28 +23,33 @@
         <div class="btnwrapper">
             <div class="block"><button class="playBtn" onclick="pressedPlay()">Play</button></div>
             <div class="block nomobile" id="playBtn"><button onclick="pressedCoop()">Coop</button></div>
-            <div class="block"><button class="playBtn" onclick="setDifficulty('run')">Run Mode</button></div>
+            <div class="block"><button class="playBtn" onclick="setDifficulty('run')"><p class="tiny-info">SCORE</p>Run Mode</button></div>
             <div class="block noserver" id="playBtn"><button onclick="pressedMultiplayer()">Multiplayer</button></div>
             <!--<div class="block nomobile" id="settings"><button onclick="clickmenu()">Settings</button></div>!-->
-            <div class="block"><button onclick="window.close()">Exit</button></div>
+            <div class="block"><button class="playBtn" onclick="window.location.assign('./scoreboard/index.php');">Scoreboard</button></div>
+            <!--<div class="block"><button onclick="closeWindow()">Exit</button></div>!-->
         </div>
     </main>
     
-    <div id="donate-button-container">
-        <div id="donate-button"></div>
-        <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
-        <script>
-            PayPal.Donation.Button({
-                env: 'production',
-                hosted_button_id: '5K8VCUZB7KCQS',
-                image: {
-                    src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
-                    alt: 'Donate with PayPal button',
-                    title: 'PayPal - The safer, easier way to pay online!',
-                }
-            }).render('#donate-button');
-        </script>
-    </div>
+    <a href="https://paypal.me/michaelruep">
+        <div id="donate-button-container">
+            <div id="donate-button"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" alt=""></div>
+            <!--
+            <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
+            <script>
+                PayPal.Donation.Button({
+                    env: 'production',
+                    hosted_button_id: '5K8VCUZB7KCQS',
+                    image: {
+                        src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
+                        alt: 'Donate with PayPal button',
+                        title: 'PayPal - The safer, easier way to pay online!',
+                    }
+                }).render('#donate-button');
+            </script>
+            !-->
+        </div>
+    </a>
 
 
 

@@ -27,7 +27,7 @@ if (!preg_match("/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/", $email)) {
     die("Error: Invalid email address");
 }
 
-if (!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/", $_POST['password'])) {
+if (!preg_match("/^(?=.*[a-zA-Z0-9])(?!.*e$).{3,}$/", $_POST['password'])) {
     die("Error: Invalid password");
 }
 
