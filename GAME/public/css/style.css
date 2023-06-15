@@ -738,3 +738,15 @@ input:checked+.themeslider:before {
 }
 
 
+
+#loggeduser{
+    position: absolute;
+    font-size: 4.5vmin;
+    left: 2vmin;
+    bottom: 2vmin;
+
+    text-shadow: 0px 0px 0.4vmin #9700bd,
+                0px 0px 0.5vmin #ffffff55,
+                0px 0px 0.5vmin #ffffff55,
+                0px 0px 0.4vmin #9700bd;
+}

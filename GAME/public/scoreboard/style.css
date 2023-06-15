@@ -1,72 +1,107 @@
 * {
-
   text-align: center;
-  
-  }
+}
+
 body {
-    background-color: #222222;
-    color: #FFFFFF;
-    font-family: monospace;
-    font-size: 16px;
-    margin: 0;
-    background-image: url('../img/galaxyAll.gif');
-  }
-  
-  h1 {
-    text-align: center;
-  }
-  
-  table {
-    margin: 20px auto;
-    border-collapse: collapse;
-    width: 80%;
-    background-color: #22222200;
-  }
-  
-  th, td {
-    padding: 10px;
-    text-align: left;
-  }
-  
-  th {
-    background-color: #444444cc;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #333333cc;
-  }
-  
-  tr:nth-child(odd) {
-    background-color: #222222cc;
-  }
-  
-  #scoreTable td:first-child {
-    font-weight: bold;
-  }
-  
+  background-color: #222222;
+  color: #FFFFFF;
+  font-family: monospace;
+  font-size: 16px;
+  margin: 0;
+  background-image: url('../img/galaxyAll.gif');
+}
 
-  /*ICONS*/
+.wrapper {
+  background-color: #00000055;
+  width: 85vmax;
+  margin-left: 7.5vmax;
+  border: #222222 solid 0px;
+  border-radius: 3vmin;
+  padding-bottom: 3vmin;
+}
 
-  .icons{
-    position: absolute;
-    margin: 2vmax;
-    width: 2vmax;
-    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(350deg) brightness(102%) contrast(102%);
-    opacity: 0.8;
-    transition: 300ms;
-  }
-  
-  .icons:hover{
-    margin: 1.75vmax;
-    width: 2.5vmax;
-    opacity: 1;
-  }
-  
-  .back{
-    transform: rotate(180deg);
-    left: 0;
-  }
-  
-  .user{
-    right: 0;	
-  }
+h1 {
+  padding-top: 3vmin;
+  text-align: center;
+}
+
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 80%;
+  background-color: #222222aa;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #444444cc;
+}
+
+tr:nth-child(even) {
+  background-color: #333333cc;
+}
+
+tr:nth-child(odd) {
+  background-color: #222222cc;
+}
+
+#scoreTable td:first-child {
+  font-weight: bold;
+}
+
+/* ICONS */
+
+.icons {
+  position: absolute;
+  margin: 2vmax;
+  width: 2vmax;
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(350deg) brightness(102%) contrast(102%);
+  opacity: 0.8;
+  transition: 300ms;
+}
+
+.icons:hover {
+  margin: 1.75vmax;
+  width: 2.5vmax;
+  opacity: 1;
+}
+
+.back {
+  transform: rotate(180deg);
+  left: 0;
+}
+
+.user {
+  right: 0;	
+}
+
+p {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin: 0;
+}
+
+input[type="text"], select {
+  padding: 0.5vmin;
+  width: 20vmin;
+  border-radius: 1vmin;
+  margin-right: 1vmin;
+}
+
+input[type="submit"] {
+  padding: 1vmin 2vmin;
+  background-color: #6b1681;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 1vmin;
+  margin-top: 3vmin;
+}
+
+input[type="submit"]:hover {
+  background-color: #7c1d99;
+}
