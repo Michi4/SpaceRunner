@@ -146,7 +146,7 @@ class Item{
         this.img = img ?? coin;
         this.width = width ?? innerWidth/48;
         this.height = height ?? innerWidth/48;
-        this.music = music ?? null;//new Audio('music/CoinCollect.mp3');
+        this.music = music ?? null;//new Audio('music/coin_collect.mp3');
     }
 
     draw(){
@@ -1621,27 +1621,30 @@ function printScores(){
 }
 
 function getLoggedUser() {
-    // Split the cookie string into an array of name-value pairs
-    let cookies = document.cookie.split(";");
+  let cookies = document.cookie.split(";");
+  let userId = null;
+  let username = "";
 
-    // Loop through the cookies to find the user_id cookie
-    let userId = null;
-    for (let i = 0; i < cookies.length; i++) {
-      let cookie = cookies[i].trim();
-      if (cookie.indexOf("user_id=") == 0) {
-        // Extract the user_id value from the cookie
-        userId = cookie.substring("user_id=".length, cookie.length);
-        break;
-      }
+  for (let i = 0; i < cookies.length; i++) {
+    let cookie = cookies[i].trim();
+
+    if (cookie.indexOf("user_id=") === 0) {
+      userId = cookie.substring("user_id=".length);
     }
 
-    // Return the userId variable
-    console.log(userId);
-    console.log("userId");
-    console.log("userId");
-    return userId;
+    if (cookie.indexOf("username=") === 0) {
+      username = cookie.substring("username=".length);
+    }
+  }
+
+  console.log("User ID: " + userId + ", Username: " + username);
+  document.getElementById("loggeduser").innerHTML = username;
+
+  return userId;
 }
+
 getLoggedUser();
+  
 
 
 function saveScore(score) {
@@ -1651,7 +1654,7 @@ function saveScore(score) {
     data.append('level', score.level ?? 0);
     console.log(...data);
     
-    fetch('save_score.php', {
+    fetch('./php/save_score.php', {
       method: 'POST',
       body: data,
     })

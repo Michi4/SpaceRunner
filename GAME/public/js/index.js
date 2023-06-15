@@ -237,25 +237,26 @@ function changeTheme(){
 /*NEWNEW ig*/
 
 function getLoggedUser() {
-    // Split the cookie string into an array of name-value pairs
-    let cookies = document.cookie.split(';');
-
-    // Loop through the cookies to find the user_id cookie
+    let cookies = document.cookie.split(";");
     let userId = null;
+    let username = "";
+  
     for (let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i].trim();
-        if (cookie.indexOf('user_id=') == 0) {
-        // Extract the user_id value from the cookie
-        userId = cookie.substring('user_id='.length, cookie.length);
-        break;
-        }
+      let cookie = cookies[i].trim();
+  
+      if (cookie.indexOf("user_id=") === 0) {
+        userId = cookie.substring("user_id=".length);
+      }
+  
+      if (cookie.indexOf("username=") === 0) {
+        username = cookie.substring("username=".length);
+      }
     }
-
-    // Return the userId variable
-    console.log(userId);
-    console.log("userId");
-    console.log("userId");
+  
+    console.log("User ID: " + userId + ", Username: " + username);
+    document.getElementById("loggeduser").innerHTML = username;
+  
     return userId;
-}
-
-getLoggedUser();
+  }
+  
+  getLoggedUser();

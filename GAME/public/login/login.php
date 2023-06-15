@@ -1,14 +1,19 @@
 <?php
-// MySQL database connection parameters
-$_db_host = "localhost";
-$_db_database = "spacerunner";
-$_db_username = "spacerunner";
-$_db_password = "spacerunner";
+include('login.html');
+
+// Include the config.php file
+require_once '../php/config.php';
+
+// Database connection settings
+$_db_host = getenv('DB_HOST');
+$_db_database = getenv('DB_DATABASE');
+$_db_username = getenv('DB_USERNAME');
+$_db_password = getenv('DB_PASSWORD');
 
 // Create a new database connection
 $conn = new mysqli($_db_host, $_db_username, $_db_password, $_db_database);
 
-// Check the database connection for errors
+//checking the connection for errors
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -51,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Set the cookie with name, value, expiration time and path
                 setcookie('user_id', $row["u_id"], time() + (3 * 24 * 60 * 60), '/');
+                setcookie('username', $row["u_username"], time() + (3 * 24 * 60 * 60), '/');
                 
                 // Start the session and set the user ID
                 session_start();
@@ -68,9 +74,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 die("Something went wrong :c");
             }
         } else {
+            echo "Invalid password";
+            header("Location: login.html");
             die("Invalid password");
         }
     } else {
+        echo "User not found";
+        header("Location: login.html");
         die("User not found");
     }
 }

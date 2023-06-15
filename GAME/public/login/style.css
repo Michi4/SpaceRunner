@@ -10,6 +10,7 @@ body {
 	color: #ffffff;
 	font-family: "Space Mono", monospace;
 	background-image: url("../img/galaxyAll.gif");
+	background-size: cover;
 }
 
 .icons{
@@ -122,7 +123,31 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
 	background-color: #7c1d99;
+	width: 95%;
 }
+
+#logout-btn{
+	position: relative;
+	left: 2vmin;
+	margin-top: 1vmin;
+	padding: 1vmin;
+	border: none;
+	border-radius: 2vmin;
+	background-color: grey;
+	color: #ffffff;
+	font-size: 1.2em;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	width: 30%;
+	font-family: "Space Mono", monospace;
+}
+#logout-btn:hover{
+	background-color: lightgray;
+	color: #000000;
+}
+
+
 
 form p{
 	margin-top: 1vh;
