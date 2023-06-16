@@ -14,7 +14,7 @@ const playerCount= parseInt(localStorage.getItem("playernum") ?? 1);
 //gamepaddi
 
 let gamepad = false;
-let gamepadIndex;
+let gamepadCount = 0;
 
 //cam
 const camera = { x: 0, y: 0 };
@@ -68,6 +68,7 @@ class Player{
         this.color = color ?? JSON.parse(localStorage.getItem("playerrainbow")) ?? true;
         this.shadow = shadow ?? true;
         this.reassigned = reassigned ?? false;
+        this.gamepadIndex = -1;
     }
 
     draw(){
@@ -416,6 +417,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
     Array.from(document.getElementsByClassName('nomobile')).forEach(x => {
         x.innerHTML = '';
     });
+    console.log("mobiletelefonii");
 }else{
     document.getElementById('mobile').innerHTML = '';
 }
@@ -798,46 +800,57 @@ function update(){
     })&& !menu && coinLoad) setTimeout(update, 1000/fps);
 
     updateCameraPosition();   
-    if(!mobile && gamepad && gamepadIndex !== undefined){
-        const myGamepad = navigator.getGamepads()[gamepadIndex];
-        myGamepad.buttons.map(e => e.touched).forEach((isPressed, buttonIndex) => {
-            if (isPressed) {
-                // button is pressed; indicate this on the page
-                console.log(`Button ${buttonIndex} is pressed`);
-                if(buttonIndex === 0 || buttonIndex === 1 || buttonIndex === 12){
-                    players[0].keys.jump = true;
-                    console.log("jump")
-                }
-                if(buttonIndex === 13){
-                    players[0].keys.down = true;      
-                    players[0].velocity.y += 15;
-                }
-                if(buttonIndex === 4){
-                    players[0].keys.sprint = true;
-                }
-                if(buttonIndex === 15){
-                    players[0].keys.right = true;
-                }
-                if(buttonIndex === 14){
-                    players[0].keys.left = true;
-                }
-                if(buttonIndex === 9){
-                    window.location.assign('index.html');
-                }
-            }
-            if(!isPressed){
-                setTimeout(function(){
 
-                    players[0].keys.jump = false;
-                    players[0].keys.left = false;
-                    players[0].keys.right = false;
-                    players[0].keys.sprint = false;                    
-                    players[0].keys.down = false;
-                }, 0); 
-                    
-            }
-        });      
+    players.forEach(player =>{
+    if(!mobile && gamepad && player.gamepadIndex !== undefined){
+        const gamePads = navigator.getGamepads();
+            const myGamepad = gamePads[player.id];
+            //console.log(myGamepad);
+            myGamepad.buttons.map(e => e.touched).forEach((isPressed, buttonIndex) => {
+                if (isPressed) {
+                    // button is pressed; indicate this on the page
+                    //console.log(`Button ${buttonIndex} is pressed`);
+                    if(buttonIndex === 0 || buttonIndex === 1 ){//|| buttonIndex === 12){
+                        player.keys.jump = true;
+                        console.log("jump")
+                    }
+                    if(buttonIndex === 13){
+                        player.keys.down = true;      
+                        player.velocity.y += 15;
+                    }
+                    if(buttonIndex === 4 || buttonIndex === 2 || buttonIndex === 3){
+                        player.keys.sprint = true;
+                    }
+                    if(buttonIndex === 5){
+                        player.keys.sneak = true;
+                    }
+                    if(buttonIndex === 15){
+                        player.keys.right = true;
+                    }
+                    if(buttonIndex === 14){
+                        player.keys.left = true;
+                    }
+                    if(buttonIndex === 9){
+                        window.location.assign('index.html');
+                    }
+                }
+                if(!isPressed){
+                    setTimeout(function(){
+    
+                        player.keys.jump = false;
+                        player.keys.left = false;
+                        player.keys.right = false;
+                        player.keys.sprint = false;                    
+                        player.keys.down = false;
+                        player.keys.sneak = false;
+                    }, 0); 
+                        
+                }
+            });
+        //const myGamepad = navigator.getGamepads()[player.gamepadIndex];      
     }
+    
+});
 
     players.forEach(player => {
         if(game.difficulty == 'run') player.keys.left = false;
@@ -1567,7 +1580,8 @@ window.addEventListener("gamepadconnected", function (e) {
         e.gamepad.index, e.gamepad.id,
         e.gamepad.buttons.length, e.gamepad.axes.length);
     gamepad = true;
-    gamepadIndex = event.gamepad.index;
+    gamepadCount++;
+    players[gamepadCount].gamepadIndex = event.gamepad.index;
 });
 
 window.addEventListener("gamepaddisconnected", function (e) {

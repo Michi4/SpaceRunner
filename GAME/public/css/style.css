@@ -750,3 +750,30 @@ input:checked+.themeslider:before {
                 0px 0px 0.5vmin #ffffff55,
                 0px 0px 0.4vmin #9700bd;
 }
+
+
+
+#left{
+    width: 100%;    
+    background-color: #00000000;
+}
+
+#right{
+    
+    width: 100%;
+    background-color: #00000000;
+
+}
+
+#mobile{
+    margin-top: -5%;
+    background-color: #00000000;
+    justify-content: space-around;
+    width: 25%;
+}
+
+
+#mobile button{
+    background-color: #00000000;
+    padding: 2%;
+}
