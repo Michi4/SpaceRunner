@@ -1,7 +1,7 @@
+drop table sr_score;
 drop table sr_scoretype;
 drop table sr_user;
 drop table sr_userdata;
-drop table sr_score;
 
 CREATE TABLE sr_userdata (
     ud_id INT(11) UNSIGNED NOT NULL PRIMARY KEY,
