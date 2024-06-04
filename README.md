@@ -1,2 +1,2 @@
 # SpaceRunner
-A Platformer based on canvas with JS.
+A Platformer based on JavaScript using Canvas.
