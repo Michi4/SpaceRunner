@@ -15,6 +15,7 @@ const playerCount= parseInt(localStorage.getItem("playernum") ?? 1);
 
 let gamepad = false;
 let gamepadCount = 0;
+let coins = 0;
 
 //cam
 const camera = { x: 0, y: 0 };
@@ -1666,12 +1667,14 @@ function saveScore(score) {
       method: 'POST',
       body: data,
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(result => {
-      console.log(result);
+      if (!result.success) {
+        console.error('Score save failed:', result.error);
+      }
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error('Error saving score:', error);
     });
 }
 
