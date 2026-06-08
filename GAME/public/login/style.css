@@ -108,7 +108,47 @@ input:focus {
 	transition: color 0.2s;
 }
 
+.pw-wrapper {
+	position: relative;
+	width: 100%;
+}
+
+.pw-wrapper input {
+	padding-right: 45px !important;
+}
+
+.pw-toggle {
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	color: #ffffff90;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.2s, transform 0.2s;
+	width: 24px;
+	height: 24px;
+	z-index: 2;
+}
+
+.pw-toggle:hover {
+	color: #9700bd;
+	transform: translateY(-50%) scale(1.1);
+}
+
+.eye-icon {
+	width: 20px;
+	height: 20px;
+}
+
 /* ── Form field wrappers ─────────────────────────────── */
+
 
 .form-control {
 	margin-bottom: 2.5vmin;
