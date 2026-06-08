@@ -254,7 +254,13 @@ function getLoggedUser() {
     }
   
     console.log("User ID: " + userId + ", Username: " + username);
-    document.getElementById("loggeduser").innerHTML = username;
+    if (username) {
+        document.getElementById("loggeduser").innerHTML = username;
+        const navUserText = document.getElementById("nav-user-text");
+        if (navUserText) {
+            navUserText.innerText = username;
+        }
+    }
   
     return userId;
   }

@@ -148,4 +148,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial load
     loadScores();
+
+    function updateLoggedUser() {
+        let cookies = document.cookie.split(";");
+        let username = "";
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.indexOf("username=") === 0) {
+                username = cookie.substring("username=".length);
+            }
+        }
+        if (username) {
+            const navUserText = document.getElementById("nav-user-text");
+            if (navUserText) {
+                navUserText.innerText = username;
+            }
+        }
+    }
+    updateLoggedUser();
 });
