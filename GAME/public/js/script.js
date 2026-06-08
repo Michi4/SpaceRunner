@@ -1378,13 +1378,7 @@ function gameOver(){
         game.levels = [];
         levelSwitch();
     }
-    console.log(game.coins);
-    if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
-    if(game.difficulty != 'easy'){
-        game.resetLevels();    
-    } 
-    
-    document.getElementById('attemptcount').innerHTML = `Attempt: ${game.attempts}`;
+    // attemptcount element was removed from HTML
 }
 
 document.getElementById('fullscreen').addEventListener('click', fullScreen);
