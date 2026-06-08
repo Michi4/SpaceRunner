@@ -1,124 +1,252 @@
-const passwordInput = document.getElementById("password");
-const confirmPasswordInput = document.getElementById("confirm-password");
-const submitButton = document.getElementById("signup-btn");
-const usernameInput = document.getElementById("username");
-const emailInput = document.getElementById("email");
-const passwordStrength = document.getElementById("password-strength");
-const passwordMatch = document.getElementById("password-match");
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+/* =========================================================
+   SpaceRunner – Login / Signup form logic
+   ========================================================= */
 
-function validateForm(event) {
-  event.preventDefault();
+'use strict';
 
-  const usernameValue = usernameInput.value.trim();
-  const emailValue = emailInput.value.trim();
-  const passwordValue = passwordInput.value;
-  const confirmPasswordValue = confirmPasswordInput.value;
+// ── Shared helpers ────────────────────────────────────────
 
-  if (usernameValue === "") {
-    showError(usernameInput, "Username is required");
-  } else {
-    showSuccess(usernameInput);
-  }
-
-  if (emailValue === "") {
-    showError(emailInput, "Email is required");
-  } else if (!isValidEmail(emailValue)) {
-    showError(emailInput, "Email is not valid");
-  } else {
-    showSuccess(emailInput);
-  }
-
-  if (passwordValue === "") {
-    showError(passwordInput, "Password is required");
-  } else if (!passwordRegex.test(passwordValue)) {
-    showError(passwordInput, "Password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, and one number");
-  } else {
-    showSuccess(passwordInput);
-  }
-
-  if (confirmPasswordValue === "") {
-    showError(confirmPasswordInput, "Please confirm your password");
-  } else if (passwordValue !== confirmPasswordValue) {
-    showError(confirmPasswordInput, "Passwords do not match");
-  } else {
-    showSuccess(confirmPasswordInput);
-  }
-
-  // Submit the form if all fields are valid
-  if (document.querySelectorAll(".form-control.success").length === 4) {
-    submitButton.disabled = true;
-    submitButton.classList.add("disabled");
-    submitButton.textContent = "Submitting...";
-    document.forms[0].submit();
-  }
-}
-
+/**
+ * Mark a field as invalid and show a message.
+ * @param {HTMLInputElement} input
+ * @param {string} message
+ */
 function showError(input, message) {
-  const formControl = input.parentElement;
-  const errorText = formControl.querySelector(".error-text");
-
-  formControl.classList.remove("success");
-  formControl.classList.add("error");
-  errorText.textContent = message;
+  const wrapper = input.closest('.form-control');
+  wrapper.classList.remove('success');
+  wrapper.classList.add('error');
+  wrapper.querySelector('.error-text').textContent = message;
 }
 
+/**
+ * Mark a field as valid.
+ * @param {HTMLInputElement} input
+ */
 function showSuccess(input) {
-  const formControl = input.parentElement;
+  const wrapper = input.closest('.form-control');
+  wrapper.classList.remove('error');
+  wrapper.classList.add('success');
+  wrapper.querySelector('.error-text').textContent = '';
+}
 
-  formControl.classList.remove("error");
-  formControl.classList.add("success");
+/**
+ * Show / hide a top-level alert banner.
+ * @param {HTMLElement} el
+ * @param {string} message
+ */
+function showAlert(el, message) {
+  el.textContent = message;
+  el.hidden = false;
+}
+
+function hideAlert(el) {
+  el.textContent = '';
+  el.hidden = true;
 }
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+// ── Password strength ─────────────────────────────────────
+
+const strengthEl = document.getElementById('password-strength');
+const passwordInput = document.getElementById('password');
+
+if (passwordInput && strengthEl) {
+  passwordInput.addEventListener('input', checkPasswordStrength);
+}
+
 function checkPasswordStrength() {
-    const password = passwordInput.value;
-    let strength = 0;
-  
-    if (password.length >= 12) {
-      strength += 1;
-    }
-  
-    if (password.match(/[a-z]/)) {
-      strength += 1;
-    }
-  
-    if (password.match(/[A-Z]/)) {
-      strength += 1;
-    }
-  
-    if (password.match(/[0-9]/)) {
-      strength += 1;
-    }
-  
-    if (password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/)) {
-      strength += 1;
-    }
-  
-    switch (strength) {
-      case 0:
-      case 1:
-      case 2:
-        passwordStrength.textContent = "Weak";
-        passwordStrength.style.color = "#d8000c";
-        break;
-      case 3:
-        passwordStrength.textContent = "Moderate";
-        passwordStrength.style.color = "#f0ad4e";
-        break;
-      case 4:
-        passwordStrength.textContent = "Strong";
-        passwordStrength.style.color = "#4f8a10";
-        break;
-      case 5:
-        passwordStrength.textContent = "Very Strong";
-        passwordStrength.style.color = "#4f8a10";
-        break;
-      default:
-        break;
-    }
+  const pw = passwordInput.value;
+  let score = 0;
+  if (pw.length >= 12) score++;
+  if (/[a-z]/.test(pw)) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[!@#$%^&*()\-_=+[\]{};':"\\|,.<>/?]/.test(pw)) score++;
+
+  const levels = [
+    { label: '',           color: '' },
+    { label: 'Weak',       color: '#d8000c' },
+    { label: 'Weak',       color: '#d8000c' },
+    { label: 'Moderate',   color: '#f0ad4e' },
+    { label: 'Strong',     color: '#4f8a10' },
+    { label: 'Very Strong',color: '#4f8a10' },
+  ];
+
+  const { label, color } = levels[score] ?? levels[0];
+  strengthEl.textContent = label;
+  strengthEl.style.color  = color;
+}
+
+// ── Password match ────────────────────────────────────────
+
+const confirmInput = document.getElementById('confirm-password');
+const matchEl      = document.getElementById('password-match');
+
+if (confirmInput && matchEl) {
+  confirmInput.addEventListener('input', checkPasswordsMatch);
+}
+
+function checkPasswordsMatch() {
+  if (!passwordInput || !confirmInput) return;
+  if (confirmInput.value === '') {
+    matchEl.textContent = '';
+    return;
   }
-  
+  if (passwordInput.value === confirmInput.value) {
+    matchEl.textContent = '✓ Passwords match';
+    matchEl.style.color = '#4f8a10';
+  } else {
+    matchEl.textContent = '✗ Passwords do not match';
+    matchEl.style.color = '#d8000c';
+  }
+}
+
+// ── Signup form ───────────────────────────────────────────
+
+const signupForm = document.getElementById('signup-form');
+
+if (signupForm) {
+  const usernameInput = document.getElementById('username');
+  const emailInput    = document.getElementById('email');
+  const signupBtn     = document.getElementById('signup-btn');
+  const signupError   = document.getElementById('signup-error');
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+  signupForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    hideAlert(signupError);
+
+    let valid = true;
+
+    // Username
+    const usernameVal = usernameInput.value.trim();
+    if (!usernameVal) {
+      showError(usernameInput, 'Username is required.');
+      valid = false;
+    } else if (!/^[a-zA-Z0-9_-]{3,16}$/.test(usernameVal)) {
+      showError(usernameInput, 'Use 3–16 characters: letters, numbers, _ or -.');
+      valid = false;
+    } else {
+      showSuccess(usernameInput);
+    }
+
+    // Email
+    const emailVal = emailInput.value.trim();
+    if (!emailVal) {
+      showError(emailInput, 'Email is required.');
+      valid = false;
+    } else if (!isValidEmail(emailVal)) {
+      showError(emailInput, 'Enter a valid email address.');
+      valid = false;
+    } else {
+      showSuccess(emailInput);
+    }
+
+    // Password
+    const passwordVal = passwordInput.value;
+    if (!passwordVal) {
+      showError(passwordInput, 'Password is required.');
+      valid = false;
+    } else if (!passwordRegex.test(passwordVal)) {
+      showError(passwordInput, 'Min 8 characters with uppercase, lowercase and a number.');
+      valid = false;
+    } else {
+      showSuccess(passwordInput);
+    }
+
+    // Confirm password
+    const confirmVal = confirmInput.value;
+    if (!confirmVal) {
+      showError(confirmInput, 'Please confirm your password.');
+      valid = false;
+    } else if (passwordVal !== confirmVal) {
+      showError(confirmInput, 'Passwords do not match.');
+      valid = false;
+    } else {
+      showSuccess(confirmInput);
+    }
+
+    if (!valid) return;
+
+    // Submit via fetch
+    signupBtn.disabled = true;
+    signupBtn.textContent = 'Signing up…';
+
+    try {
+      const formData = new FormData(signupForm);
+      const response = await fetch('signup.php', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.success) {
+        window.location.href = 'login.html';
+      } else {
+        showAlert(signupError, data.error ?? 'Something went wrong. Please try again.');
+        signupBtn.disabled = false;
+        signupBtn.textContent = 'Sign Up';
+      }
+    } catch (err) {
+      showAlert(signupError, 'Network error. Please check your connection.');
+      signupBtn.disabled = false;
+      signupBtn.textContent = 'Sign Up';
+    }
+  });
+}
+
+// ── Login form ────────────────────────────────────────────
+
+const loginForm = document.getElementById('login-form');
+
+if (loginForm) {
+  const identifierInput = document.getElementById('username-email');
+  const loginPasswordInput = document.getElementById('login-password');
+  const loginBtn    = document.getElementById('login-btn');
+  const loginError  = document.getElementById('login-error');
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    hideAlert(loginError);
+
+    let valid = true;
+
+    if (!identifierInput.value.trim()) {
+      showError(identifierInput, 'Username or email is required.');
+      valid = false;
+    } else {
+      showSuccess(identifierInput);
+    }
+
+    if (!loginPasswordInput.value) {
+      showError(loginPasswordInput, 'Password is required.');
+      valid = false;
+    } else {
+      showSuccess(loginPasswordInput);
+    }
+
+    if (!valid) return;
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Logging in…';
+
+    try {
+      const formData = new FormData(loginForm);
+      const response = await fetch('login.php', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.success) {
+        window.location.href = '../index.html';
+      } else {
+        showAlert(loginError, data.error ?? 'Invalid credentials. Please try again.');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+      }
+    } catch (err) {
+      showAlert(loginError, 'Network error. Please check your connection.');
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Login';
+    }
+  });
+}

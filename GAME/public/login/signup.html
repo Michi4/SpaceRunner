@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Signup Page</title>
+	<title>Sign Up – SpaceRunner</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="style.css">
-	<script src="script.js" defer></script>
 </head>
 <body>
 	<a href="../index.html"><svg class="icons back" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M130 480c40.6 0 80.4-11 115.2-31.9L352 384l-224 0 0 96h2zM352 128L245.2 63.9C210.4 43 170.6 32 130 32h-2v96l224 0zM96 128l0-96H80C53.5 32 32 53.5 32 80v48h8c-22.1 0-40 17.9-40 40v16V328v16c0 22.1 17.9 40 40 40H32v48c0 26.5 21.5 48 48 48H96l0-96h8c26.2 0 49.4-12.6 64-32H456c69.3 0 135-22.7 179.2-81.6c6.4-8.5 6.4-20.3 0-28.8C591 182.7 525.3 160 456 160H168c-14.6-19.4-37.8-32-64-32l-8 0zM512 243.6v24.9c0 19.6-15.9 35.6-35.6 35.6c-2.5 0-4.4-2-4.4-4.4V212.4c0-2.5 2-4.4 4.4-4.4c19.6 0 35.6 15.9 35.6 35.6z"/></svg></a>
@@ -13,25 +12,48 @@
 
 	<div class="container">
 		<div class="form-wrapper">
-			<form id="signup-form" class="form" action="signup.php" method="POST">
+			<form id="signup-form" class="form">
 				<h2>Sign Up</h2>
-				<label for="username"><span>Username</span></label>
-				<input type="text" id="username" name="username" placeholder="Enter your username" required pattern="^[a-zA-Z0-9_-]{3,16}$">
-				<label for="email"><span>Email</span></label>
-				<input type="email" id="email" name="email" placeholder="Enter your email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-				<label for="password"><span>Password</span></label>
-				<input type="password" id="password" name="password" placeholder="Enter your password" required pattern="^(?=.*[a-zA-Z0-9])(?!.*e$).{3,}$" onkeyup='checkPasswordStrength();'>
-				<div id="password-strength"></div>
-				<label for="confirm-password"><span>Confirm Password</span></label>
-				<input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required onkeyup='checkPasswordsMatch();'>
-				<div id="password-match"></div>
+
+				<div class="form-control">
+					<label for="username"><span>Username</span></label>
+					<input type="text" id="username" name="username"
+					       placeholder="Enter your username" required
+					       pattern="^[a-zA-Z0-9_-]{3,16}$" autocomplete="username">
+					<small class="error-text"></small>
+				</div>
+
+				<div class="form-control">
+					<label for="email"><span>Email</span></label>
+					<input type="email" id="email" name="email"
+					       placeholder="Enter your email" required autocomplete="email">
+					<small class="error-text"></small>
+				</div>
+
+				<div class="form-control">
+					<label for="password"><span>Password</span></label>
+					<input type="password" id="password" name="password"
+					       placeholder="Enter your password" required autocomplete="new-password">
+					<div id="password-strength"></div>
+					<small class="error-text"></small>
+				</div>
+
+				<div class="form-control">
+					<label for="confirm-password"><span>Confirm Password</span></label>
+					<input type="password" id="confirm-password" name="confirm-password"
+					       placeholder="Confirm your password" required autocomplete="new-password">
+					<div id="password-match"></div>
+					<small class="error-text"></small>
+				</div>
+
+				<div id="signup-error" class="alert-error" role="alert" hidden></div>
+
 				<button type="submit" id="signup-btn">Sign Up</button>
-				<p>Already have an Account? <a href="./login.html">Login</a></p>
-				<p><a href="./logout.php">Logout</a></p>
+				<p>Already have an account? <a href="./login.html">Login</a></p>
 			</form>
-			
 		</div>
 	</div>
 
+	<script src="script.js" defer></script>
 </body>
 </html>

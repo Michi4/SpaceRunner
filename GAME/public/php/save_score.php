@@ -1,69 +1,69 @@
 <?php
-session_start(); // Start the session
+declare(strict_types=1);
+
+session_start();
+
+header('Content-Type: application/json; charset=utf-8');
+
 if (!isset($_SESSION['user_id'])) {
-    exit;
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Not authenticated.']);
+    exit();
 }
 
-// Include the config.php file
-require_once './config.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 
-// Database connection settings
-$_db_host = getenv('DB_HOST');
-$_db_database = getenv('DB_DATABASE');
-$_db_username = getenv('DB_USERNAME');
-$_db_password = getenv('DB_PASSWORD');
-
-// Create a new database connection
-$conn = new mysqli($_db_host, $_db_username, $_db_password, $_db_database);
-
-
-// Check if the connection was successful
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+/**
+ * Maps difficulty string to scoretype ID.
+ */
+function get_scoretype_id(string $difficulty): int
+{
+    return match ($difficulty) {
+        'hard'       => 1,
+        'impossible' => 2,
+        'run'        => 3,
+        default      => 1,
+    };
 }
 
+if (!isset($_POST['difficulty'], $_POST['score'], $_POST['level'])) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Missing required fields: difficulty, score, level.']);
+    exit();
+}
 
-// Check if the POST request contains the required data
-if (isset($_POST['difficulty'], $_POST['score'], $_POST['level'])) {
-    $scoreTypeId = getScoretypeId($_POST['difficulty']);
-    $score = $_POST['score'];
-    $level = $_POST['level'];
-    $userId = $_SESSION['user_id']; 
+$difficulty  = (string) $_POST['difficulty'];
+$score       = (int)    $_POST['score'];
+$level       = (int)    $_POST['level'];
+$userId      = (int)    $_SESSION['user_id'];
+$scoreTypeId = get_scoretype_id($difficulty);
 
-    // Prepare the SQL statement
-    $sql = "INSERT INTO sr_score (s_user_id, s_scoretype_id, s_score, s_level_reached, s_date_achieved)
-            VALUES (?, ?, ?, ?, NOW())";
-    $stmt = $conn->prepare($sql);
-    
-    // Bind the parameters to the prepared statement
-    $stmt->bind_param("iiii", $userId, $scoreTypeId, $score, $level);
-        
-    // Execute the prepared statement
-    if ($stmt->execute()) {
-        echo "Score saved successfully!";
-    } else {
-        echo "Error: " . $stmt->error;
-    }
+if ($score < 0 || $level < 0) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Score and level must be non-negative.']);
+    exit();
+}
 
-    // Close the statement
+try {
+    $conn = db_connect();
+
+    $stmt = $conn->prepare(
+        'INSERT INTO sr_score (s_user_id, s_scoretype_id, s_score, s_level_reached, s_date_achieved)
+         VALUES (?, ?, ?, ?, NOW())'
+    );
+    $stmt->bind_param('iiii', $userId, $scoreTypeId, $score, $level);
+    $stmt->execute();
     $stmt->close();
-} else {
-    echo "Error: Incomplete data";
-}
+    $conn->close();
 
-// Close the database connection
-$conn->close();
- 
-function getScoretypeId($difficulty) {
-    switch ($difficulty) {
-        case 'hard':
-            return 1;
-        case 'impossible':
-            return 2;
-        case 'run':
-            return 3;
-        default:
-            return 1; // Default to hard if difficulty is not recognized
-    }
+    echo json_encode(['success' => true, 'message' => 'Score saved successfully.']);
+
+} catch (RuntimeException $e) {
+    http_response_code(503);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+} catch (mysqli_sql_exception $e) {
+    error_log('[SpaceRunner] save_score error: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'An internal error occurred.']);
 }
-?>
