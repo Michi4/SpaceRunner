@@ -30,7 +30,7 @@ function pressedCoop(){
 }
 
 function pressedMultiplayer(){
-    genBtns(true);
+    window.location.assign('./lobby.html');
 }
 
 function genBtns(slider){

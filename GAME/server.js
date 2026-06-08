@@ -1,4 +1,3 @@
-const { application, json } = require('express');
 const express = require('express');
 const http = require('http');
 
@@ -9,37 +8,106 @@ const port = 3000;
 
 app.use(express.static('public'));
 
-let ip;
-let counter = 0;
+let rooms = {};
 
-app.get("/", function (req, res) {
-    ip = req.ip.substring(7,req.ip.length);
-    if(ip != '192.168.1.1' && ip != '127.0.0.1'){
-        console.log(++counter + `: ` + ip);
-    }
-    res.sendFile(__dirname + "/public/index.html");
-});
+// Helper: Broadcast all rooms to matching sockets
+function broadcastRooms() {
+  io.emit('rooms-update', rooms);
+}
 
 io.on('connection', (socket) => {
-  /*
-    let socketId = socket.id;
-    let clientIp = '' + socket.request.connection.remoteAddress;
-    clientIp = clientIp.substring(7, clientIp.length);
 
-    clients++;
-    console.log('User with ID: ' + socketId + ' with IP: ' + clientIp);
-    console.log('Users: ' + clients);1
-*/
-    socket.on('disconnect', (socket) => {
-    });
+  // Retrieve current active rooms
+  socket.on('get-rooms', () => {
+    socket.emit('rooms-update', rooms);
+  });
 
-    socket.on('move', (data) =>{
-        console.log(data);
-        socket.broadcast.emit('playerdata', data);
-    });
+  // Create Room
+  socket.on('create-room', (roomName, username) => {
+    if (!roomName || rooms[roomName]) return;
+
+    rooms[roomName] = {
+      host: socket.id,
+      players: [{ id: socket.id, username: username }]
+    };
+
+    socket.join(roomName);
+    socket.emit('room-joined', roomName, rooms[roomName].players, rooms[roomName].host);
+    broadcastRooms();
+  });
+
+  // Join Room
+  socket.on('join-room', (roomName, username) => {
+    const room = rooms[roomName];
+    if (!room || room.players.length >= 4) return;
+
+    room.players.push({ id: socket.id, username: username });
+    socket.join(roomName);
+    socket.emit('room-joined', roomName, room.players, room.host);
+    
+    // Notify room members
+    io.to(roomName).emit('room-sync', room.players, room.host);
+    broadcastRooms();
+  });
+
+  // Leave Room
+  socket.on('leave-room', (roomName) => {
+    handleRoomDeparture(socket, roomName);
+  });
+
+  // Game Start
+  socket.on('start-game', (roomName) => {
+    const room = rooms[roomName];
+    if (room && room.host === socket.id) {
+      io.to(roomName).emit('game-starting', roomName);
+      // Clean up room room structure so it's not active in lobby list
+      delete rooms[roomName];
+      broadcastRooms();
+    }
+  });
+
+  // Client updates position
+  socket.on('move', (data) => {
+    // Legacy support / general room sync
+    if (data.room) {
+      socket.to(data.room).emit('playerdata', data);
+    } else {
+      socket.broadcast.emit('playerdata', data);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    // Find if user was in a room and clean up
+    for (const roomName in rooms) {
+      const room = rooms[roomName];
+      const pIndex = room.players.findIndex(p => p.id === socket.id);
+      if (pIndex !== -1) {
+        handleRoomDeparture(socket, roomName);
+        break;
+      }
+    }
+  });
 });
 
-server.listen(port, ()=>{
-    console.log(`Server gestartet`);
-    console.log(`Erreichbar unter http://localhost:${port}`);
-    });
+function handleRoomDeparture(socket, roomName) {
+  const room = rooms[roomName];
+  if (!room) return;
+
+  room.players = room.players.filter(p => p.id !== socket.id);
+  socket.leave(roomName);
+
+  if (room.players.length === 0) {
+    delete rooms[roomName];
+  } else {
+    // Reassign host if the host left
+    if (room.host === socket.id) {
+      room.host = room.players[0].id;
+    }
+    io.to(roomName).emit('room-sync', room.players, room.host);
+  }
+  broadcastRooms();
+}
+
+server.listen(port, () => {
+  console.log(`Server started on port ${port}`);
+});
