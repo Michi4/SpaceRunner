@@ -1,0 +1,69 @@
+services:
+  webserver:
+    container_name: nginx
+    image: nginx:1.26-alpine
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"
+    volumes:
+      - ./GAME/public:/var/www/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - php
+      - node
+      - database
+    networks:
+      - spacerunner-network
+
+  php:
+    container_name: php
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./GAME/public:/var/www/html
+      - ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+    environment:
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_NAME:-spacerunner}
+      DB_USERNAME: ${DB_USER:-spacerunner}
+      DB_PASSWORD: ${DB_PASSWORD:-spacerunner}
+    depends_on:
+      - database
+    networks:
+      - spacerunner-network
+
+  node:
+    container_name: node_app
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    networks:
+      - spacerunner-network
+
+  database:
+    container_name: mariadb
+    image: mariadb:11.4
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-spacerunner}
+      MYSQL_DATABASE: ${DB_NAME:-spacerunner}
+      MYSQL_USER: ${DB_USER:-spacerunner}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-spacerunner}
+    networks:
+      - spacerunner-network
+
+networks:
+  spacerunner-network:
+    driver: bridge
+
+volumes:
+  db-data:
