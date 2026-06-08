@@ -1,13 +1,20 @@
 <?php
-$envFile = '../.env';
+/**
+ * Loads .env file into environment variables.
+ * Variables already set (e.g. injected by Docker) take priority.
+ */
+$envFile = __DIR__ . '/../.env';
+
 if (file_exists($envFile)) {
-    $envVariables = parse_ini_file($envFile);
-    if ($envVariables) {
-        foreach ($envVariables as $key => $value) {
-            putenv("$key=$value");
+    $vars = parse_ini_file($envFile);
+    if ($vars !== false) {
+        foreach ($vars as $key => $value) {
+            // Do NOT override values already set by the container/host environment
+            if (getenv($key) === false) {
+                putenv("$key=$value");
+            }
         }
     }
 } else {
-    die('.env file not found');
+    error_log('[SpaceRunner] .env file not found at: ' . $envFile);
 }
-?>

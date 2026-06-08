@@ -1,90 +1,99 @@
 <?php
-include('login.html');
+declare(strict_types=1);
 
-// Include the config.php file
-require_once '../php/config.php';
+require_once __DIR__ . '/../php/config.php';
+require_once __DIR__ . '/../php/db.php';
 
-// Database connection settings
-$_db_host = getenv('DB_HOST');
-$_db_database = getenv('DB_DATABASE');
-$_db_username = getenv('DB_USERNAME');
-$_db_password = getenv('DB_PASSWORD');
+header('Content-Type: application/json; charset=utf-8');
 
-// Create a new database connection
-$conn = new mysqli($_db_host, $_db_username, $_db_password, $_db_database);
-
-//checking the connection for errors
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+/**
+ * Send a JSON error response and exit.
+ */
+function send_error(string $message, int $status = 400): never
+{
+    http_response_code($status);
+    echo json_encode(['success' => false, 'error' => $message]);
+    exit();
 }
 
-// Check if the form was submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get the username or email and password input from the form
-    $username_email = $_POST["username-email"];
-    $password = $_POST["login-password"];
+/**
+ * Send a JSON success response and exit.
+ */
+function send_success(array $data = []): never
+{
+    http_response_code(200);
+    echo json_encode(array_merge(['success' => true], $data));
+    exit();
+}
 
-    // Prepare a SQL statement to retrieve the user's password hash from the database
-    $stmt = $conn->prepare("SELECT u_password FROM sr_user WHERE u_username = ? OR u_email = ?");
-    $stmt->bind_param("ss", $username_email, $username_email);
+// Only accept POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    send_error('Method not allowed.', 405);
+}
+
+// --- Input ---
+$identifier = trim($_POST['username-email'] ?? '');
+$password   = $_POST['login-password']      ?? '';
+
+if ($identifier === '' || $password === '') {
+    send_error('Username/email and password are required.');
+}
+
+// --- Database ---
+try {
+    $conn = db_connect();
+
+    $stmt = $conn->prepare(
+        'SELECT u_id, u_username, u_password
+         FROM sr_user
+         WHERE (u_username = ? OR u_email = ?) AND u_user_deleted = 0
+         LIMIT 1'
+    );
+    $stmt->bind_param('ss', $identifier, $identifier);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Check if a row was returned from the database
-    if ($result->num_rows == 1) {
-        // Get the password hash from the database
-        $row = $result->fetch_assoc();
-        $password_hash = $row["u_password"];
-
-        // Verify the password hash using the password_verify() function
-        if (password_verify($password, $password_hash)) {
-            // Update the user's last login time in the database
-            $stmt = $conn->prepare("UPDATE sr_user SET u_last_login = NOW() WHERE u_username = ? OR u_email = ?");
-            $stmt->bind_param("ss", $username_email, $username_email);
-            $stmt->execute();
-
-            // Create a SQL query to retrieve data from the "sr_user" table
-            $sql = "SELECT u_id, u_username FROM sr_user WHERE u_username = ? OR u_email = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $username_email, $username_email);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows == 1) {
-                // Fetch the single row from the result set
-                $row = $result->fetch_assoc();
-
-                // Set the cookie with name, value, expiration time and path
-                setcookie('user_id', $row["u_id"], time() + (3 * 24 * 60 * 60), '/');
-                setcookie('username', $row["u_username"], time() + (3 * 24 * 60 * 60), '/');
-                
-                // Start the session and set the user ID
-                session_start();
-                $_SESSION['user_id'] = $row["u_id"];
-
-                // Update the user's last login time in the database
-                $stmt = $conn->prepare("UPDATE sr_user SET u_last_login = NOW() WHERE u_id = ?");
-                $stmt->bind_param("i", $row["u_id"]);
-                $stmt->execute();
-
-                // Redirect the user to the home page or another page
-                header("Location: ../index.html");
-                exit();
-            } else {
-                die("Something went wrong :c");
-            }
-        } else {
-            echo "Invalid password";
-            header("Location: login.html");
-            die("Invalid password");
-        }
-    } else {
-        echo "User not found";
-        header("Location: login.html");
-        die("User not found");
+    if ($result->num_rows !== 1) {
+        $stmt->close();
+        $conn->close();
+        // Generic message — don't reveal whether user exists
+        send_error('Invalid credentials.', 401);
     }
-}
 
-// Close the database connection
-$conn->close();
-?>
+    $user = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!password_verify($password, $user['u_password'])) {
+        $conn->close();
+        send_error('Invalid credentials.', 401);
+    }
+
+    // Update last login timestamp
+    $stmt = $conn->prepare('UPDATE sr_user SET u_last_login = NOW() WHERE u_id = ?');
+    $stmt->bind_param('i', $user['u_id']);
+    $stmt->execute();
+    $stmt->close();
+    $conn->close();
+
+    // --- Session ---
+    session_start();
+    session_regenerate_id(true); // Prevent session fixation
+    $_SESSION['user_id']  = $user['u_id'];
+    $_SESSION['username'] = $user['u_username'];
+
+    // --- Cookies (HttpOnly flag for XSS protection) ---
+    $expires = time() + (3 * 24 * 60 * 60); // 3 days
+    setcookie('user_id',  (string) $user['u_id'],  $expires, '/', '', false, true);
+    setcookie('username', $user['u_username'],      $expires, '/', '', false, true);
+
+    send_success([
+        'user_id'  => $user['u_id'],
+        'username' => $user['u_username'],
+    ]);
+
+} catch (RuntimeException $e) {
+    send_error($e->getMessage(), 503);
+} catch (mysqli_sql_exception $e) {
+    error_log('[SpaceRunner] login error: ' . $e->getMessage());
+    send_error('An internal error occurred. Please try again.', 500);
+}

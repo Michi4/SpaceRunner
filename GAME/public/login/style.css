@@ -101,9 +101,65 @@ input:focus {
 	background-color: #4d4f53;
 }
 
-#password-strength{
+#password-strength {
 	margin-top: -2.5vmin;
 	margin-bottom: 2.5vmin;
+	font-size: 0.85em;
+	transition: color 0.2s;
+}
+
+/* ── Form field wrappers ─────────────────────────────── */
+
+.form-control {
+	margin-bottom: 2.5vmin;
+	text-align: left;
+}
+
+.form-control input {
+	margin-bottom: 0.4vmin;
+	width: 100%;
+	box-sizing: border-box;
+	border: 2px solid transparent;
+	transition: border-color 0.2s;
+}
+
+.form-control.error input {
+	border-color: #d8000c;
+	background-color: #3d2020;
+}
+
+.form-control.success input {
+	border-color: #4f8a10;
+}
+
+.error-text {
+	display: block;
+	font-size: 0.78em;
+	color: #d8000c;
+	min-height: 1em;
+	margin-top: 0.2vmin;
+}
+
+/* ── Server alert banner ────────────────────────────── */
+
+.alert-error {
+	background-color: rgba(216, 0, 12, 0.15);
+	border: 1px solid #d8000c;
+	border-radius: 1vmin;
+	color: #ff6b6b;
+	font-size: 0.9em;
+	margin-bottom: 2vmin;
+	padding: 1vmin 1.5vmin;
+	text-align: left;
+}
+
+/* ── Disabled submit button ─────────────────────────── */
+
+button[type="submit"]:disabled {
+	background-color: #4a4a4a;
+	cursor: not-allowed;
+	width: 100%;
+	opacity: 0.7;
 }
 
 button[type="submit"] {
