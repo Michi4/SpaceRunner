@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby – SpaceRunner</title>
+    <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: space-mono, monospace;
+            background-color: #121214;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: auto;
+        }
+        .lobby-container {
+            background-color: rgba(20, 20, 25, 0.85);
+            backdrop-filter: blur(12px);
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid rgba(151, 0, 189, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(151, 0, 189, 0.6), 0 0 20px rgba(151, 0, 189, 0.4);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .section:last-of-type {
+            border-bottom: none;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        input[type="text"] {
+            padding: 12px;
+            background-color: rgba(30, 30, 35, 0.7);
+            border: 1px solid rgba(151, 0, 189, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            width: 250px;
+            text-align: center;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #9700bd;
+            box-shadow: 0 0 8px rgba(151, 0, 189, 0.3);
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #9700bd;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background-color: #b700dd;
+            box-shadow: 0 0 10px rgba(151, 0, 189, 0.5);
+            transform: translateY(-1px);
+        }
+        button:disabled {
+            background-color: #444;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .rooms-list {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .room-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .room-item:last-child {
+            border-bottom: none;
+        }
+        .player-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .player-badge {
+            background: rgba(151, 0, 189, 0.15);
+            border: 1px solid rgba(151, 0, 189, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .player-badge.host {
+            border-color: gold;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        .back-icon {
+            width: 28px;
+            height: 28px;
+            fill: #fff;
+            opacity: 0.8;
+            transition: opacity 0.2s, fill 0.2s;
+            transform: rotate(180deg);
+        }
+        .back-icon:hover {
+            opacity: 1;
+            fill: #9700bd;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'" title="Main Menu">
+        <svg class="back-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M130 480c40.6 0 80.4-11 115.2-31.9L352 384l-224 0 0 96h2zM352 128L245.2 63.9C210.4 43 170.6 32 130 32h-2v96l224 0zM96 128l0-96H80C53.5 32 32 53.5 32 80v48h8c-22.1 0-40 17.9-40 40v16V328v16c0 22.1 17.9 40 40 40H32v48c0 26.5 21.5 48 48 48H96l0-96h8c26.2 0 49.4-12.6 64-32H456c69.3 0 135-22.7 179.2-81.6c6.4-8.5 6.4-20.3 0-28.8C591 182.7 525.3 160 456 160H168c-14.6-19.4-37.8-32-64-32l-8 0zM512 243.6v24.9c0 19.6-15.9 35.6-35.6 35.6c-2.5 0-4.4-2-4.4-4.4V212.4c0-2.5 2-4.4 4.4-4.4c19.6 0 35.6 15.9 35.6 35.6z"/></svg>
+    </button>
+
+    <div class="lobby-container">
+        <h1>Multiplayer Lobby</h1>
+
+        <!-- View 1: Join/Create Room -->
+        <div id="setup-view" class="view">
+            <div class="section">
+                <h3>Create a Room</h3>
+                <div class="input-group">
+                    <input type="text" id="create-room-name" placeholder="Enter Room Name" maxlength="20">
+                    <button id="create-btn">Create</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Available Rooms</h3>
+                <div class="rooms-list" id="rooms-list-container">
+                    <div style="padding: 20px; color: rgba(255, 255, 255, 0.4);">No rooms active. Create one above!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 2: Room Lobby -->
+        <div id="lobby-view" class="view" style="display: none;">
+            <h2 id="current-room-title">Room: ...</h2>
+            
+            <div class="section">
+                <h3>Players</h3>
+                <div class="player-list" id="player-badge-container">
+                    <!-- Dynamic badges -->
+                </div>
+            </div>
+
+            <div class="section">
+                <button id="start-game-btn" disabled>Waiting for Host...</button>
+                <button id="leave-btn" style="background-color: #444; margin-left: 10px;">Leave Room</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const setupView = document.getElementById('setup-view');
+        const lobbyView = document.getElementById('lobby-view');
+        const createRoomNameInput = document.getElementById('create-room-name');
+        const createBtn = document.getElementById('create-btn');
+        const roomsListContainer = document.getElementById('rooms-list-container');
+        const currentRoomTitle = document.getElementById('current-room-title');
+        const playerBadgeContainer = document.getElementById('player-badge-container');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const leaveBtn = document.getElementById('leave-btn');
+
+        let myUsername = "";
+        let currentRoom = null;
+        let isHost = false;
+
+        // Fetch logged username from cookie
+        function getUsername() {
+            let cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.indexOf("username=") === 0) {
+                    return decodeURIComponent(cookie.substring("username=".length));
+                }
+            }
+            return "Player_" + Math.floor(Math.random() * 1000);
+        }
+
+        myUsername = getUsername();
+
+        // Join Lobby main room
+        socket.emit('get-rooms');
+
+        // Socket listener: Rooms List
+        socket.on('rooms-update', (rooms) => {
+            roomsListContainer.innerHTML = '';
+            const roomKeys = Object.keys(rooms);
+            if (roomKeys.length === 0) {
+                roomsListContainer.innerHTML = '<div style="padding: 20px; color: rgba(255, 255, 255, 0.4);">No rooms active. Create one above!</div>';
+                return;
+            }
+
+            roomKeys.forEach(roomName => {
+                const room = rooms[roomName];
+                const item = document.createElement('div');
+                item.className = 'room-item';
+                item.innerHTML = `
+                    <div style="text-align: left;">
+                        <strong>${escapeHtml(roomName)}</strong>
+                        <div style="font-size: 0.8rem; color: #aaa;">Players: ${room.players.length}/4</div>
+                    </div>
+                    <button onclick="joinRoom('${escapeHtml(roomName)}')">Join</button>
+                `;
+                roomsListContainer.appendChild(item);
+            });
+        });
+
+        // Create Room click
+        createBtn.addEventListener('click', () => {
+            const name = createRoomNameInput.value.trim();
+            if (!name) return;
+            socket.emit('create-room', name, myUsername);
+        });
+
+        // Join Room function
+        window.joinRoom = function(roomName) {
+            socket.emit('join-room', roomName, myUsername);
+        };
+
+        // Socket listener: Joined successfully
+        socket.on('room-joined', (roomName, players, hostId) => {
+            currentRoom = roomName;
+            isHost = (socket.id === hostId);
+            
+            setupView.style.display = 'none';
+            lobbyView.style.display = 'block';
+            currentRoomTitle.textContent = `Room: ${roomName}`;
+
+            updatePlayerBadges(players, hostId);
+        });
+
+        // Socket listener: Room Sync
+        socket.on('room-sync', (players, hostId) => {
+            isHost = (socket.id === hostId);
+            updatePlayerBadges(players, hostId);
+        });
+
+        function updatePlayerBadges(players, hostId) {
+            playerBadgeContainer.innerHTML = '';
+            players.forEach(p => {
+                const badge = document.createElement('div');
+                badge.className = 'player-badge' + (p.id === hostId ? ' host' : '');
+                badge.innerHTML = `
+                    <span>${p.id === hostId ? '👑 ' : ''}${escapeHtml(p.username)}</span>
+                `;
+                playerBadgeContainer.appendChild(badge);
+            });
+
+            if (isHost) {
+                startGameBtn.disabled = false;
+                startGameBtn.textContent = "Start Game";
+                startGameBtn.style.backgroundColor = '#9700bd';
+            } else {
+                startGameBtn.disabled = true;
+                startGameBtn.textContent = "Waiting for Host...";
+                startGameBtn.style.backgroundColor = '#444';
+            }
+        }
+
+        // Leave Room click
+        leaveBtn.addEventListener('click', () => {
+            socket.emit('leave-room', currentRoom);
+            setupView.style.display = 'block';
+            lobbyView.style.display = 'none';
+            currentRoom = null;
+            socket.emit('get-rooms');
+        });
+
+        // Start Game click
+        startGameBtn.addEventListener('click', () => {
+            if (isHost) {
+                socket.emit('start-game', currentRoom);
+            }
+        });
+
+        // Socket listener: Game Starting
+        socket.on('game-starting', (roomName) => {
+            localStorage.setItem("multiplayer", "true");
+            localStorage.setItem("difficulty", "normal");
+            localStorage.setItem("playernum", "1"); // single client tracks self locally
+            window.location.assign('game.html');
+        });
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+    </script>
+</body>
+</html>
