@@ -52,6 +52,16 @@ function genBtns(slider){
     <div class="block" id="settings"><button onclick="setDifficulty('normal')" style="color:lightgrey;">Normal</button></div>
     <div class="block" id="settings"><button onclick="setDifficulty('hard')" style="color:red;"><p class="tiny-info">SCORE</p>Hard</button></div>
     <div class="block" id="settings"><button onclick="setDifficulty('impossible')" style="color:purple;"><p class="tiny-info">SCORE</p>Impossible</button></div>`;
+    // Show seed row
+    const seedRow = document.getElementById('seed-row');
+    if (seedRow) seedRow.style.display = 'flex';
+    // Enter on seed input triggers setDifficulty('normal')
+    const seedInput = document.getElementById('solo-seed');
+    if (seedInput) {
+        seedInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') setDifficulty('normal');
+        });
+    }
 }
 
 function updateTextInput(value){
@@ -65,6 +75,16 @@ function setDifficulty(a){
     //localStorage.setItem("id", id);
     localStorage.setItem("difficulty", difficulty);
     localStorage.setItem("playernum", '' + (num ?? 1));
+    // Save seed if provided
+    const seedInputVal = document.getElementById('solo-seed')?.value.trim();
+    if (seedInputVal) {
+        const parsedSeed = parseInt(seedInputVal) || seedInputVal.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+        localStorage.setItem('mapSeed', parsedSeed);
+        localStorage.setItem('customSeedUsed', 'true');
+    } else {
+        localStorage.removeItem('mapSeed');
+        localStorage.setItem('customSeedUsed', 'false');
+    }
     window.location.assign('/game');
 }
 

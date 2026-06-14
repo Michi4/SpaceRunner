@@ -592,14 +592,25 @@ function level3(){
     return new Level(lvlplatforms, lvlitems, lvltexts);
 }
 
-function randomGen(){
+function randomGen(levelIndex){
     let lvlplatforms = [];
     let lvlitems = [];
     
     lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
     lvlitems[0] = new Item(0, 0, 0, 0);
+
+    // Seeded PRNG: mulberry32
+    const baseSeed = window._mapSeed ?? Date.now();
+    const levelSeed = (baseSeed + (levelIndex ?? game.level) * 1000003) >>> 0;
+    let _s = levelSeed;
+    function seededRand() {
+        _s |= 0; _s = _s + 0x6D2B79F5 | 0;
+        let t = Math.imul(_s ^ _s >>> 15, 1 | _s);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
     
-    if(Math.random() > 0.5){
+    if(seededRand() > 0.5){
     const platpos = {
         x: 0,
         y: 0.8
@@ -612,22 +623,20 @@ function randomGen(){
         x: 0.5,
         y: 0.2
     };
-    //if(game.level <= 4) lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2, '#00000000', '#00000000');
-    //else lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
     for(let i = 1; i < 9; i++){
-        platpos.x = Math.random() * ((platpos.x  + platdim.x)+ 0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
-        platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
+        platpos.x = seededRand() * ((platpos.x  + platdim.x)+ 0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
+        platpos.y = seededRand() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
 
-        platdim.x = Math.random() * (1 - 0.2) + 0.2;
-        platdim.y = Math.random() * (1 - 0.015) + 0.015;
+        platdim.x = seededRand() * (1 - 0.2) + 0.2;
+        platdim.y = seededRand() * (1 - 0.015) + 0.015;
 
         lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
 
         //COINS man
         if(game.difficulty != 'run'){
-            for(let j = 0; j < Math.floor(Math.random()*5); j++){
-                coinpos.x = Math.random() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
-                coinpos.y = Math.random() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
+            for(let j = 0; j < Math.floor(seededRand()*5); j++){
+                coinpos.x = seededRand() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
+                coinpos.y = seededRand() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
                 let tempItem = new Item(coinpos.x, coinpos.y, innerWidth/48, innerWidth/48);
                 console.log(tempItem);
                 if(tempItem && tempItem != null) lvlitems.push(tempItem);
@@ -635,9 +644,7 @@ function randomGen(){
         }
     }
 
-    //winx = lvlplatforms[9].position.x;
     }else{
-    //gewichter try
     const platpos = {
         x: 0,
         y: 0.8
@@ -652,39 +659,37 @@ function randomGen(){
     };
 
     for(let i = 1; i < 9; i++){
-        platpos.x = Math.random() * ((platpos.x  + platdim.x)+0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
-        platpos.y = Math.random() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
+        platpos.x = seededRand() * ((platpos.x  + platdim.x)+0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
+        platpos.y = seededRand() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
 
-        platdim.x = Math.random() * (0.3 - 0.1) + 0.1;
-        platdim.y = Math.random() * (0.025 - 0.015) + 0.015; 
+        platdim.x = seededRand() * (0.3 - 0.1) + 0.1;
+        platdim.y = seededRand() * (0.025 - 0.015) + 0.015; 
         lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
 
         //COINS man
-        if(game.difficulty != 'run' && Math.random() > 0.5){
-            coinpos.x = Math.random() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
-            coinpos.y = Math.random() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
-            console.log(coinpos.x)
-            console.log(coinpos.y)
+        if(game.difficulty != 'run' && seededRand() > 0.5){
+            coinpos.x = seededRand() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
+            coinpos.y = seededRand() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
             let tempItem = new Item(coinpos.x, coinpos.y, innerWidth/48, innerWidth/48);
             console.log(tempItem);
             if(tempItem && tempItem != null) lvlitems.push(tempItem);
         } 
     }
 
-    //winx = lvlplatforms[9].position.x;
     }
-    lvlplatforms[9] = new Platform(lvlplatforms[8].position.x+lvlplatforms[8].width + (Math.random()*0.3), height*0.8, width*0.5, height*0.2);
+    // Use seeded rand for last platform offset too
+    lvlplatforms[9] = new Platform(lvlplatforms[8].position.x+lvlplatforms[8].width + (seededRand()*0.3), height*0.8, width*0.5, height*0.2);
     console.log(lvlitems);
     return new Level(lvlplatforms, lvlitems);
 }
 
-//TODO NOW
+////TODO NOW
 function levelSwitch(victory){
     console.log(game.levels.length >= 2);
     if(game.levels.length >= 2 && victory) game.levels.shift();
     if(game.difficulty == "run"){
-        game.addLevel(randomGen());
-        if(game.levels.length <= 1) game.addLevel(randomGen());
+        game.addLevel(randomGen(game.level));
+        if(game.levels.length <= 1) game.addLevel(randomGen(game.level + 1));
         return;
     }
     console.log("LEvel: " + game.level);
@@ -700,10 +705,10 @@ function levelSwitch(victory){
             game.addLevel(level3());
             break;
         case 3:
-            game.addLevel(randomGen());
+            game.addLevel(randomGen(game.level));
             break;
         default:
-            game.addLevel(randomGen());
+            game.addLevel(randomGen(game.level));
             break;
     }
     /*if(game.levels.length >= 3){
@@ -774,45 +779,59 @@ function draw() {
 
 function drawFrame(){
     //TODO fix rezize
-    if(innerWidth != width /*&& !game.multiplayer*/){
-        width = innerWidth;
-        console.log('width: ' + width)
-        startScrollR = width*0.4;
-        startScrollL = width*0.15;
-        canvas.width = width;
-        game.speed = width*game.multiplier;
-        
-        // Update rather than recreate game state
-        game.speed = width * game.multiplier;
-        
-        players.forEach(player =>{
-            player.width = width/38.4;
-            player.height = width/38.4;
+    if (innerWidth != width || innerHeight != height) {
+        const oldWidth = width;
+        const oldHeight = height;
 
-            player.position.x = 100;
-            player.position.y = 100;
-            player.velocity.y = game.gravity;
-        });
-        game.resetLevels();
-    }                                                           //mach änderererer
-    if(innerHeight!= height /*&& !game.multiplayer*/){
-        console.log('height: ' + height)
+        width = innerWidth;
         height = innerHeight;
+        canvas.width = width;
         canvas.height = height;
-        
-        // Update gravity/jumpforce on existing game
+
+        startScrollR = width * 0.4;
+        startScrollL = width * 0.15;
+        game.speed = width * game.multiplier;
         game.gravity = height / 1700 * 5;
         game.jumpforce = height * (game.multiplier - 0.0005) * 10;
-        
-        players.forEach(player =>{
-            player.width = width/38.4;
-            player.height = width/38.4;
 
-            player.position.x = 100;
-            player.position.y = 100;
+        players.forEach(player => {
+            player.width = width / 38.4;
+            player.height = width / 38.4;
+
+            // Calculate normalized position relative to old screen dimensions
+            const rx = (player.position.x + game.scrollOffset) / oldWidth;
+            const ry = player.position.y / oldHeight;
+
+            // Update position using new screen dimensions
+            if (player.leader) {
+                game.scrollOffset = Math.max(0, rx * width - startScrollR);
+                player.position.x = rx * width - game.scrollOffset;
+            } else {
+                player.position.x = rx * width - game.scrollOffset;
+            }
+            player.position.y = ry * height;
             player.velocity.y = game.gravity;
         });
+
+        // Regenerate/reset levels to base coordinates for the new width/height
         game.resetLevels();
+
+        // Shift platforms/items/texts in all current levels by the new scrollOffset
+        game.levels.forEach(level => {
+            if (level) {
+                level.platforms.forEach(platform => {
+                    platform.position.x -= game.scrollOffset;
+                });
+                level.items.forEach(item => {
+                    item.position.x -= game.scrollOffset;
+                });
+                if (level.texts) {
+                    level.texts.forEach(text => {
+                        text.position.x -= game.scrollOffset;
+                    });
+                }
+            }
+        });
     }
 
     if(game.platformShadow == true && rgbCounter >= 100 || players.some(player => player.color === true) && rgbCounter >= 100){
@@ -1072,13 +1091,16 @@ function updatePhysics(){
     if(localStorage.getItem('multiplayer') === 'true' && (typeof socket !== 'undefined' || typeof window.socket !== 'undefined')){
         const currentSocket = typeof socket !== 'undefined' ? socket : window.socket;
         const myRoom = localStorage.getItem('multiplayerRoom');
+        const levelWinx = game.getCurrentLevel ? game.getCurrentLevel().winx : 1;
         const data = {
             room: myRoom,
-            // Normalise to 0..1 so different screen sizes stay in sync
-            px: players[0].position.x / width,
-            py: players[0].position.y / height,
-            offset: game.scrollOffset / width,
-            color: players[0].color === true ? rgbColor : players[0].color
+            // Screen-fraction: position as ratio of current screen size (0..1)
+            sfx: players[0].position.x / width,
+            sfy: players[0].position.y / height,
+            // Level progress: scrollOffset as fraction of level length (0..1)
+            progress: levelWinx > 0 ? game.scrollOffset / levelWinx : 0,
+            color: players[0].color,
+            text: players[0].text || ''
         };
         currentSocket.emit('move', data);
     }
@@ -1374,10 +1396,20 @@ function victory(){
     game.lvlCoins = 0;
     game.level++;
     levelSwitch(true);
+    if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
+        window._emitPosition();
+    }
 }
 
 function gameOver(){
-    //TODO
+    // Generate a new random seed for next attempt if custom seed was not specified and NOT in multiplayer
+    if (localStorage.getItem('customSeedUsed') !== 'true' && localStorage.getItem('multiplayer') !== 'true') {
+        window._mapSeed = Math.floor(Math.random() * 999999999);
+        const seedEl = document.getElementById('seed-display');
+        if (seedEl) {
+            seedEl.textContent = '🌱 ' + window._mapSeed;
+        }
+    }
     
     if(game.difficulty == 'hard' || game.difficulty == 'impossible' || game.difficulty == 'run') saveScore(game);
 
@@ -1416,6 +1448,9 @@ function gameOver(){
 
         game.levels = [];
         levelSwitch();
+        if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
+            window._emitPosition();
+        }
     }
     if(game.difficulty == 'impossible'){
         game.level = 0;
@@ -1432,6 +1467,9 @@ function gameOver(){
         
         game.levels = [];
         levelSwitch();
+        if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
+            window._emitPosition();
+        }
     }
     // attemptcount element was removed from HTML
 }
@@ -1702,6 +1740,9 @@ function getLoggedUser() {
 
   console.log("User ID: " + userId + ", Username: " + username);
   document.getElementById("loggeduser").innerHTML = username;
+  if (username && typeof players !== 'undefined' && players[0]) {
+      players[0].text = username;
+  }
 
   return userId;
 }
@@ -1715,6 +1756,7 @@ function saveScore(score) {
     data.append('difficulty', score.difficulty ?? 'hard');
     data.append('score', score.ratioDistance ?? 0);
     data.append('level', score.level ?? 0);
+    data.append('seed', window._mapSeed ?? '');
     console.log(...data);
     
     fetch('./php/save_score.php', {
@@ -1725,6 +1767,10 @@ function saveScore(score) {
     .then(result => {
       if (!result.success) {
         console.error('Score save failed:', result.error);
+      } else {
+        // Show achievement notification
+        if (result.personalBest) showAchievement('🏆 New Personal Best!', '#f0c040');
+        else if (result.globalRank && result.globalRank <= 10) showAchievement(`🚀 Top ${result.globalRank} on Leaderboard!`, '#9700bd');
       }
     })
     .catch(error => {
@@ -1732,9 +1778,55 @@ function saveScore(score) {
     });
 }
 
+function showAchievement(text, color) {
+    const overlay = document.getElementById('achievement-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = `<div style="
+        background: rgba(10,10,15,0.92);
+        border: 1.5px solid ${color};
+        border-radius: 14px;
+        padding: 14px 28px;
+        font-family: space-mono, monospace;
+        font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        color: ${color};
+        text-shadow: 0 0 12px ${color};
+        box-shadow: 0 0 20px ${color}55;
+        white-space: nowrap;
+        animation: achievementFadeIn 0.4s ease;
+    ">${text}</div>`;
+    overlay.style.display = 'block';
+    setTimeout(() => {
+        overlay.style.transition = 'opacity 0.7s';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            overlay.style.opacity = '1';
+            overlay.style.transition = '';
+        }, 700);
+    }, 3500);
+}
+
 // ─── Multiplayer online sync ──────────────────────────────────────────────────
-// remotePlayers: map of socketId → {px, py, offset, color}
+// remotePlayers: map of socketId → {px, py, offset, color, text}
 const remotePlayers = {};
+
+// ─── Seed setup ──────────────────────────────────────────────────────────────
+(function setupSeed() {
+    const isCustom = localStorage.getItem('customSeedUsed') === 'true';
+    const stored = localStorage.getItem('mapSeed');
+    
+    if (isCustom && stored) {
+        window._mapSeed = parseInt(stored);
+    } else {
+        window._mapSeed = Math.floor(Math.random() * 999999999);
+    }
+    
+    const seedEl = document.getElementById('seed-display');
+    if (seedEl) {
+        seedEl.textContent = '🌱 ' + window._mapSeed;
+        seedEl.style.display = 'inline';
+    }
+})();
 
 if (localStorage.getItem('multiplayer') === 'true') {
     // Wait for socket.io to be available (loaded synchronously before defer scripts)
@@ -1742,40 +1834,122 @@ if (localStorage.getItem('multiplayer') === 'true') {
         if (typeof io === 'undefined') { setTimeout(_initMP, 100); return; }
 
         const socket = io();
+        window.socket = socket;
 
-        socket.on('playerdata', (data) => {
-            console.log('Received remote player position:', data);
-            remotePlayers[data.socketId || 'remote'] = data;
+        const myRoom = localStorage.getItem('multiplayerRoom');
+
+        // Helper: immediately emit current position (called on connect and when a peer joins)
+        function emitPosition() {
+            if (!myRoom) return;
+            const data = {
+                room: myRoom,
+                rx: (players[0].position.x + game.scrollOffset) / width,
+                ry: players[0].position.y / height,
+                color: players[0].color,
+                text: players[0].text || '',
+                level: game.level
+            };
+            socket.emit('move', data);
+        }
+        window._emitPosition = emitPosition;
+
+        // Join room as soon as socket connects
+        socket.on('connect', () => {
+            if (myRoom) {
+                socket.emit('join-game', myRoom);
+                // Send position immediately so peers see us right away
+                setTimeout(emitPosition, 100);
+            }
         });
 
-        // Expose socket globally so updatePhysics() emit works
-        window.socket = socket;
+        // When a new peer joins, immediately resend our position so they see us
+        socket.on('player-joined-game', () => {
+            emitPosition();
+        });
+
+        socket.on('playerdata', (data) => {
+            remotePlayers[data.socketId || 'remote'] = data;
+
+            // Sync level if remote player is on a higher level or if there is a reset
+            if (typeof game !== 'undefined') {
+                if (data.level > game.level) {
+                    console.log(`Syncing level to ${data.level} (current: ${game.level})`);
+                    while (game.level < data.level) {
+                        game.scrollOffset = 0;
+                        game.lvlDistance = game.distance;
+                        game.lvlCoins = 0;
+                        game.level++;
+                        levelSwitch(true);
+                    }
+                    players.forEach(player => {
+                        player.position.x = 120;
+                        player.position.y = 100;
+                        player.velocity.y = game.gravity;
+                    });
+                    game.scrollOffset = 0;
+                } else if (data.level < game.level && (game.difficulty === 'hard' || game.difficulty === 'impossible' || game.difficulty === 'run') && data.level === 0) {
+                    // Remote player reset to level 0 due to game over, we should too!
+                    console.log(`Remote player reset to level 0. Resetting game.`);
+                    game.level = 0;
+                    players.forEach(player => { 
+                        player.position.x = 120;
+                        player.position.y = 100;
+                        player.velocity.y = game.gravity;
+                    });
+                    game.scrollOffset = 0;
+                    game.distance = 0;
+                    game.coins = 0;
+                    game.lvlCoins = 0;
+                    game.levels = [];
+                    levelSwitch();
+                }
+            }
+        });
+
         console.log('Multiplayer initialized. Socket connected.');
     };
     _initMP();
 }
 
-// Draw remote players on top of game.draw() – called inside drawFrame()
+// Draw remote players on top of game.draw() – called inside ctx.translate(-camera.x, -camera.y)
+// Uses screen-size-independent coordinates (rx/ry = screen fraction relative to level offset)
 function drawRemotePlayers() {
     if (localStorage.getItem('multiplayer') !== 'true') return;
     const playerW = width / 38.4;
     const playerH = playerW;
-    const myOffset = game.scrollOffset / width;
+
     Object.values(remotePlayers).forEach(d => {
-        // Calculate dynamic relative screen position based on scrollOffset difference
-        // rx = (remote px + remote scrollOffset) * width - local scrollOffset
-        const rx = (d.px + d.offset - myOffset) * width;
-        const ry = d.py * height;
+        // Only draw players on the exact same level
+        if (d.level !== game.level) return;
+
+        // Reconstruct screen X and Y based on local width/height and scrollOffset
+        const screenX = d.rx * width - game.scrollOffset;
+        const screenY = d.ry * height;
 
         ctx.save();
-        ctx.shadowColor = d.color || '#ffffff';
+        let drawColor = d.color;
+        if (drawColor === true || drawColor === 'true') {
+            drawColor = rgbColor;
+        }
+        const col = drawColor || '#ffffff';
+        ctx.shadowColor = col;
         ctx.shadowBlur = width * 0.9;
-        ctx.fillStyle = d.color || '#ffffff';
-        ctx.fillRect(rx, ry, playerW, playerH);
+        ctx.fillStyle = col;
+        ctx.fillRect(screenX, screenY, playerW, playerH);
         ctx.shadowBlur = 0;
-        ctx.fillStyle = '#202124';
-        ctx.font = `${width/55}px space, sans-serif`;
-        ctx.fillText('●', rx + playerW * 0.1, ry + playerH * 0.7);
+
+        // Draw name ABOVE the player
+        const fontSize = Math.max(10, width / 70);
+        ctx.font = `bold ${fontSize}px space, sans-serif`;
+        const label = d.text || '?';
+        const textWidth = ctx.measureText(label).width;
+        // Name tag background
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(screenX + playerW / 2 - textWidth / 2 - 3, screenY - fontSize - 6, textWidth + 6, fontSize + 4);
+        // Name tag text (colored)
+        ctx.fillStyle = col;
+        ctx.fillText(label, screenX + playerW / 2 - textWidth / 2, screenY - 5);
+
         ctx.restore();
     });
 }

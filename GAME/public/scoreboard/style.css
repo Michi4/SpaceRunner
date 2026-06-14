@@ -403,3 +403,22 @@ tr:hover {
     height: 18px;
     fill: currentColor;
 }
+
+.seed-badge {
+    display: inline-block;
+    background-color: rgba(0, 229, 255, 0.1);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    color: #00e5ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.seed-badge:hover {
+    background-color: rgba(0, 229, 255, 0.25);
+    border-color: #00e5ff;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}

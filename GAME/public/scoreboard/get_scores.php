@@ -22,6 +22,7 @@ try {
         's_score' => 's.s_score',
         's_level_reached' => 's.s_level_reached',
         'st_scoretype' => 'st.st_scoretype',
+        's_seed' => 's.s_seed',
         's_date_achieved' => 's.s_date_achieved'
     ];
 
@@ -30,7 +31,7 @@ try {
 
     // Construct select statement with ranking subquery
     // Rank is dynamic based on s_score (lower rank number = higher score)
-    $sql = "SELECT u.u_username, s.s_score, s.s_level_reached, st.st_scoretype, s.s_date_achieved,
+    $sql = "SELECT u.u_username, s.s_score, s.s_level_reached, st.st_scoretype, s.s_seed, s.s_date_achieved,
             (SELECT COUNT(*)+1 FROM sr_score s2 WHERE s2.s_score > s.s_score) AS s_rank
             FROM sr_score s
             INNER JOIN sr_user u ON s.s_user_id = u.u_id
@@ -69,6 +70,7 @@ try {
             'score' => (int)$row['s_score'],
             'level' => (int)$row['s_level_reached'],
             'scoretype' => $row['st_scoretype'],
+            'seed' => $row['s_seed'],
             'date' => $row['s_date_achieved']
         ];
     }

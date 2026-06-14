@@ -41,6 +41,16 @@
             <div class="block"><button class="playBtn" onclick="window.location.assign('/scoreboard');">Scores</button></div>
             <!--<div class="block"><button onclick="closeWindow()">Exit</button></div>!-->
         </div>
+        <div id="seed-row" style="display:none; margin-top:8px; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap;">
+            <label for="solo-seed" style="font-family:space-mono,monospace; font-size:0.8rem; color:rgba(255,255,255,0.55);">&#x1F331; Seed:</label>
+            <input id="solo-seed" type="text" maxlength="20" placeholder="Leave blank for random" style="
+                padding:6px 10px; background:rgba(20,20,25,0.8); border:1px solid rgba(151,0,189,0.4);
+                border-radius:6px; color:#fff; font-family:space-mono,monospace; font-size:0.78rem;
+                width:160px; text-align:center; outline:none;">
+            <button onclick="document.getElementById('solo-seed').value=Math.floor(Math.random()*999999999)" style="
+                padding:5px 10px; background:rgba(151,0,189,0.3); border:1px solid rgba(151,0,189,0.5);
+                border-radius:6px; color:#fff; font-family:space-mono,monospace; font-size:0.78rem; cursor:pointer;">&#x1F3B2;</button>
+        </div>
     </main>
     
     <a href="https://paypal.me/michaelruep">

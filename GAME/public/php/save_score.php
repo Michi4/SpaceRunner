@@ -38,6 +38,7 @@ $score       = (int)    $_POST['score'];
 $level       = (int)    $_POST['level'];
 $userId      = (int)    $_SESSION['user_id'];
 $scoreTypeId = get_scoretype_id($difficulty);
+$seed        = isset($_POST['seed']) ? (string) $_POST['seed'] : null;
 
 if ($score < 0 || $level < 0) {
     http_response_code(400);
@@ -49,15 +50,45 @@ try {
     $conn = db_connect();
 
     $stmt = $conn->prepare(
-        'INSERT INTO sr_score (s_user_id, s_scoretype_id, s_score, s_level_reached, s_date_achieved)
-         VALUES (?, ?, ?, ?, NOW())'
+        'INSERT INTO sr_score (s_user_id, s_scoretype_id, s_score, s_level_reached, s_seed, s_date_achieved)
+         VALUES (?, ?, ?, ?, ?, NOW())'
     );
-    $stmt->bind_param('iiii', $userId, $scoreTypeId, $score, $level);
+    $stmt->bind_param('iiiis', $userId, $scoreTypeId, $score, $level, $seed);
     $stmt->execute();
     $stmt->close();
+
+    // Check personal best (previous best before this submission)
+    $pbStmt = $conn->prepare(
+        'SELECT MAX(s_score) AS pb FROM sr_score
+         WHERE s_user_id = ? AND s_scoretype_id = ? AND s_score < ?'
+    );
+    $pbStmt->bind_param('iii', $userId, $scoreTypeId, $score);
+    $pbStmt->execute();
+    $pbResult = $pbStmt->get_result()->fetch_assoc();
+    $pbStmt->close();
+    $isPersonalBest = ($pbResult['pb'] === null); // no prior better score
+
+    // Get global rank
+    $rankStmt = $conn->prepare(
+        'SELECT COUNT(DISTINCT s_user_id) + 1 AS `rank`
+         FROM sr_score
+         WHERE s_scoretype_id = ?
+           AND s_score > ?'
+    );
+    $rankStmt->bind_param('ii', $scoreTypeId, $score);
+    $rankStmt->execute();
+    $rankResult = $rankStmt->get_result()->fetch_assoc();
+    $rankStmt->close();
+    $globalRank = (int)($rankResult['rank'] ?? 999);
+
     $conn->close();
 
-    echo json_encode(['success' => true, 'message' => 'Score saved successfully.']);
+    echo json_encode([
+        'success'        => true,
+        'message'        => 'Score saved successfully.',
+        'personalBest'   => $isPersonalBest,
+        'globalRank'     => $globalRank,
+    ]);
 
 } catch (RuntimeException $e) {
     http_response_code(503);

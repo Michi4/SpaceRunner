@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS sr_score (
     s_scoretype_id INT(11) UNSIGNED NOT NULL,
     s_score INT(11) NOT NULL,
     s_level_reached INT(11),
+    s_seed VARCHAR(50) DEFAULT NULL,
     s_date_achieved DATETIME NOT NULL,
     FOREIGN KEY (s_user_id) REFERENCES sr_user(u_id),
     FOREIGN KEY (s_scoretype_id) REFERENCES sr_scoretype(st_id)
