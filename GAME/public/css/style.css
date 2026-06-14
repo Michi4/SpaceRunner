@@ -256,11 +256,11 @@ input:checked+.slider:before {
     top: 0;
     left: 0;
     width: 100%;
-    height: 70px;
+    height: clamp(50px, 8vh, 70px);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 40px;
+    padding: 0 clamp(10px, 4vw, 40px);
     box-sizing: border-box;
     z-index: 100;
     background: rgba(20, 20, 24, 0.75);
@@ -298,7 +298,7 @@ input:checked+.slider:before {
 
 .header-logo a {
     font-family: space;
-    font-size: 2.2rem;
+    font-size: clamp(1.2rem, 3.5vw, 2.2rem);
     color: #ffffff;
     text-decoration: none;
     text-shadow: 0 0 8px rgba(151, 0, 189, 0.6);
@@ -312,7 +312,7 @@ input:checked+.slider:before {
 
 .header-nav {
     display: flex;
-    gap: 20px;
+    gap: clamp(10px, 2vw, 20px);
 }
 
 button.nav-btn {
@@ -327,15 +327,15 @@ button.nav-btn {
 .nav-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: clamp(4px, 1vw, 8px);
     background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(151, 0, 189, 0.3);
     border-radius: 6px;
-    padding: 8px 16px;
+    padding: clamp(6px, 1.5vh, 10px) clamp(10px, 1.5vw, 18px);
     color: #ffffff;
     text-decoration: none;
     font-family: space-mono, monospace;
-    font-size: 0.9rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.95rem);
     cursor: pointer;
     transition: all 0.25s ease;
 }
@@ -348,8 +348,8 @@ button.nav-btn {
 }
 
 .nav-svg {
-    width: 18px;
-    height: 18px;
+    width: clamp(12px, 2vw, 18px);
+    height: clamp(12px, 2vw, 18px);
     fill: currentColor;
 }
 
@@ -808,7 +808,7 @@ input:checked+.themeslider:before {
 }
 
 #scores{
-    top: 90px;
+    top: calc(clamp(50px, 8vh, 70px) + 20px);
     left: 2vw;
 }
 
