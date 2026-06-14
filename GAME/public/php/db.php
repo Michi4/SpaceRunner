@@ -36,6 +36,12 @@ function db_connect(): mysqli
             }
         }
 
+        // Run migrations: check if s_seed column exists in sr_score
+        $resSeed = $conn->query("SHOW COLUMNS FROM sr_score LIKE 's_seed'");
+        if ($resSeed && $resSeed->num_rows === 0) {
+            $conn->query("ALTER TABLE sr_score ADD COLUMN s_seed VARCHAR(50) DEFAULT NULL");
+        }
+
         return $conn;
     } catch (mysqli_sql_exception $e) {
         error_log('[SpaceRunner] DB connection failed: ' . $e->getMessage());

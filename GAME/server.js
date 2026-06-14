@@ -56,14 +56,22 @@ io.on('connection', (socket) => {
   });
 
   // Game Start
-  socket.on('start-game', (roomName, mode) => {
+  socket.on('start-game', (roomName, mode, seed) => {
     const room = rooms[roomName];
     if (room && room.host === socket.id) {
-      io.to(roomName).emit('game-starting', roomName, mode || 'normal');
+      io.to(roomName).emit('game-starting', roomName, mode || 'normal', seed || null);
       // Clean up room room structure so it's not active in lobby list
       delete rooms[roomName];
       broadcastRooms();
     }
+  });
+
+  // Join active game room on game load
+  socket.on('join-game', (roomName) => {
+    socket.join(roomName);
+    // Notify other players in room to immediately re-send their position
+    socket.to(roomName).emit('player-joined-game');
+    console.log(`Socket ${socket.id} joined game room: ${roomName}`);
   });
 
   // Client updates position

@@ -208,6 +208,12 @@
                     <option value="impossible">Impossible (Score)</option>
                     <option value="run">Run Mode</option>
                 </select>
+                <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <label for="seed-input" style="font-weight: bold; font-family: inherit;">🌱 Seed:</label>
+                    <input type="text" id="seed-input" placeholder="Random (leave blank)" maxlength="20" style="width: 180px;">
+                    <button id="random-seed-btn" style="padding: 10px; font-size: 0.85em; background: rgba(151,0,189,0.3);">🎲 Random</button>
+                </div>
+                <div style="margin-top: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.45);">Seeds only apply to random levels (after level 3). Same seed = same map!</div>
             </div>
 
             <div class="section">
@@ -287,6 +293,9 @@
             if (!name) return;
             socket.emit('create-room', name, myUsername);
         });
+        createRoomNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') createBtn.click();
+        });
 
         // Join Room function
         window.joinRoom = function(roomName) {
@@ -346,20 +355,37 @@
             socket.emit('get-rooms');
         });
 
+        // Random seed button
+        const randomSeedBtn = document.getElementById('random-seed-btn');
+        if (randomSeedBtn) {
+            randomSeedBtn.addEventListener('click', () => {
+                document.getElementById('seed-input').value = Math.floor(Math.random() * 999999999);
+            });
+        }
+
         // Start Game click
         startGameBtn.addEventListener('click', () => {
             if (isHost) {
                 const selectedMode = document.getElementById('game-mode').value;
-                socket.emit('start-game', currentRoom, selectedMode);
+                const seedVal = document.getElementById('seed-input')?.value.trim() || null;
+                const seed = seedVal ? parseInt(seedVal) || seedVal.split('').reduce((a,c)=>a+c.charCodeAt(0),0) : Math.floor(Math.random() * 999999999);
+                socket.emit('start-game', currentRoom, selectedMode, seed);
             }
         });
 
         // Socket listener: Game Starting
-        socket.on('game-starting', (roomName, mode) => {
+        socket.on('game-starting', (roomName, mode, seed) => {
             localStorage.setItem("multiplayer", "true");
             localStorage.setItem("difficulty", mode || "normal");
             localStorage.setItem("multiplayerRoom", roomName);
             localStorage.setItem("multiplayerPlayers", JSON.stringify(roomPlayers));
+            if (seed !== null && seed !== undefined) {
+                localStorage.setItem("mapSeed", seed);
+                localStorage.setItem("customSeedUsed", "true");
+            } else {
+                localStorage.removeItem("mapSeed");
+                localStorage.setItem("customSeedUsed", "false");
+            }
             window.location.assign('game');
         });
 

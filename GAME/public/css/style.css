@@ -10,6 +10,18 @@
     margin: 0;
     padding: 0;
 }
+
+/* Global: pointer cursor for all interactive elements */
+a, button, select, label[for], [onclick], input[type="range"], input[type="checkbox"],
+input[type="color"], .block, .cross, .back-icon, .nav-btn, .room-item button {
+    cursor: pointer;
+}
+
+/* Achievement pop-in animation */
+@keyframes achievementFadeIn {
+    from { opacity: 0; transform: translateY(-12px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
 html{
     background-color: #202124;
 }

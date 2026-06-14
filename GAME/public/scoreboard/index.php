@@ -49,6 +49,7 @@
                         <th data-order-by="s_score" class="sortable sorted desc">Score <span class="sort-indicator"></span></th>
                         <th data-order-by="s_level_reached" class="sortable">Level <span class="sort-indicator"></span></th>
                         <th data-order-by="st_scoretype" class="sortable">Difficulty <span class="sort-indicator"></span></th>
+                        <th data-order-by="s_seed" class="sortable">Seed <span class="sort-indicator"></span></th>
                         <th data-order-by="s_date_achieved" class="sortable">Date <span class="sort-indicator"></span></th>
                     </tr>
                 </thead>

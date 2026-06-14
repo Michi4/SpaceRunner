@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingSpinner.hidden = true;
 
             if (!data.success) {
-                scoresBody.innerHTML = `<tr><td colspan="6" style="color: #ff4d4d; text-align: center;">Error loading scores: ${escapeHtml(data.error)}</td></tr>`;
+                scoresBody.innerHTML = `<tr><td colspan="7" style="color: #ff4d4d; text-align: center;">Error loading scores: ${escapeHtml(data.error)}</td></tr>`;
                 return;
             }
 
@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td><span class="score-highlight">${row.score.toLocaleString()}</span></td>
                     <td><span class="level-highlight">${row.level}</span></td>
                     <td><span class="difficulty-badge badge-${escapeHtml(row.scoretype)}">${escapeHtml(row.scoretype)}</span></td>
+                    <td>${row.seed ? `<span class="seed-badge" onclick="copySeed('${escapeHtml(row.seed)}')" title="Click to copy and play seed">${escapeHtml(row.seed)} 📋</span>` : '-'}</td>
                     <td title="${escapeHtml(row.date)}">${formattedDate}</td>
                 `;
                 scoresBody.appendChild(tr);
@@ -61,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             loadingSpinner.hidden = true;
-            scoresBody.innerHTML = `<tr><td colspan="6" style="color: #ff4d4d; text-align: center;">Network error occurred.</td></tr>`;
+            scoresBody.innerHTML = `<tr><td colspan="7" style="color: #ff4d4d; text-align: center;">Network error occurred.</td></tr>`;
             console.error('Scoreboard fetch error:', error);
         }
     }
@@ -166,4 +167,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     updateLoggedUser();
+
+    window.copySeed = function(seed) {
+        navigator.clipboard.writeText(seed).then(() => {
+            showToast('🌱 Seed copied: ' + seed);
+        }).catch(err => {
+            console.error('Failed to copy seed: ', err);
+        });
+    };
+
+    function showToast(message) {
+        let toast = document.getElementById('scoreboard-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'scoreboard-toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(151, 0, 189, 0.9);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 8px;
+                padding: 12px 24px;
+                color: white;
+                font-family: 'space-mono', monospace;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+                z-index: 10000;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                opacity: 0;
+            `;
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(10px)';
+        }, 2500);
+    }
 });
