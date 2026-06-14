@@ -1727,8 +1727,16 @@ function getLoggedUser() {
 
   console.log("User ID: " + userId + ", Username: " + username);
   document.getElementById("loggeduser").innerHTML = username;
-  if (username && typeof players !== 'undefined' && players[0]) {
-      players[0].text = username;
+  if (typeof players !== 'undefined' && players[0]) {
+      if (username) {
+          players[0].text = username;
+      } else {
+          // Assign a persistent guest name for this session so remote players see a name
+          if (!window._guestName) {
+              window._guestName = 'Guest_' + Math.floor(Math.random() * 9000 + 1000);
+          }
+          players[0].text = window._guestName;
+      }
   }
 
   return userId;
@@ -1831,9 +1839,9 @@ if (localStorage.getItem('multiplayer') === 'true') {
             const data = {
                 room: myRoom,
                 rx: (players[0].position.x + game.scrollOffset) / width,
-                ry: (players[0].position.y + players[0].height) / height, // feet Y normalization
+                ry: players[0].position.y / height, // top-of-player Y (proportional to screen height)
                 color: players[0].color,
-                text: players[0].text || '',
+                text: players[0].text || (window._guestName || '?'),
                 level: game.level
             };
             socket.emit('move', data);
@@ -1876,11 +1884,11 @@ function drawRemotePlayers() {
         const localLevel = Number(game.level);
         if (remoteLevel !== localLevel) return;
 
-        // d.rx = (remote_pos_x + remote_scrollOffset) / remote_width → world X
+        // world X: absolute level position
         const worldX = d.rx * width - game.scrollOffset;
 
-        // d.ry = (remote_pos_y + remote_height) / remote_height (feet) → screen Y minus player height
-        const worldY = d.ry * height - playerH;
+        // world Y: proportional to screen height (same top-Y normalization as sent)
+        const worldY = d.ry * height;
 
         ctx.save();
         let drawColor = d.color;
