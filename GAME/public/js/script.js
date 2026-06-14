@@ -1831,7 +1831,7 @@ if (localStorage.getItem('multiplayer') === 'true') {
             const data = {
                 room: myRoom,
                 rx: (players[0].position.x + game.scrollOffset) / width,
-                ry: players[0].position.y / height,
+                ry: (players[0].position.y + players[0].height) / height, // feet Y normalization
                 color: players[0].color,
                 text: players[0].text || '',
                 level: game.level
@@ -1856,41 +1856,6 @@ if (localStorage.getItem('multiplayer') === 'true') {
 
         socket.on('playerdata', (data) => {
             remotePlayers[data.socketId || 'remote'] = data;
-
-            // Sync level if remote player is on a higher level or if there is a reset
-            if (typeof game !== 'undefined') {
-                if (data.level > game.level) {
-                    console.log(`Syncing level to ${data.level} (current: ${game.level})`);
-                    while (game.level < data.level) {
-                        game.scrollOffset = 0;
-                        game.lvlDistance = game.distance;
-                        game.lvlCoins = 0;
-                        game.level++;
-                        levelSwitch(true);
-                    }
-                    players.forEach(player => {
-                        player.position.x = 120;
-                        player.position.y = 100;
-                        player.velocity.y = game.gravity;
-                    });
-                    game.scrollOffset = 0;
-                } else if (data.level < game.level && (game.difficulty === 'hard' || game.difficulty === 'impossible' || game.difficulty === 'run') && data.level === 0) {
-                    // Remote player reset to level 0 due to game over, we should too!
-                    console.log(`Remote player reset to level 0. Resetting game.`);
-                    game.level = 0;
-                    players.forEach(player => { 
-                        player.position.x = 120;
-                        player.position.y = 100;
-                        player.velocity.y = game.gravity;
-                    });
-                    game.scrollOffset = 0;
-                    game.distance = 0;
-                    game.coins = 0;
-                    game.lvlCoins = 0;
-                    game.levels = [];
-                    levelSwitch();
-                }
-            }
         });
 
         console.log('Multiplayer initialized. Socket connected.');
@@ -1911,7 +1876,7 @@ function drawRemotePlayers() {
 
         // Reconstruct screen X and Y based on local width/height and scrollOffset
         const screenX = d.rx * width - game.scrollOffset;
-        const screenY = d.ry * height;
+        const screenY = d.ry * height - playerH; // Subtract player height from feet Y
 
         ctx.save();
         let drawColor = d.color;
