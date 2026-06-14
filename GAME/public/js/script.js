@@ -1744,11 +1744,13 @@ if (localStorage.getItem('multiplayer') === 'true') {
         const socket = io();
 
         socket.on('playerdata', (data) => {
+            console.log('Received remote player position:', data);
             remotePlayers[data.socketId || 'remote'] = data;
         });
 
         // Expose socket globally so updatePhysics() emit works
         window.socket = socket;
+        console.log('Multiplayer initialized. Socket connected.');
     };
     _initMP();
 }
@@ -1758,9 +1760,11 @@ function drawRemotePlayers() {
     if (localStorage.getItem('multiplayer') !== 'true') return;
     const playerW = width / 38.4;
     const playerH = playerW;
+    const myOffset = game.scrollOffset / width;
     Object.values(remotePlayers).forEach(d => {
-        // De-normalise to this client's screen dimensions
-        const rx = d.px * width;
+        // Calculate dynamic relative screen position based on scrollOffset difference
+        // rx = (remote px + remote scrollOffset) * width - local scrollOffset
+        const rx = (d.px + d.offset - myOffset) * width;
         const ry = d.py * height;
 
         ctx.save();
