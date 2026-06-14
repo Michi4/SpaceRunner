@@ -723,7 +723,7 @@ function addText(text, x, y){
 let loopStarted = false;
 let lastTime = null;
 let accumulator = 0;
-const targetFps = 60;
+const targetFps = 75;
 const step = 1000 / targetFps;
 
 function gameLoop(timestamp) {
