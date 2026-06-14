@@ -130,6 +130,9 @@ if (signupForm) {
     } else if (!/^[a-zA-Z0-9_-]{3,16}$/.test(usernameVal)) {
       showError(usernameInput, 'Use 3–16 characters: letters, numbers, _ or -.');
       valid = false;
+    } else if (usernameVal.toLowerCase().startsWith('sr_player_')) {
+      showError(usernameInput, 'Username cannot start with "sr_player_".');
+      valid = false;
     } else {
       showSuccess(usernameInput);
     }

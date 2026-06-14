@@ -40,6 +40,10 @@ if (!preg_match('/^[a-zA-Z0-9_-]{3,16}$/', $username)) {
     send_error('Invalid username. Use 3–16 characters: letters, numbers, _ or -.');
 }
 
+if (strncasecmp($username, 'sr_player_', 10) === 0) {
+    send_error('Username cannot start with "sr_player_".');
+}
+
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     send_error('Invalid email address.');
 }
