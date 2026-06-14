@@ -1088,21 +1088,8 @@ function updatePhysics(){
         }
     });
 
-    if(localStorage.getItem('multiplayer') === 'true' && (typeof socket !== 'undefined' || typeof window.socket !== 'undefined')){
-        const currentSocket = typeof socket !== 'undefined' ? socket : window.socket;
-        const myRoom = localStorage.getItem('multiplayerRoom');
-        const levelWinx = game.getCurrentLevel ? game.getCurrentLevel().winx : 1;
-        const data = {
-            room: myRoom,
-            // Screen-fraction: position as ratio of current screen size (0..1)
-            sfx: players[0].position.x / width,
-            sfy: players[0].position.y / height,
-            // Level progress: scrollOffset as fraction of level length (0..1)
-            progress: levelWinx > 0 ? game.scrollOffset / levelWinx : 0,
-            color: players[0].color,
-            text: players[0].text || ''
-        };
-        currentSocket.emit('move', data);
+    if(localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function'){
+        window._emitPosition();
     }
     printScores();
 }
