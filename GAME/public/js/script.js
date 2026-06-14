@@ -84,7 +84,7 @@ class Player{
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         ctx.shadowBlur = 0;
-        ctx.font = `${width/55}px`;
+        ctx.font = `${width/55}px space, sans-serif`;
         ctx.fillStyle = '#202124';
         ctx.fillText(this.text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
     }
@@ -178,7 +178,14 @@ class GameText{
         ctx.shadowColor = this.shadow ?? "#ffffff00";
         if(this.color == "rgbColor") ctx.fillStyle = rgbColor;
         else ctx.fillStyle = this.color;
-        ctx.font = `${(this.size ?? width/55)}px space-mono, monospace`;
+        // If this.size is a small decimal (e.g. 0.025), treat it as a fraction of width
+        let fontSizePx = this.size;
+        if (typeof this.size === 'number' && this.size < 1) {
+            fontSizePx = width * this.size;
+        } else if (!this.size) {
+            fontSizePx = width / 55;
+        }
+        ctx.font = `${fontSizePx}px space-mono, monospace`;
         ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
         ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
         ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
@@ -466,10 +473,10 @@ function level0(){
 
     let lvltexts = [
         //new GameText("Welcome to SpaceRunner", "rgbColor", -width*0.3, height*0.3, width*0.05),
-        new GameText("Home ->", "#000000", "#FFFfff99", -width*0.09, -height*0.075, width*0.03),
-        new GameText("press", "#000000", "#9700bd", 0, height*0.15, width*0.025),
-        new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#000000", "#9700bd", 0, height*0.25, width*0.025),
-        new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#000000", "#9700bd", width*0.95, height*0.5, width*0.025),
+        new GameText("Home ->", "#000000", "#FFFfff99", -width*0.09, -height*0.075, 0.03),
+        new GameText("press", "#000000", "#9700bd", 0, height*0.15, 0.025),
+        new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#000000", "#9700bd", 0, height*0.25, 0.025),
+        new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#000000", "#9700bd", width*0.95, height*0.5, 0.025),
     ];
 
     return new Level(lvlplatforms, lvlitems, lvltexts);
@@ -532,7 +539,7 @@ function level2(){
     ];
 
     let lvltexts = [
-        new GameText(keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint,", "#000000", "#9700bd", width*0.125, height*0.65, width*0.025),
+        new GameText(keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint,", "#000000", "#9700bd", width*0.125, height*0.65, 0.025),
     ];
     
     return new Level(lvlplatforms, lvlitems, lvltexts);
@@ -578,8 +585,8 @@ function level3(){
     ];
     
     let lvltexts = [
-        new GameText(keycodes[players[0].reassign.sneak].toUpperCase() + " to sneak,", "#000000", "#9700bd", width*0.125, height*0.65, width*0.025),
-        new GameText("ESC to open the menu.", "#000000", "#9700bd", width*2.1, height*0.65, width*0.025),
+        new GameText(keycodes[players[0].reassign.sneak].toUpperCase() + " to sneak,", "#000000", "#9700bd", width*0.125, height*0.65, 0.025),
+        new GameText("ESC to open the menu.", "#000000", "#9700bd", width*2.1, height*0.65, 0.025),
     ];
     
     return new Level(lvlplatforms, lvlitems, lvltexts);
@@ -774,7 +781,10 @@ function drawFrame(){
         startScrollL = width*0.15;
         canvas.width = width;
         game.speed = width*game.multiplier;
-        game = new Game([], localStorage.getItem("difficulty") ?? 'normal', false, localStorage.getItem("speedMode") ?? false);
+        
+        // Update rather than recreate game state
+        game.speed = width * game.multiplier;
+        
         players.forEach(player =>{
             player.width = width/38.4;
             player.height = width/38.4;
@@ -783,14 +793,17 @@ function drawFrame(){
             player.position.y = 100;
             player.velocity.y = game.gravity;
         });
-        levelSwitch();
+        game.resetLevels();
     }                                                           //mach änderererer
     if(innerHeight!= height /*&& !game.multiplayer*/){
         console.log('height: ' + height)
         height = innerHeight;
         canvas.height = height;
-        game.jumpforce = height*(game.multiplier-0.0005)*10;
-        game = new Game([], localStorage.getItem("difficulty") ?? 'normal', false, localStorage.getItem("speedMode") ?? false);
+        
+        // Update gravity/jumpforce on existing game
+        game.gravity = height / 1700 * 5;
+        game.jumpforce = height * (game.multiplier - 0.0005) * 10;
+        
         players.forEach(player =>{
             player.width = width/38.4;
             player.height = width/38.4;
@@ -799,7 +812,7 @@ function drawFrame(){
             player.position.y = 100;
             player.velocity.y = game.gravity;
         });
-        levelSwitch();
+        game.resetLevels();
     }
 
     if(game.platformShadow == true && rgbCounter >= 100 || players.some(player => player.color === true) && rgbCounter >= 100){
@@ -1757,7 +1770,7 @@ function drawRemotePlayers() {
         ctx.fillRect(rx, ry, playerW, playerH);
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#202124';
-        ctx.font = `${width/55}px`;
+        ctx.font = `${width/55}px space, sans-serif`;
         ctx.fillText('●', rx + playerW * 0.1, ry + playerH * 0.7);
         ctx.restore();
     });
