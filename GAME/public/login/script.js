@@ -182,7 +182,7 @@ if (signupForm) {
       const data = await response.json();
 
       if (data.success) {
-        window.location.href = 'login.html';
+        window.location.href = '/login/login';
       } else {
         showAlert(signupError, data.error ?? 'Something went wrong. Please try again.');
         signupBtn.disabled = false;
@@ -237,7 +237,7 @@ if (loginForm) {
       const data = await response.json();
 
       if (data.success) {
-        window.location.href = '../index.html';
+        window.location.href = '/';
       } else {
         showAlert(loginError, data.error ?? 'Invalid credentials. Please try again.');
         loginBtn.disabled = false;

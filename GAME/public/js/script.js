@@ -832,6 +832,7 @@ function drawFrame(){
 
 
     game.draw();
+    drawRemotePlayers();
 
     ctx.restore();
 }
@@ -1055,15 +1056,18 @@ function updatePhysics(){
         }
     });
 
-    if(game.multiplayer == 'true'){
-        let data = {
-            "player": players[0].position,
-            "offset": game.scrollOffset,
-            "level": level,
-            "width": width,
-            "height": height
+    if(localStorage.getItem('multiplayer') === 'true' && (typeof socket !== 'undefined' || typeof window.socket !== 'undefined')){
+        const currentSocket = typeof socket !== 'undefined' ? socket : window.socket;
+        const myRoom = localStorage.getItem('multiplayerRoom');
+        const data = {
+            room: myRoom,
+            // Normalise to 0..1 so different screen sizes stay in sync
+            px: players[0].position.x / width,
+            py: players[0].position.y / height,
+            offset: game.scrollOffset / width,
+            color: players[0].color === true ? rgbColor : players[0].color
         };
-        socket.emit('move', data);
+        currentSocket.emit('move', data);
     }
     printScores();
 }
@@ -1715,4 +1719,46 @@ function saveScore(score) {
     });
 }
 
-  
+// ─── Multiplayer online sync ──────────────────────────────────────────────────
+// remotePlayers: map of socketId → {px, py, offset, color}
+const remotePlayers = {};
+
+if (localStorage.getItem('multiplayer') === 'true') {
+    // Wait for socket.io to be available (loaded synchronously before defer scripts)
+    const _initMP = () => {
+        if (typeof io === 'undefined') { setTimeout(_initMP, 100); return; }
+
+        const socket = io();
+
+        socket.on('playerdata', (data) => {
+            remotePlayers[data.socketId || 'remote'] = data;
+        });
+
+        // Expose socket globally so updatePhysics() emit works
+        window.socket = socket;
+    };
+    _initMP();
+}
+
+// Draw remote players on top of game.draw() – called inside drawFrame()
+function drawRemotePlayers() {
+    if (localStorage.getItem('multiplayer') !== 'true') return;
+    const playerW = width / 38.4;
+    const playerH = playerW;
+    Object.values(remotePlayers).forEach(d => {
+        // De-normalise to this client's screen dimensions
+        const rx = d.px * width;
+        const ry = d.py * height;
+
+        ctx.save();
+        ctx.shadowColor = d.color || '#ffffff';
+        ctx.shadowBlur = width * 0.9;
+        ctx.fillStyle = d.color || '#ffffff';
+        ctx.fillRect(rx, ry, playerW, playerH);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#202124';
+        ctx.font = `${width/55}px`;
+        ctx.fillText('●', rx + playerW * 0.1, ry + playerH * 0.7);
+        ctx.restore();
+    });
+}

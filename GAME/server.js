@@ -56,10 +56,10 @@ io.on('connection', (socket) => {
   });
 
   // Game Start
-  socket.on('start-game', (roomName) => {
+  socket.on('start-game', (roomName, mode) => {
     const room = rooms[roomName];
     if (room && room.host === socket.id) {
-      io.to(roomName).emit('game-starting', roomName);
+      io.to(roomName).emit('game-starting', roomName, mode || 'normal');
       // Clean up room room structure so it's not active in lobby list
       delete rooms[roomName];
       broadcastRooms();
@@ -68,11 +68,12 @@ io.on('connection', (socket) => {
 
   // Client updates position
   socket.on('move', (data) => {
-    // Legacy support / general room sync
+    // Tag the data with sender's socket ID
+    const payload = { ...data, socketId: socket.id };
     if (data.room) {
-      socket.to(data.room).emit('playerdata', data);
+      socket.to(data.room).emit('playerdata', payload);
     } else {
-      socket.broadcast.emit('playerdata', data);
+      socket.broadcast.emit('playerdata', payload);
     }
   });
 
