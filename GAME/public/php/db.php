@@ -19,6 +19,23 @@ function db_connect(): mysqli
     try {
         $conn = new mysqli($host, $username, $password, $database);
         $conn->set_charset('utf8mb4');
+
+        // Check if sr_user table exists; if not, initialize database from SQL file
+        $res = $conn->query("SHOW TABLES LIKE 'sr_user'");
+        if ($res && $res->num_rows === 0) {
+            $sqlFile = dirname(__DIR__) . '/db/create_tables.sql';
+            if (file_exists($sqlFile)) {
+                $queries = file_get_contents($sqlFile);
+                if ($conn->multi_query($queries)) {
+                    do {
+                        if ($result = $conn->store_result()) {
+                            $result->free();
+                        }
+                    } while ($conn->more_results() && $conn->next_result());
+                }
+            }
+        }
+
         return $conn;
     } catch (mysqli_sql_exception $e) {
         error_log('[SpaceRunner] DB connection failed: ' . $e->getMessage());

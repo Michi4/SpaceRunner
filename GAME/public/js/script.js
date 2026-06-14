@@ -720,11 +720,52 @@ function addText(text, x, y){
 
 
 
-function draw(){
-    if (!players.every(player => {
-        return player.dead;
-    }) && !menu && coinLoad) requestAnimationFrame(draw);
-        
+let loopStarted = false;
+let lastTime = null;
+let accumulator = 0;
+const targetFps = 60;
+const step = 1000 / targetFps;
+
+function gameLoop(timestamp) {
+    if (lastTime === null) {
+        lastTime = timestamp;
+    }
+    let dt = timestamp - lastTime;
+    lastTime = timestamp;
+
+    if (dt > 100) dt = 100;
+
+    accumulator += dt;
+
+    while (accumulator >= step) {
+        if (!players.every(player => player.dead) && !menu && coinLoad) {
+            updatePhysics();
+        }
+        accumulator -= step;
+    }
+
+    drawFrame();
+
+    if (!players.every(player => player.dead) && !menu && coinLoad) {
+        requestAnimationFrame(gameLoop);
+    } else {
+        loopStarted = false;
+    }
+}
+
+function update() {
+    if (!loopStarted && !players.every(player => player.dead) && !menu && coinLoad) {
+        loopStarted = true;
+        lastTime = null;
+        requestAnimationFrame(gameLoop);
+    }
+}
+
+function draw() {
+    drawFrame();
+}
+
+function drawFrame(){
     //TODO fix rezize
     if(innerWidth != width /*&& !game.multiplayer*/){
         width = innerWidth;
@@ -795,11 +836,7 @@ function draw(){
     ctx.restore();
 }
 let clickcount = 0;
-function update(){
-    if (!players.every(player => {
-        return player.dead;
-    })&& !menu && coinLoad) setTimeout(update, 1000/fps);
-
+function updatePhysics(){
     updateCameraPosition();   
 
     players.forEach(player =>{
