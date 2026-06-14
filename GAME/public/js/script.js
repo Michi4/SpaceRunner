@@ -1871,8 +1871,9 @@ function drawRemotePlayers() {
     const playerH = playerW;
 
     Object.values(remotePlayers).forEach(d => {
-        // Only draw players on the exact same level
-        if (d.level !== game.level) return;
+        // Only draw players on the exact same level (type-safe comparison)
+        const remoteLevel = d.level !== undefined && d.level !== null ? d.level : 0;
+        if (Number(remoteLevel) !== Number(game.level)) return;
 
         // Reconstruct screen X and Y based on local width/height and scrollOffset
         const screenX = d.rx * width - game.scrollOffset;
