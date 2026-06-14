@@ -35,8 +35,8 @@ main{
     justify-content: center;
     height: 100vh;
     width: 100vw;
-    padding: 20px;
-    padding-top: 80px;
+    padding: clamp(10px, 3vh, 20px);
+    padding-top: calc(clamp(40px, 6vh, 60px) + clamp(10px, 3vh, 30px));
     overflow: hidden;
     transition: 500ms all ease-in-out;
 }
@@ -256,7 +256,7 @@ input:checked+.slider:before {
     top: 0;
     left: 0;
     width: 100%;
-    height: clamp(50px, 8vh, 70px);
+    height: clamp(40px, 6vh, 60px);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -453,12 +453,12 @@ table, td, input, select, textarea {
 
 .headline {
     font-family: space, sans-serif;
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-size: clamp(1.8rem, 5vw, 4rem);
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 4px;
-    margin-top: 1vh;
-    margin-bottom: 2vh;
+    margin-top: clamp(4px, 1.5vh, 16px);
+    margin-bottom: clamp(6px, 2vh, 20px);
     text-shadow: 0 0 10px rgba(151, 0, 189, 0.6), 0 0 20px rgba(151, 0, 189, 0.4), 0 0 30px rgba(151, 0, 189, 0.2);
     display: inline-block;
     transition: all 0.3s ease;
@@ -808,7 +808,7 @@ input:checked+.themeslider:before {
 }
 
 #scores{
-    top: calc(clamp(50px, 8vh, 70px) + 20px);
+    top: calc(clamp(40px, 6vh, 60px) + 20px);
     left: 2vw;
 }
 
