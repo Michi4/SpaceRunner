@@ -512,8 +512,8 @@ input{
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    height: 55vh;
-    max-height: 500px;
+    height: clamp(200px, 50vh, 500px);
+    max-height: calc(100vh - clamp(50px, 8vh, 70px) - 100px);
     width: min(450px, 85vw);
     padding-top: 1vh;
     transition: .5s;
