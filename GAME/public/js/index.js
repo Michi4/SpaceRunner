@@ -30,7 +30,7 @@ function pressedCoop(){
 }
 
 function pressedMultiplayer(){
-    window.location.assign('./lobby.html');
+    window.location.assign('/lobby');
 }
 
 function genBtns(slider){
@@ -64,8 +64,8 @@ function setDifficulty(a){
     difficulty = a;
     //localStorage.setItem("id", id);
     localStorage.setItem("difficulty", difficulty);
-    localStorage.setItem("playernum", '' + num ?? 1);
-    window.location.assign('./game.html');
+    localStorage.setItem("playernum", '' + (num ?? 1));
+    window.location.assign('/game');
 }
 
 

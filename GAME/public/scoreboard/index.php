@@ -9,13 +9,13 @@
     <script src="script.js" defer></script>
 </head>
     <header class="game-header">
-        <div class="header-logo"><a href="../index.html">SpaceRunner</a></div>
+        <div class="header-logo"><a href="/">SpaceRunner</a></div>
         <nav class="header-nav">
-            <a href="../index.html" class="nav-btn" title="Back to Main Menu">
+            <a href="/" class="nav-btn" title="Back to Main Menu">
                 <svg viewBox="0 0 576 512" class="nav-svg"><path fill="currentColor" d="M575.8 255.5c0 18-15 32.1-32 32.1h-32v224c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V384H256v128c0 17.7-14.3 32-32 32H112c-17.7 0-32-14.3-32-32V287.6H48c-18 0-32-14.1-32-32.1c0-9 3-17 10-24L265 7c6-6 15-10 23-10s17 4 23 10L565 231.5c7 7 10.8 15 10.8 24z"/></svg>
                 <span>Home</span>
             </a>
-            <a href="../login/login.html" class="nav-btn" id="login-nav-btn" title="Login/Signup">
+            <a href="/login/login" class="nav-btn" id="login-nav-btn" title="Login/Signup">
                 <svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-16.7a174.1 174.1 0 0 1-145.8 0h-16.7A111.6 111.6 0 0 0 24 399.6v40.4A72 72 0 0 0 96 512h256a72 72 0 0 0 72-72v-40.4A111.6 111.6 0 0 0 313.6 288z"/></svg>
                 <span id="nav-user-text">Login</span>
             </a>
