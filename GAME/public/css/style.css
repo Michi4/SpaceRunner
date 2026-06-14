@@ -28,6 +28,16 @@ body{
 }
 
 main{
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    padding: 20px;
+    padding-top: 80px;
+    overflow: hidden;
     transition: 500ms all ease-in-out;
 }
 
@@ -442,11 +452,11 @@ table, td, input, select, textarea {
 
 .headline {
     font-family: space, sans-serif;
-    font-size: 4.5rem;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 4px;
-    margin-top: 8vh;
+    margin-top: 1vh;
     margin-bottom: 2vh;
     text-shadow: 0 0 10px rgba(151, 0, 189, 0.6), 0 0 20px rgba(151, 0, 189, 0.4), 0 0 30px rgba(151, 0, 189, 0.2);
     display: inline-block;
@@ -500,14 +510,13 @@ input{
     font-family: space;
     display: flex;
     flex-direction: column;
-    margin: auto;
-    height: 50vh;
-    max-height: 450px;
-    width: 40vw;
-    padding-top: 2vh;
+    margin: 0 auto;
+    height: 55vh;
+    max-height: 500px;
+    width: min(450px, 85vw);
+    padding-top: 1vh;
     transition: .5s;
     opacity: .9;
-    
     z-index: 1;
 }
 
@@ -564,19 +573,21 @@ input{
 .btnwrapper button{
     height: 100%;
     width: 100%;
-    font-size: 3rem;
+    font-size: clamp(1.5rem, 3.5vh, 2.5rem);
     font-family: space;
     border-radius: 0px;
     border: 0;
     transition: 500ms;
     color: rgb(255, 255, 255);
     background-color: #000;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .btnwrapper button:hover{
-    font-size: 3.5rem;
     color: rgb(255, 255, 255);
     background-color: rgba(0, 0, 0, 0.75);
+    box-shadow: 0 0 15px rgba(151, 0, 189, 0.4);
 }
 
 #playerslider {
@@ -803,12 +814,15 @@ input:checked+.themeslider:before {
 
 
 .tiny-info{
-    position: relative;
-    top: 0.1vh;
-    right: 16vw;
-
-    font-size: 0.25em;
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.3em;
     color: gold;
+    letter-spacing: 0.15em;
+    margin: 0;
+    line-height: 1;
 }
 
 
