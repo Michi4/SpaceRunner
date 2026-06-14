@@ -1876,16 +1876,11 @@ function drawRemotePlayers() {
         const localLevel = Number(game.level);
         if (remoteLevel !== localLevel) return;
 
-        // d.rx = (remote_pos_x + remote_scrollOffset) / remote_width
-        // In local world space: world_x = d.rx * local_width - local_scrollOffset
-        // (platforms are shifted so that their position.x is relative to scrollOffset=0 start)
+        // d.rx = (remote_pos_x + remote_scrollOffset) / remote_width → world X
         const worldX = d.rx * width - game.scrollOffset;
 
-        // d.ry = (remote_pos_y + remote_height) / remote_height  (feet)
-        // Remote feet screen_y = d.ry * remote_height
-        // We need to draw at local world_y such that: world_y - camera.y = d.ry * height - playerH
-        // => world_y = d.ry * height - playerH + camera.y
-        const worldY = d.ry * height - playerH + camera.y;
+        // d.ry = (remote_pos_y + remote_height) / remote_height (feet) → screen Y minus player height
+        const worldY = d.ry * height - playerH;
 
         ctx.save();
         let drawColor = d.color;
