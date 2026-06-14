@@ -1863,21 +1863,29 @@ if (localStorage.getItem('multiplayer') === 'true') {
     _initMP();
 }
 
-// Draw remote players on top of game.draw() – called inside ctx.translate(-camera.x, -camera.y)
-// Uses screen-size-independent coordinates (rx/ry = screen fraction relative to level offset)
+// Draw remote players – called inside ctx.translate(-camera.x, -camera.y) in drawFrame()
+// All drawing must be in world-space coordinates (same as platforms/player positions).
 function drawRemotePlayers() {
     if (localStorage.getItem('multiplayer') !== 'true') return;
     const playerW = width / 38.4;
     const playerH = playerW;
 
     Object.values(remotePlayers).forEach(d => {
-        // Only draw players on the exact same level (type-safe comparison)
-        const remoteLevel = d.level !== undefined && d.level !== null ? d.level : 0;
-        if (Number(remoteLevel) !== Number(game.level)) return;
+        // Only draw players on the exact same level as the local player
+        const remoteLevel = (d.level !== undefined && d.level !== null) ? Number(d.level) : 0;
+        const localLevel = Number(game.level);
+        if (remoteLevel !== localLevel) return;
 
-        // Reconstruct screen X and Y based on local width/height and scrollOffset
-        const screenX = d.rx * width - game.scrollOffset;
-        const screenY = d.ry * height - playerH; // Subtract player height from feet Y
+        // d.rx = (remote_pos_x + remote_scrollOffset) / remote_width
+        // In local world space: world_x = d.rx * local_width - local_scrollOffset
+        // (platforms are shifted so that their position.x is relative to scrollOffset=0 start)
+        const worldX = d.rx * width - game.scrollOffset;
+
+        // d.ry = (remote_pos_y + remote_height) / remote_height  (feet)
+        // Remote feet screen_y = d.ry * remote_height
+        // We need to draw at local world_y such that: world_y - camera.y = d.ry * height - playerH
+        // => world_y = d.ry * height - playerH + camera.y
+        const worldY = d.ry * height - playerH + camera.y;
 
         ctx.save();
         let drawColor = d.color;
@@ -1888,7 +1896,7 @@ function drawRemotePlayers() {
         ctx.shadowColor = col;
         ctx.shadowBlur = width * 0.9;
         ctx.fillStyle = col;
-        ctx.fillRect(screenX, screenY, playerW, playerH);
+        ctx.fillRect(worldX, worldY, playerW, playerH);
         ctx.shadowBlur = 0;
 
         // Draw name ABOVE the player
@@ -1898,10 +1906,10 @@ function drawRemotePlayers() {
         const textWidth = ctx.measureText(label).width;
         // Name tag background
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(screenX + playerW / 2 - textWidth / 2 - 3, screenY - fontSize - 6, textWidth + 6, fontSize + 4);
-        // Name tag text (colored)
+        ctx.fillRect(worldX + playerW / 2 - textWidth / 2 - 3, worldY - fontSize - 6, textWidth + 6, fontSize + 4);
+        // Name tag text
         ctx.fillStyle = col;
-        ctx.fillText(label, screenX + playerW / 2 - textWidth / 2, screenY - 5);
+        ctx.fillText(label, worldX + playerW / 2 - textWidth / 2, worldY - 5);
 
         ctx.restore();
     });
