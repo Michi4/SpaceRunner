@@ -35,8 +35,8 @@ main{
     justify-content: center;
     height: 100vh;
     width: 100vw;
-    padding: clamp(10px, 3vh, 20px);
-    padding-top: calc(clamp(40px, 6vh, 60px) + clamp(10px, 3vh, 30px));
+    padding: clamp(8px, 2.5vh, 16px);
+    padding-top: calc(clamp(40px, 6vh, 60px) + clamp(6px, 1.5vh, 20px));
     overflow: hidden;
     transition: 500ms all ease-in-out;
 }
@@ -453,12 +453,12 @@ table, td, input, select, textarea {
 
 .headline {
     font-family: space, sans-serif;
-    font-size: clamp(1.8rem, 5vw, 4rem);
+    font-size: clamp(1.4rem, 4vw, 3.2rem);
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 4px;
-    margin-top: clamp(4px, 1.5vh, 16px);
-    margin-bottom: clamp(6px, 2vh, 20px);
+    margin-top: clamp(2px, 0.8vh, 10px);
+    margin-bottom: clamp(4px, 1.2vh, 14px);
     text-shadow: 0 0 10px rgba(151, 0, 189, 0.6), 0 0 20px rgba(151, 0, 189, 0.4), 0 0 30px rgba(151, 0, 189, 0.2);
     display: inline-block;
     transition: all 0.3s ease;
