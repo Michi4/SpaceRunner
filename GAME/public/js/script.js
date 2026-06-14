@@ -1725,16 +1725,27 @@ function getLoggedUser() {
     }
   }
 
+  if (!window._guestName) {
+      if (localStorage.getItem('sr_guest_name')) {
+          window._guestName = localStorage.getItem('sr_guest_name');
+      } else {
+          const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
+          const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
+          const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+          const noun = nouns[Math.floor(Math.random() * nouns.length)];
+          window._guestName = 'sr_player_' + adj + noun;
+          localStorage.setItem('sr_guest_name', window._guestName);
+      }
+  }
+
   console.log("User ID: " + userId + ", Username: " + username);
-  document.getElementById("loggeduser").innerHTML = username;
+  const displayUser = username || window._guestName;
+  document.getElementById("loggeduser").innerHTML = displayUser;
+
   if (typeof players !== 'undefined' && players[0]) {
       if (username) {
           players[0].text = username;
       } else {
-          // Assign a persistent guest name for this session so remote players see a name
-          if (!window._guestName) {
-              window._guestName = 'Guest_' + Math.floor(Math.random() * 9000 + 1000);
-          }
           players[0].text = window._guestName;
       }
   }
@@ -1747,6 +1758,10 @@ getLoggedUser();
 
 
 function saveScore(score) {
+    if (players[0] && players[0].text && players[0].text.startsWith('sr_player_')) {
+        console.log('Guest score not saved.');
+        return;
+    }
     const data = new FormData();
     data.append('difficulty', score.difficulty ?? 'hard');
     data.append('score', score.ratioDistance ?? 0);
@@ -1838,8 +1853,9 @@ if (localStorage.getItem('multiplayer') === 'true') {
             if (!myRoom) return;
             const data = {
                 room: myRoom,
-                rx: (players[0].position.x + game.scrollOffset) / width,
-                ry: players[0].position.y / height, // top-of-player Y (proportional to screen height)
+                px: players[0].position.x / width,
+                py: players[0].position.y / height,
+                offset: game.scrollOffset / width,
                 color: players[0].color,
                 text: players[0].text || (window._guestName || '?'),
                 level: game.level
@@ -1877,6 +1893,7 @@ function drawRemotePlayers() {
     if (localStorage.getItem('multiplayer') !== 'true') return;
     const playerW = width / 38.4;
     const playerH = playerW;
+    const myOffset = game.scrollOffset / width;
 
     Object.values(remotePlayers).forEach(d => {
         // Only draw players on the exact same level as the local player
@@ -1884,11 +1901,9 @@ function drawRemotePlayers() {
         const localLevel = Number(game.level);
         if (remoteLevel !== localLevel) return;
 
-        // world X: absolute level position
-        const worldX = d.rx * width - game.scrollOffset;
-
-        // world Y: proportional to screen height (same top-Y normalization as sent)
-        const worldY = d.ry * height;
+        // Calculate dynamic relative screen position based on scrollOffset difference
+        const worldX = (d.px + d.offset - myOffset) * width;
+        const worldY = d.py * height;
 
         ctx.save();
         let drawColor = d.color;

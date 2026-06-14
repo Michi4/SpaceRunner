@@ -273,13 +273,27 @@ function getLoggedUser() {
       }
     }
   
-    console.log("User ID: " + userId + ", Username: " + username);
-    if (username) {
-        document.getElementById("loggeduser").innerHTML = username;
-        const navUserText = document.getElementById("nav-user-text");
-        if (navUserText) {
-            navUserText.innerText = username;
+    if (!username) {
+        if (!localStorage.getItem('sr_guest_name')) {
+            const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
+            const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            localStorage.setItem('sr_guest_name', 'sr_player_' + adj + noun);
         }
+    }
+
+    const displayUser = username || localStorage.getItem('sr_guest_name');
+    console.log("User ID: " + userId + ", Username: " + username + ", Display: " + displayUser);
+    
+    const loggedUserEl = document.getElementById("loggeduser");
+    if (loggedUserEl) {
+        loggedUserEl.innerHTML = displayUser;
+    }
+
+    const navUserText = document.getElementById("nav-user-text");
+    if (navUserText && username) {
+        navUserText.innerText = username;
     }
   
     return userId;
