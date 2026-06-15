@@ -1133,7 +1133,9 @@ function imgLoaded() {
 
 // userMenu
 function userMenu() {
-    const canChangeMode = (localStorage.getItem("multiplayer") !== "true" || localStorage.getItem("isHost") === "true");
+    // Online multiplayer = multiplayer flag + a room code. Local coop has no room code.
+    const isOnlineMP = localStorage.getItem("multiplayer") === "true" && !!localStorage.getItem("multiplayerRoom");
+    const canChangeMode = !isOnlineMP || localStorage.getItem("isHost") === "true";
 
     document.getElementById('blur').style.filter = "blur(10px)";
     document.getElementById('clearMenu').innerHTML = `
@@ -1346,7 +1348,8 @@ function userMenu() {
     const menuLeaveBtn = document.getElementById('menu-leave-btn');
     if (menuLeaveBtn) {
         menuLeaveBtn.onclick = function() {
-            if (localStorage.getItem('multiplayer') === 'true') {
+            if (isOnlineMP) {
+                // Notify server and clean up online session keys
                 if (typeof window.socket !== 'undefined' && window.socket) {
                     window.socket.emit('leave-room', localStorage.getItem('multiplayerRoom'));
                 }

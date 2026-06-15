@@ -75,6 +75,11 @@ function setDifficulty(a){
     //localStorage.setItem("id", id);
     localStorage.setItem("difficulty", difficulty);
     localStorage.setItem("playernum", '' + (num ?? 1));
+    // Clear any leftover online-multiplayer state so it doesn't interfere
+    localStorage.removeItem('multiplayerRoom');
+    localStorage.removeItem('multiplayerPlayers');
+    localStorage.removeItem('isHost');
+    localStorage.removeItem('hostId');
     // Save seed if provided
     const seedInputVal = document.getElementById('solo-seed')?.value.trim();
     if (seedInputVal) {
