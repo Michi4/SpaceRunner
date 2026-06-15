@@ -33,15 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // --- Input & validation ---
 $username = trim($_POST['username'] ?? '');
-$email    = trim($_POST['email']    ?? '');
-$password = $_POST['password']      ?? '';
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
 
 if (!preg_match('/^[a-zA-Z0-9_-]{3,16}$/', $username)) {
-    send_error('Invalid username. Use 3–16 characters: letters, numbers, _ or -.');
+    send_error('Invalid username. Use 3-16 characters: letters, numbers, _ or -.');
 }
 
-if (strncasecmp($username, 'sr_player_', 10) === 0) {
-    send_error('Username cannot start with "sr_player_".');
+if (strncasecmp($username, 'sr_', 10) === 0) {
+    send_error('Username cannot start with "sr_".');
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

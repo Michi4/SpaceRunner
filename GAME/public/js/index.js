@@ -1,6 +1,6 @@
 const indexWindow = window.open('', '_self', '');
 
-function closeWindow(){
+function closeWindow() {
     indexWindow.close();
 }
 
@@ -8,12 +8,12 @@ $.get(`/socket.io/socket.io.min.js`)
     .done(function () {
 
     }).fail(function () {
-        $( ".noserver" ).remove();
+        $(".noserver").remove();
     });
 let charface;
 
-function saveLocal(){
-    
+function saveLocal() {
+
 }
 
 let difficulty = "normal"/*{
@@ -22,20 +22,20 @@ let difficulty = "normal"/*{
     hard: false,
     impossible: false
 }*/
-function pressedPlay(){
+function pressedPlay() {
     genBtns(false);
 }
-function pressedCoop(){
+function pressedCoop() {
     genBtns(true);
 }
 
-function pressedMultiplayer(){
+function pressedMultiplayer() {
     window.location.assign('/lobby');
 }
 
-function genBtns(slider){
+function genBtns(slider) {
     document.getElementsByClassName('btnwrapper')[0].innerHTML = ``;
-    if(slider){
+    if (slider) {
         localStorage.setItem("multiplayer", true);
         document.getElementsByClassName('btnwrapper')[0].innerHTML = `
             <div class="block">
@@ -44,7 +44,7 @@ function genBtns(slider){
                 <input type="range" name="players" id="playerslider" min="2" max="4" value="1" oninput="updateTextInput(this.value)">
                 </button>
             </div>`;
-    }else{
+    } else {
         localStorage.setItem("multiplayer", false);
     }
     document.getElementsByClassName('btnwrapper')[0].innerHTML += `
@@ -58,17 +58,17 @@ function genBtns(slider){
     // Enter on seed input triggers setDifficulty('normal')
     const seedInput = document.getElementById('solo-seed');
     if (seedInput) {
-        seedInput.addEventListener('keydown', function(e) {
+        seedInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') setDifficulty('normal');
         });
     }
 }
 
-function updateTextInput(value){
+function updateTextInput(value) {
     document.getElementById('count').innerHTML = `${value} Players:`
 }
 
-function setDifficulty(a){
+function setDifficulty(a) {
     let num = document.getElementById('playerslider')?.value;
     console.log(a);
     difficulty = a;
@@ -83,7 +83,7 @@ function setDifficulty(a){
     // Save seed if provided
     const seedInputVal = document.getElementById('solo-seed')?.value.trim();
     if (seedInputVal) {
-        const parsedSeed = parseInt(seedInputVal) || seedInputVal.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+        const parsedSeed = parseInt(seedInputVal) || seedInputVal.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
         localStorage.setItem('mapSeed', parsedSeed);
         localStorage.setItem('customSeedUsed', 'true');
     } else {
@@ -98,28 +98,28 @@ let mobile = false;
 //  add mobile stuff
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
     mobile = true;
-    $( ".nomobile" ).remove();
+    $(".nomobile").remove();
 }
 
 let text = localStorage.getItem("charface") ?? ":)";//
 let menu = false;
 
 let reassign;
-if(localStorage.getItem("reassign") != undefined){
+if (localStorage.getItem("reassign") != undefined) {
     reassign = JSON.parse(localStorage.getItem("reassign"));
-}else{
-    reassign = {down: 83, jump: 32, left: 65, right: 68, sneak: 17, sprint: 16};
+} else {
+    reassign = { down: 83, jump: 32, left: 65, right: 68, sneak: 17, sprint: 16 };
 }
 let reassigned = false;
 
 //listenersis
-function clickmenu(){
-    if(!menu)userMenu()
+function clickmenu() {
+    if (!menu) userMenu()
     else closeMenu();
 }
 
 // userMenu
-function userMenu(){
+function userMenu() {
     document.getElementById('blur').style.filter = "blur(10px)";
     document.getElementById('clearMenu').innerHTML = `<div id="menu">
     <button onclick="remapKeys()">Controls</button>
@@ -138,7 +138,7 @@ function userMenu(){
     menu = true;
 }
 
-function closeMenu(){
+function closeMenu() {
     document.getElementById('blur').style.filter = "blur(0px)";
     document.getElementById('clearMenu').style.opacity = 0;
     setTimeout(clearMenu, "501")
@@ -153,9 +153,9 @@ function clearMenu() {
 
 
 // CUSTOMSTUFF
-function changeFace(){
+function changeFace() {
     console.log(charface.value);
-    if(charface.value && charface.value != '[object HTMLInputElement]') text = charface?.value;
+    if (charface.value && charface.value != '[object HTMLInputElement]') text = charface?.value;
 }
 
 document.onkeydown = keyListenerDown;
@@ -164,13 +164,13 @@ function keyListenerDown(e) {
     console.log(e);
     console.log(e.keyCode);
     */
-    if(!menu){
-        switch (e.keyCode){  
+    if (!menu) {
+        switch (e.keyCode) {
             case 27:
-                //userMenu();
+            //userMenu();
         }
-    }else{
-        switch (e.keyCode){
+    } else {
+        switch (e.keyCode) {
             case 27:
                 closeMenu();
         }
@@ -228,9 +228,9 @@ function remapKeys() {
     }
 }
 
-function saveSettings(){
-    if(reassign) localStorage.setItem("reassign", JSON.stringify(reassign));
-    if(text) localStorage.setItem("charface", text);
+function saveSettings() {
+    if (reassign) localStorage.setItem("reassign", JSON.stringify(reassign));
+    if (text) localStorage.setItem("charface", text);
 }
 
 /*
@@ -265,32 +265,32 @@ function getLoggedUser() {
     let cookies = document.cookie.split(";");
     let userId = null;
     let username = "";
-  
+
     for (let i = 0; i < cookies.length; i++) {
-      let cookie = cookies[i].trim();
-  
-      if (cookie.indexOf("user_id=") === 0) {
-        userId = cookie.substring("user_id=".length);
-      }
-  
-      if (cookie.indexOf("username=") === 0) {
-        username = cookie.substring("username=".length);
-      }
+        let cookie = cookies[i].trim();
+
+        if (cookie.indexOf("user_id=") === 0) {
+            userId = cookie.substring("user_id=".length);
+        }
+
+        if (cookie.indexOf("username=") === 0) {
+            username = cookie.substring("username=".length);
+        }
     }
-  
+
     if (!username) {
         if (!localStorage.getItem('sr_guest_name')) {
             const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
             const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
             const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
             const noun = nouns[Math.floor(Math.random() * nouns.length)];
-            localStorage.setItem('sr_guest_name', 'sr_player_' + adj + noun);
+            localStorage.setItem('sr_guest_name', 'sr_' + adj + noun);
         }
     }
 
     const displayUser = username || localStorage.getItem('sr_guest_name');
     console.log("User ID: " + userId + ", Username: " + username + ", Display: " + displayUser);
-    
+
     const loggedUserEl = document.getElementById("loggeduser");
     if (loggedUserEl) {
         loggedUserEl.innerHTML = displayUser;
@@ -300,8 +300,8 @@ function getLoggedUser() {
     if (navUserText && username) {
         navUserText.innerText = username;
     }
-  
+
     return userId;
-  }
-  
-  getLoggedUser();
+}
+
+getLoggedUser();
