@@ -40,11 +40,13 @@
                     <span>Scores</span>
                 </a>
                 <span id="seed-display" style="font-size:0.72rem; color:rgba(255,255,255,0.4); font-family:space-mono,monospace; align-self:center; display:none;"></span>
-                <button id="openmenu" class="nav-btn nomobile" onclick="clickmenu()" title="Settings">
+                <button id="openmenu" class="nav-btn" onclick="clickmenu()" title="Settings">
                     <svg viewBox="0 0 512 512" class="nav-svg"><path fill="currentColor" d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6l-43.3 75c-3.2 8.7-11.9 14.3-21.2 14.3H383.6l-23 40c-4.7 8.2-13.4 13.3-22.8 13.3H264v-64h-16v64H174.2c-9.4 0-18.1-5.1-22.8-13.3l-23-40H80.7c-9.3 0-18-5.6-21.2-14.3l-43.3-75c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C65.1 273.1 64.5 264.6 64.5 256s.6-17.1 1.7-25.4L22.9 191.2c-6.9-6.2-9.6-15.9-6.4-24.6l43.3-75C63 82.9 71.7 77.3 81 77.3H128.4l23-40c4.7-8.2 13.4-13.3 22.8-13.3H248v64h16V24h73.8c9.4 0 18.1 5.1 22.8 13.3l23 40h47.7c9.3 0 18 5.6 21.2 14.3l43.3 75zM256 320a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
+                    <span class="nav-label">Settings</span>
                 </button>
-                <button id="fullscreen" class="nav-btn" title="Toggle Fullscreen">
-                    <svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zM32 288c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V320c0-17.7-14.3-32-32-32zM416 320c-17.7 0-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V320c0-17.7-14.3-32-32-32z"/></svg>
+                <button id="fullscreen-btn" class="nav-btn" title="Toggle Fullscreen">
+                    <svg id="fullscreen-icon" viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
+                    <span class="nav-label">Fullscreen</span>
                 </button>
             </nav>
         </header>

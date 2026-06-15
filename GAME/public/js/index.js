@@ -305,3 +305,23 @@ function getLoggedUser() {
 }
 
 getLoggedUser();
+
+function toggleFullScreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (document.body.requestFullscreen) {
+            document.body.requestFullscreen();
+        } else if (document.body.webkitRequestFullscreen) {
+            document.body.webkitRequestFullscreen();
+        } else if (document.body.msRequestFullscreen) {
+            document.body.msRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
