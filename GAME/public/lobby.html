@@ -319,6 +319,9 @@
             isHost = (socket.id === hostId);
             roomPlayers = players;
             
+            localStorage.setItem("hostId", hostId);
+            localStorage.setItem("isHost", isHost ? "true" : "false");
+            
             setupView.style.display = 'none';
             lobbyView.style.display = 'block';
             currentRoomTitle.textContent = `Room: ${roomName}`;
@@ -330,6 +333,8 @@
         socket.on('room-sync', (players, hostId) => {
             isHost = (socket.id === hostId);
             roomPlayers = players;
+            localStorage.setItem("hostId", hostId);
+            localStorage.setItem("isHost", isHost ? "true" : "false");
             updatePlayerBadges(players, hostId);
         });
 
@@ -390,6 +395,7 @@
             localStorage.setItem("difficulty", mode || "normal");
             localStorage.setItem("multiplayerRoom", roomName);
             localStorage.setItem("multiplayerPlayers", JSON.stringify(roomPlayers));
+            localStorage.setItem("isHost", isHost ? "true" : "false");
             if (seed !== null && seed !== undefined) {
                 localStorage.setItem("mapSeed", seed);
                 localStorage.setItem("customSeedUsed", "true");
