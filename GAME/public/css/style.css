@@ -531,8 +531,6 @@ input:checked+.slider:before {
 }
 
 button.nav-btn {
-    background: rgba(32, 33, 36, 0.6);
-    border: 1px solid rgba(151, 0, 189, 0.4);
     font: inherit;
     outline: none;
     color: inherit;
@@ -542,23 +540,26 @@ button.nav-btn {
 .nav-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: clamp(4px, 1vw, 8px);
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(151, 0, 189, 0.3);
-    border-radius: 6px;
-    padding: clamp(6px, 1.5vh, 10px) clamp(10px, 1.5vw, 18px);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(151, 0, 189, 0.4);
+    border-radius: 8px;
+    padding: clamp(6px, 1.2vh, 10px) clamp(10px, 1.5vw, 16px);
     color: #ffffff;
     text-decoration: none;
     font-family: space-mono, monospace;
     font-size: clamp(0.75rem, 1.5vw, 0.95rem);
     cursor: pointer;
     transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .nav-btn:hover {
-    background: rgba(151, 0, 189, 0.2);
-    border-color: rgba(151, 0, 189, 0.8);
-    box-shadow: 0 0 12px rgba(151, 0, 189, 0.4);
+    background: rgba(151, 0, 189, 0.25);
+    border-color: rgba(183, 0, 221, 0.95);
+    box-shadow: 0 0 15px rgba(183, 0, 221, 0.5);
     transform: translateY(-2px);
 }
 
