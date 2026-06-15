@@ -1435,9 +1435,6 @@ function gameOver() {
 
         game.levels = [];
         levelSwitch();
-        if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
-            window._emitPosition();
-        }
     }
     if (game.difficulty == 'impossible') {
         game.level = 0;
@@ -1454,9 +1451,9 @@ function gameOver() {
 
         game.levels = [];
         levelSwitch();
-        if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
-            window._emitPosition();
-        }
+    }
+    if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
+        window._emitPosition();
     }
     // attemptcount element was removed from HTML
 }
