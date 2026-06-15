@@ -1513,18 +1513,40 @@ function gameOver() {
     // attemptcount element was removed from HTML
 }
 
-document.getElementById('fullscreen').addEventListener('click', fullScreen);
+
+// SVG path for enter fullscreen (expand arrows)
+const _fsEnterPath = 'M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z';
+// SVG path for exit fullscreen (collapse arrows)
+const _fsExitPath = 'M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zM352 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V64zM320 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32s32-14.3 32-32V352h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z';
+
+function _updateFsIcon() {
+    const icon = document.getElementById('fullscreen-icon');
+    if (!icon) return;
+    const path = icon.querySelector('path');
+    if (!path) return;
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+    path.setAttribute('d', isFs ? _fsExitPath : _fsEnterPath);
+}
+
+document.addEventListener('fullscreenchange', _updateFsIcon);
+document.addEventListener('webkitfullscreenchange', _updateFsIcon);
+
+const _fsBtnEl = document.getElementById('fullscreen-btn');
+if (_fsBtnEl) _fsBtnEl.addEventListener('click', fullScreen);
+
 function fullScreen() {
-    //document.body.requestFullscreen();
-    console.log('eyman')
-    if (document.body.requestFullscreen) {
-        document.body.requestFullscreen();
-    } else if (document.body.msRequestFullscreen) {      // for IE11 (remove June 15, 2022)
-        document.body.msRequestFullscreen();
-    } else if (document.body.webkitRequestFullscreen) {  // iOS Safari
-        document.body.webkitRequestFullscreen();
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+    if (!isFs) {
+        if (document.body.requestFullscreen) document.body.requestFullscreen();
+        else if (document.body.webkitRequestFullscreen) document.body.webkitRequestFullscreen();
+        else if (document.body.msRequestFullscreen) document.body.msRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
     }
 }
+
 
 document.onkeydown = keyListenerDown;
 document.onkeyup = keyListenerUp;
@@ -1916,6 +1938,14 @@ if (localStorage.getItem('multiplayer') === 'true') {
             socket.emit('move', data);
         }
         window._emitPosition = emitPosition;
+        // Throttle: only emit max 30 times per second
+        let _lastEmit = 0;
+        window._emitPosition = function() {
+            const now = Date.now();
+            if (now - _lastEmit < 33) return; // ~30 fps
+            _lastEmit = now;
+            emitPosition();
+        };
 
         // Join room as soon as socket connects
         socket.on('connect', () => {
@@ -2019,7 +2049,7 @@ function drawRemotePlayers() {
         }
         const col = drawColor || '#ffffff';
         ctx.shadowColor = col;
-        ctx.shadowBlur = width * 0.9;
+        ctx.shadowBlur = width * 0.015; // small glow, not full-screen blur
         ctx.fillStyle = col;
         ctx.fillRect(worldX, worldY, playerW, playerH);
         ctx.shadowBlur = 0;

@@ -19,6 +19,10 @@
                 <svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-16.7a174.1 174.1 0 0 1-145.8 0h-16.7A111.6 111.6 0 0 0 24 399.6v40.4A72 72 0 0 0 96 512h256a72 72 0 0 0 72-72v-40.4A111.6 111.6 0 0 0 313.6 288z"/></svg>
                 <span id="nav-user-text">Login</span>
             </a>
+            <button class="nav-btn" title="Toggle Fullscreen" onclick="toggleFullScreen()">
+                <svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
+                <span class="nav-label">Fullscreen</span>
+            </button>
         </nav>
     </header>
 
@@ -61,5 +65,16 @@
             <div id="loading-spinner" class="loading-spinner">Loading scores...</div>
         </div>
     </div>
+    <script>
+        function toggleFullScreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (document.body.requestFullscreen) document.body.requestFullscreen();
+                else if (document.body.webkitRequestFullscreen) document.body.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+    </script>
 </body>
 </html>
