@@ -1932,14 +1932,24 @@ function drawRemotePlayers() {
         const localLevel = Number(game.level);
         if (remoteLevel !== localLevel) return;
 
-        // Smoothly interpolate rendered coords toward the latest network target
-        d.rx += (d.px - d.rx) * lerpRate;
-        d.ry += (d.py - d.ry) * lerpRate;
-        d.roffset += (d.offset - d.roffset) * lerpRate;
+        const dx = d.px - d.rx;
+        const dy = d.py - d.ry;
+        const doff = d.offset - d.roffset;
 
-        // Use interpolated coords for drawing
+        // Snap immediately if distance is large (teleporting, death, level change)
+        if (Math.abs(dx) > 0.2 || Math.abs(dy) > 0.2 || Math.abs(doff) > 0.2) {
+            d.rx = d.px;
+            d.ry = d.py;
+            d.roffset = d.offset;
+        } else {
+            d.rx += dx * lerpRate;
+            d.ry += dy * lerpRate;
+            d.roffset += doff * lerpRate;
+        }
+
+        // Use interpolated coords for drawing (adjust Y by playerH to draw top-left from feet ratio)
         const worldX = (d.rx + d.roffset - myOffset) * width;
-        const worldY = d.ry * height;
+        const worldY = d.ry * height - playerH;
 
         ctx.save();
         let drawColor = d.color;
