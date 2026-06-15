@@ -1136,102 +1136,76 @@ function userMenu() {
     // Online multiplayer = multiplayer flag + a room code. Local coop has no room code.
     const isOnlineMP = localStorage.getItem("multiplayer") === "true" && !!localStorage.getItem("multiplayerRoom");
     const canChangeMode = !isOnlineMP || localStorage.getItem("isHost") === "true";
-
     document.getElementById('blur').style.filter = "blur(10px)";
     document.getElementById('clearMenu').innerHTML = `
     <div id="menu">
         <div class="cross" onclick="closeMenu()">&#10006;</div>
-        <div id="keybindbox" class="menu-box">
-            <h2>Keybindings</h2>
-            <div id="playerholder" ><select id="whatplayer" name="player"></select></div>
-            <div id="keyinputholder">
+        <div class="menu-content">
+            <div id="keybindbox" class="menu-box nomobile">
+                <h2>Keybindings</h2>
+                <div id="playerholder"><select id="whatplayer" name="player"></select></div>
+                <div id="keyinputholder"></div>
             </div>
-        </div>
-        <div id="keymapHolder">
-            " Keymappings: "
-            <div id="keymap">
-                "{ "<br>""down": 83, "<br>""jump": 32, "<br>""left": 65, "<br>""right": 68, "<br>""sneak": 17, "<br>""sprint": 16 }"
+            <div id="keymapHolder" class="nomobile">
+                <h2>Keymappings</h2>
+                <div id="keymap">
+                    "{ "<br>""down": 83, "<br>""jump": 32, "<br>""left": 65, "<br>""right": 68, "<br>""sneak": 17, "<br>""sprint": 16 }"
+                </div>
             </div>
-        </div>
-        <div class="menu-box">
-            <h2>Customs</h2>
-            <!--<div class="customholder">
-                <h3>Name: </h3>
-                <input id="charface" type="text" maxlength="2" placeholder="Name">
-            </div>!-->
-            <div class="customholder">
-                <h3>RGB: </h3>
-                <label class="switch">
-                    <input id="RGB" type="checkbox" checked>
-                    <span class="slider round"></span>
-                </label>
+            <div class="menu-box">
+                <h2>Customs</h2>
+                <div class="customholder">
+                    <h3>RGB:</h3>
+                    <label class="switch">
+                        <input id="RGB" type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="customholder">
+                    <h3>Player RGB:</h3>
+                    <label class="switch">
+                        <input id="playerrgb" type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="customholder">
+                    <h3>Platform RGB:</h3>
+                    <label class="switch">
+                        <input id="platrgb" type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="customholder" id="playercolor">
+                    <h3>Player-Color:</h3>
+                    <input class="colorinput" type="color" id="Player-Color" name="player-color" value="#ff0000">
+                </div>
+                <div class="customholder" id="platshadowcolor">
+                    <h3>Platform-Shadow:</h3>
+                    <input class="colorinput" type="color" id="Platform-Shadow" name="platform-shadow" value="#ffffff">
+                </div>
+                <div class="customholder">
+                    <h3>Platform-Color:</h3>
+                    <input class="colorinput" type="color" id="Platform-Color" name="platform-color" value="#ff0000">
+                </div>
             </div>
-            <div class="customholder">
-                <h3>Player RGB: </h3>
-                <label class="switch">
-                    <input id="playerrgb" type="checkbox" checked>
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="customholder">
-                <h3>Platform RGB: </h3>
-                <label class="switch">
-                    <input id="platrgb" type="checkbox" checked>
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="customholder" id="playercolor">
-                <h3>Player-Color: </h3>
-                <input class="colorinput" type="color" id="Player-Color" name="player-color" value="#ff0000"><br><br>
-            </div>
-            <div class="customholder" id="platshadowcolor">
-                <h3>Platform-Shadow: </h3>
-                <input class="colorinput" type="color" id="Platform-Shadow" name="platform-shadow" value="#ffffff"><br><br>
-            </div>
-            <div class="customholder">
-                <h3>Platform-Color: </h3>
-                <input class="colorinput" type="color" id="Platform-Color" name="platform-color" value="#ff0000"><br><br>
-            </div>
-        </div>
-        
-        <div class="menu-box" style="margin-left: 3vw;">
-            <h2>Settings</h2>
-            <div class="customholder">
-                <h3>Difficulty:</h3>
-                <select id="menu-game-mode" ${canChangeMode ? '' : 'disabled'} style="
-                    width: 10vw;
-                    height: 4.5vh;
-                    border-radius: 10px;
-                    background-color: #222;
-                    color: #fff;
-                    font-size: 1.1em;
-                    border: 0;
-                    font-family: inherit;
-                    cursor: ${canChangeMode ? 'pointer' : 'not-allowed'};
-                    margin-top: 1vh;
-                ">
-                    <option value="easy">Easy</option>
-                    <option value="normal">Normal</option>
-                    <option value="hard">Hard</option>
-                    <option value="impossible">Impossible</option>
-                    <option value="run">Run Mode</option>
-                </select>
-            </div>
-            ${!canChangeMode ? '<div style="font-size: 0.8em; color: rgba(255,255,255,0.4); margin-left: 2vw; margin-top: 0.5vh;">Host only</div>' : ''}
             
-            <div style="margin-top: 5vh; text-align: left; margin-left: 2vw;">
-                <button id="menu-leave-btn" style="
-                    padding: 1vh 2vw;
-                    background-color: #9700bd;
-                    border: none;
-                    border-radius: 10px;
-                    color: #fff;
-                    font-family: space, sans-serif;
-                    font-size: 1.3em;
-                    font-weight: bold;
-                    cursor: pointer;
-                    transition: background-color 0.2s;
-                " onmouseover="this.style.backgroundColor='#b700dd'" onmouseout="this.style.backgroundColor='#9700bd'">Leave Game</button>
+            <div class="menu-box">
+                <h2>Settings</h2>
+                <div class="customholder">
+                    <h3>Difficulty:</h3>
+                    <select id="menu-game-mode" ${canChangeMode ? '' : 'disabled'}>
+                        <option value="easy">Easy</option>
+                        <option value="normal">Normal</option>
+                        <option value="hard">Hard</option>
+                        <option value="impossible">Impossible</option>
+                        <option value="run">Run Mode</option>
+                    </select>
+                </div>
+                ${!canChangeMode ? '<div class="host-only-label">Host only</div>' : ''}
+                
+                <div class="leave-btn-holder">
+                    <button id="menu-leave-btn" class="menu-btn">Leave Game</button>
+                </div>
             </div>
         </div>
     </div>`;
@@ -1334,7 +1308,7 @@ function userMenu() {
             const newDifficulty = this.value;
             game.difficulty = newDifficulty;
             localStorage.setItem("difficulty", newDifficulty);
-            
+
             if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
                 window._emitPosition();
             }
@@ -1347,7 +1321,7 @@ function userMenu() {
     // Leave button handler
     const menuLeaveBtn = document.getElementById('menu-leave-btn');
     if (menuLeaveBtn) {
-        menuLeaveBtn.onclick = function() {
+        menuLeaveBtn.onclick = function () {
             if (isOnlineMP) {
                 // Notify server and clean up online session keys
                 if (typeof window.socket !== 'undefined' && window.socket) {
@@ -1811,7 +1785,7 @@ function getLoggedUser() {
             const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
             const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
             const noun = nouns[Math.floor(Math.random() * nouns.length)];
-            window._guestName = 'sr_player_' + adj + noun;
+            window._guestName = 'sr_' + adj + noun;
             localStorage.setItem('sr_guest_name', window._guestName);
         }
     }
@@ -1836,7 +1810,7 @@ getLoggedUser();
 
 
 function saveScore(score) {
-    if (players[0] && players[0].text && players[0].text.startsWith('sr_player_')) {
+    if (players[0] && players[0].text && players[0].text.startsWith('sr_')) {
         console.log('Guest score not saved.');
         return;
     }
@@ -1959,7 +1933,7 @@ if (localStorage.getItem('multiplayer') === 'true') {
 
         socket.on('playerdata', (data) => {
             const id = data.socketId || 'remote';
-            
+
             // Sync difficulty changes from the host
             if (data.difficulty && data.socketId === localStorage.getItem("hostId") && game.difficulty !== data.difficulty) {
                 game.difficulty = data.difficulty;
