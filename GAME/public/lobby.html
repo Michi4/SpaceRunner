@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +19,7 @@
             margin: 0;
             overflow: auto;
         }
+
         .lobby-container {
             background-color: rgba(20, 20, 25, 0.85);
             backdrop-filter: blur(12px);
@@ -29,26 +31,31 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             text-align: center;
         }
+
         h1 {
             color: #fff;
             text-shadow: 0 0 10px rgba(151, 0, 189, 0.6), 0 0 20px rgba(151, 0, 189, 0.4);
             margin-bottom: 30px;
             text-transform: uppercase;
         }
+
         .section {
             margin-bottom: 25px;
             padding-bottom: 25px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .section:last-of-type {
             border-bottom: none;
         }
+
         .input-group {
             display: flex;
             gap: 10px;
             justify-content: center;
             margin-top: 15px;
         }
+
         input[type="text"] {
             padding: 12px;
             background-color: rgba(30, 30, 35, 0.7);
@@ -59,11 +66,13 @@
             width: 250px;
             text-align: center;
         }
+
         input[type="text"]:focus {
             outline: none;
             border-color: #9700bd;
             box-shadow: 0 0 8px rgba(151, 0, 189, 0.3);
         }
+
         button {
             padding: 12px 24px;
             background-color: #9700bd;
@@ -75,11 +84,13 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         button:hover {
             background-color: #b700dd;
             box-shadow: 0 0 10px rgba(151, 0, 189, 0.5);
             transform: translateY(-1px);
         }
+
         button:disabled {
             background-color: #444;
             color: #888;
@@ -87,6 +98,7 @@
             transform: none;
             box-shadow: none;
         }
+
         .rooms-list {
             margin-top: 15px;
             max-height: 200px;
@@ -95,6 +107,7 @@
             border-radius: 8px;
             background: rgba(0, 0, 0, 0.2);
         }
+
         .room-item {
             display: flex;
             justify-content: space-between;
@@ -102,9 +115,11 @@
             padding: 12px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .room-item:last-child {
             border-bottom: none;
         }
+
         .player-list {
             display: flex;
             flex-wrap: wrap;
@@ -112,6 +127,7 @@
             justify-content: center;
             margin: 20px 0;
         }
+
         .player-badge {
             background: rgba(151, 0, 189, 0.15);
             border: 1px solid rgba(151, 0, 189, 0.3);
@@ -121,10 +137,12 @@
             align-items: center;
             gap: 8px;
         }
+
         .player-badge.host {
             border-color: gold;
             background: rgba(255, 215, 0, 0.1);
         }
+
         .back-btn {
             position: absolute;
             top: 30px;
@@ -134,6 +152,7 @@
             cursor: pointer;
             padding: 0;
         }
+
         .back-icon {
             width: 28px;
             height: 28px;
@@ -142,26 +161,37 @@
             transition: opacity 0.2s, fill 0.2s;
             transform: rotate(180deg);
         }
+
         .back-icon:hover {
             opacity: 1;
             fill: #9700bd;
         }
     </style>
 </head>
+
 <body>
     <header class="game-header">
         <div class="header-logo"><a href="/">SpaceRunner</a></div>
         <nav class="header-nav">
             <a href="/" class="nav-btn" title="Back to Main Menu">
-                <svg viewBox="0 0 576 512" class="nav-svg"><path fill="currentColor" d="M575.8 255.5c0 18-15 32.1-32 32.1h-32v224c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V384H256v128c0 17.7-14.3 32-32 32H112c-17.7 0-32-14.3-32-32V287.6H48c-18 0-32-14.1-32-32.1c0-9 3-17 10-24L265 7c6-6 15-10 23-10s17 4 23 10L565 231.5c7 7 10.8 15 10.8 24z"/></svg>
+                <svg viewBox="0 0 576 512" class="nav-svg">
+                    <path fill="currentColor"
+                        d="M575.8 255.5c0 18-15 32.1-32 32.1h-32v224c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V384H256v128c0 17.7-14.3 32-32 32H112c-17.7 0-32-14.3-32-32V287.6H48c-18 0-32-14.1-32-32.1c0-9 3-17 10-24L265 7c6-6 15-10 23-10s17 4 23 10L565 231.5c7 7 10.8 15 10.8 24z" />
+                </svg>
                 <span>Home</span>
             </a>
             <a href="/scoreboard" class="nav-btn" title="Scoreboard">
-                <svg viewBox="0 0 512 512" class="nav-svg"><path fill="currentColor" d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>
+                <svg viewBox="0 0 512 512" class="nav-svg">
+                    <path fill="currentColor"
+                        d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z" />
+                </svg>
                 <span>Scores</span>
             </a>
             <a href="/login/login" class="nav-btn" id="login-nav-btn" title="Login/Signup">
-                <svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-16.7a174.1 174.1 0 0 1-145.8 0h-16.7A111.6 111.6 0 0 0 24 399.6v40.4A72 72 0 0 0 96 512h256a72 72 0 0 0 72-72v-40.4A111.6 111.6 0 0 0 313.6 288z"/></svg>
+                <svg viewBox="0 0 448 512" class="nav-svg">
+                    <path fill="currentColor"
+                        d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-16.7a174.1 174.1 0 0 1-145.8 0h-16.7A111.6 111.6 0 0 0 24 399.6v40.4A72 72 0 0 0 96 512h256a72 72 0 0 0 72-72v-40.4A111.6 111.6 0 0 0 313.6 288z" />
+                </svg>
                 <span id="nav-user-text">Login</span>
             </a>
         </nav>
@@ -183,7 +213,8 @@
             <div class="section">
                 <h3>Available Rooms</h3>
                 <div class="rooms-list" id="rooms-list-container">
-                    <div style="padding: 20px; color: rgba(255, 255, 255, 0.4);">No rooms active. Create one above!</div>
+                    <div style="padding: 20px; color: rgba(255, 255, 255, 0.4);">No rooms active. Create one above!
+                    </div>
                 </div>
             </div>
         </div>
@@ -191,7 +222,7 @@
         <!-- View 2: Room Lobby -->
         <div id="lobby-view" class="view" style="display: none;">
             <h2 id="current-room-title">Room: ...</h2>
-            
+
             <div class="section">
                 <h3>Players</h3>
                 <div class="player-list" id="player-badge-container">
@@ -200,8 +231,10 @@
             </div>
 
             <div class="section" id="mode-selector-section" style="display: none; margin-bottom: 20px;">
-                <label for="game-mode" style="margin-right: 10px; font-weight: bold; font-family: inherit;">Select Mode:</label>
-                <select id="game-mode" style="padding: 10px; background: rgba(30, 30, 35, 0.9); border: 1px solid rgba(151,0,189,0.3); color: white; border-radius: 6px; font-family: inherit; cursor: pointer;">
+                <label for="game-mode" style="margin-right: 10px; font-weight: bold; font-family: inherit;">Select
+                    Mode:</label>
+                <select id="game-mode"
+                    style="padding: 10px; background: rgba(30, 30, 35, 0.9); border: 1px solid rgba(151,0,189,0.3); color: white; border-radius: 6px; font-family: inherit; cursor: pointer;">
                     <option value="normal">Normal</option>
                     <option value="easy">Easy</option>
                     <option value="hard">Hard (Score)</option>
@@ -210,10 +243,13 @@
                 </select>
                 <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <label for="seed-input" style="font-weight: bold; font-family: inherit;">🌱 Seed:</label>
-                    <input type="text" id="seed-input" placeholder="Random (leave blank)" maxlength="20" style="width: 180px;">
-                    <button id="random-seed-btn" style="padding: 10px; font-size: 0.85em; background: rgba(151,0,189,0.3);">🎲 Random</button>
+                    <input type="text" id="seed-input" placeholder="Random (leave blank)" maxlength="20"
+                        style="width: 180px;">
+                    <button id="random-seed-btn"
+                        style="padding: 10px; font-size: 0.85em; background: rgba(151,0,189,0.3);">🎲 Random</button>
                 </div>
-                <div style="margin-top: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.45);">Seeds only apply to random levels (after level 3). Same seed = same map!</div>
+                <div style="margin-top: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.45);">Seeds only apply to
+                    random levels (after level 3). Same seed = same map!</div>
             </div>
 
             <div class="section">
@@ -242,7 +278,7 @@
         let isHost = false;
         let roomPlayers = [];
 
-        // Fetch logged username from cookie or generate a persistent funny guest name starting with sr_player_
+        // Fetch logged username from cookie or generate a persistent funny guest name starting with sr_
         function getUsername() {
             let cookies = document.cookie.split(";");
             for (let i = 0; i < cookies.length; i++) {
@@ -256,14 +292,14 @@
                 const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
                 const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
                 const noun = nouns[Math.floor(Math.random() * nouns.length)];
-                localStorage.setItem('sr_guest_name', 'sr_player_' + adj + noun);
+                localStorage.setItem('sr_guest_name', 'sr_' + adj + noun);
             }
             return localStorage.getItem('sr_guest_name');
         }
 
         myUsername = getUsername();
         const navUserText = document.getElementById("nav-user-text");
-        if (navUserText && myUsername && !myUsername.startsWith("sr_player_")) {
+        if (navUserText && myUsername && !myUsername.startsWith("sr_")) {
             navUserText.innerText = myUsername;
         }
         const loggedUserEl = document.getElementById("loggeduser");
@@ -309,7 +345,7 @@
         });
 
         // Join Room function
-        window.joinRoom = function(roomName) {
+        window.joinRoom = function (roomName) {
             socket.emit('join-room', roomName, myUsername);
         };
 
@@ -318,10 +354,10 @@
             currentRoom = roomName;
             isHost = (socket.id === hostId);
             roomPlayers = players;
-            
+
             localStorage.setItem("hostId", hostId);
             localStorage.setItem("isHost", isHost ? "true" : "false");
-            
+
             setupView.style.display = 'none';
             lobbyView.style.display = 'block';
             currentRoomTitle.textContent = `Room: ${roomName}`;
@@ -384,7 +420,7 @@
             if (isHost) {
                 const selectedMode = document.getElementById('game-mode').value;
                 const seedVal = document.getElementById('seed-input')?.value.trim() || null;
-                const seed = seedVal ? parseInt(seedVal) || seedVal.split('').reduce((a,c)=>a+c.charCodeAt(0),0) : Math.floor(Math.random() * 999999999);
+                const seed = seedVal ? parseInt(seedVal) || seedVal.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : Math.floor(Math.random() * 999999999);
                 socket.emit('start-game', currentRoom, selectedMode, seed);
             }
         });
@@ -412,4 +448,5 @@
     </script>
     <p id="loggeduser"></p>
 </body>
+
 </html>
