@@ -5,11 +5,11 @@ const baseHeight = 1080;
 let width = innerWidth;
 let height = innerHeight;
 
-let startScrollR = width*0.4;
-let startScrollL = width*0.15;
+let startScrollR = width * 0.4;
+let startScrollL = width * 0.15;
 const fps = 60;
 
-const playerCount= parseInt(localStorage.getItem("playernum") ?? 1);
+const playerCount = parseInt(localStorage.getItem("playernum") ?? 1);
 
 //gamepaddi
 
@@ -39,12 +39,12 @@ let keycodes = { // https://codepen.io/jdoleary/pen/NqdmOM
 let rgbCounter = 0;
 let playerCounter = 1;
 let rgbColor = "#000000";
-class Player{
-    constructor(leader, color, shadow, text, reassigned){//if true rgb = on
+class Player {
+    constructor(leader, color, shadow, text, reassigned) {//if true rgb = on
         this.id = playerCounter++;
         this.position = {
-            x: width/15,
-            y: height/10
+            x: width / 15,
+            y: height / 10
         };
         this.velocity = {
             x: 0,
@@ -57,13 +57,13 @@ class Player{
             sprint: false,
             sneak: false
         };
-        this.reassign={jump: 32, left: 65, right: 68, down: 83, sneak: 17, sprint: 16};//{down: 83, jump: 32, left: 65, right: 68, sneak: 17, sprint: 16};
+        this.reassign = { jump: 32, left: 65, right: 68, down: 83, sneak: 17, sprint: 16 };//{down: 83, jump: 32, left: 65, right: 68, sneak: 17, sprint: 16};
         this.leader = leader ?? false;
         //TODO maybe delete completely
         this.dead = false;
-        
-        this.width = width/38.4;
-        this.height = width/38.4;
+
+        this.width = width / 38.4;
+        this.height = width / 38.4;
 
         this.text = text ?? "";
         this.color = color ?? JSON.parse(localStorage.getItem("playerrainbow")) ?? true;
@@ -72,56 +72,56 @@ class Player{
         this.gamepadIndex = -1;
     }
 
-    draw(){
-        if(this.color == true ){
+    draw() {
+        if (this.color == true) {
             ctx.shadowColor = `${rgbColor}`;
             ctx.fillStyle = `${rgbColor}`;
-        }else{
+        } else {
             ctx.shadowColor = `${this.color}`;
             ctx.fillStyle = `${this.color}`;
         }
-        ctx.shadowBlur = width*0.9;
+        ctx.shadowBlur = width * 0.9;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         ctx.shadowBlur = 0;
-        ctx.font = `${width/55}px space, sans-serif`;
+        ctx.font = `${width / 55}px space, sans-serif`;
         ctx.fillStyle = '#202124';
-        ctx.fillText(this.text, this.position.x+this.width*0.1, this.position.y+this.height*0.7);
+        ctx.fillText(this.text, this.position.x + this.width * 0.1, this.position.y + this.height * 0.7);
     }
 
-    update(){
+    update() {
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
 
-        if((this.position.y + this.height + this.velocity.y) <= canvas.height){
+        if ((this.position.y + this.height + this.velocity.y) <= canvas.height) {
             this.velocity.y += game.gravity;
         }
     }
 }
 
-class Platform{
-    constructor(x, y, width, height, color, shadow){//if true rgb = on
+class Platform {
+    constructor(x, y, width, height, color, shadow) {//if true rgb = on
         this.position = {
             x,
             y
         };
-        this.width = width ?? innerWidth*0.2;
-        this.height = height ?? innerHeight*0.02;
+        this.width = width ?? innerWidth * 0.2;
+        this.height = height ?? innerHeight * 0.02;
         this.color = color ?? null;
         this.shadow = shadow;
     }
 
-    draw(){
-        if(game.platformShadow == true){
+    draw() {
+        if (game.platformShadow == true) {
             ctx.shadowColor = `${rgbColor}`;
-        }else if (this.shadow){
+        } else if (this.shadow) {
             ctx.shadowColor = `${this.shadow}`;
-        }else if(game.platformShadow){
+        } else if (game.platformShadow) {
             ctx.shadowColor = `${game.platformShadow}`;
-        }else{
+        } else {
             ctx.shadowColor = `#ffffff`;
         }
-        ctx.shadowBlur = width/384;
+        ctx.shadowBlur = width / 384;
         ctx.fillStyle = this.color ?? game.platformColor;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
@@ -139,29 +139,29 @@ let checkpointLoad = false;
 const checkpoint = new Image(); //onload zeile 652 :D
 
 
-class Item{
-    constructor(x, y, width, height, img, music){
+class Item {
+    constructor(x, y, width, height, img, music) {
         this.position = {
             x,
             y,
         };
         this.img = img ?? coin;
-        this.width = width ?? innerWidth/48;
-        this.height = height ?? innerWidth/48;
+        this.width = width ?? innerWidth / 48;
+        this.height = height ?? innerWidth / 48;
         this.music = music ?? null;//new Audio('music/coin_collect.mp3');
     }
 
-    draw(){
-        if(game.difficulty != 'impossible') ctx.shadowColor = 'gold';
+    draw() {
+        if (game.difficulty != 'impossible') ctx.shadowColor = 'gold';
         else ctx.shadowColor = '#000';
-        ctx.shadowBlur = width*0.04;
+        ctx.shadowBlur = width * 0.04;
         //bad - coin TODO!
         ctx.drawImage(coin, this.position.x, this.position.y, this.width, this.height);
     }
 }
 
-class GameText{
-    constructor(text, color, shadow, x, y, size, maxWidth){
+class GameText {
+    constructor(text, color, shadow, x, y, size, maxWidth) {
         this.text = text;
         this.position = {
             x,
@@ -173,10 +173,10 @@ class GameText{
         this.color = color ?? '#ffffff';
     }
 
-    draw(){
-        ctx.shadowBlur = width/128;
+    draw() {
+        ctx.shadowBlur = width / 128;
         ctx.shadowColor = this.shadow ?? "#ffffff00";
-        if(this.color == "rgbColor") ctx.fillStyle = rgbColor;
+        if (this.color == "rgbColor") ctx.fillStyle = rgbColor;
         else ctx.fillStyle = this.color;
         // If this.size is a small decimal (e.g. 0.025), treat it as a fraction of width
         let fontSizePx = this.size;
@@ -194,8 +194,8 @@ class GameText{
 
 // needed for Level
 let levelCount = 1;
-class Level{
-    constructor(platforms, items, texts){//, winx){
+class Level {
+    constructor(platforms, items, texts) {//, winx){
         this.id = levelCount++;
         this.platforms = platforms ?? [];
         this.items = items ?? [];
@@ -203,23 +203,23 @@ class Level{
         this.winx = /*winx ??*/ calcWinx(platforms);
     }
 
-    getResetLevel(){
+    getResetLevel() {
         let temp = Infinity;
         let tempPlatforms = JSON.parse(JSON.stringify(this.platforms));
         tempPlatforms.forEach(platform => {
-            if(platform.position.x < temp) temp = platform.position.x; 
+            if (platform.position.x < temp) temp = platform.position.x;
         });
         tempPlatforms.forEach(platform => {
-            platform.position.x -= temp; 
+            platform.position.x -= temp;
         });
 
         temp = Infinity;
         let tempItems = JSON.parse(JSON.stringify(this.items));
         tempItems.forEach(item => {
-            if(item.position.x < temp) temp = item.position.x; 
+            if (item.position.x < temp) temp = item.position.x;
         });
         tempItems.forEach(item => {
-            item.position.x -= temp; 
+            item.position.x -= temp;
         });
 
         //text
@@ -227,18 +227,18 @@ class Level{
         return new Level(tempPlatforms, tempItems);
     }
 
-    resetLevel(){
+    resetLevel() {
         let temp = Infinity;
         this.platforms.forEach(platform => {
-            if(platform.position.x < temp) temp = platform.position.x; 
+            if (platform.position.x < temp) temp = platform.position.x;
         });
         this.platforms.forEach(platform => {
-            platform.position.x -= temp; 
+            platform.position.x -= temp;
         });
 
         temp = Infinity;
         this.items.forEach(item => {
-            if(item.position.x < temp) temp = item.position.x; 
+            if (item.position.x < temp) temp = item.position.x;
         });
         this.items.forEach(item => {
             item.position.x -= temp;
@@ -250,9 +250,9 @@ class Level{
         this.winx = calcWinx(this.platforms);
     }
 
-    setLevelStart(startx){
+    setLevelStart(startx) {
         this.platforms.forEach(platform => {
-            platform.position.x += startx; 
+            platform.position.x += startx;
         });
         this.items.forEach(item => {
             item.position.x += startx;
@@ -262,31 +262,31 @@ class Level{
         });
     }
 
-    firstPlatform(){
+    firstPlatform() {
         let temp = Infinity;
         let plat;
         this.platforms.forEach(platform => {
-            if(platform.position.x < temp){
+            if (platform.position.x < temp) {
                 temp = platform.position.x;
                 plat = platform;
-            }  
+            }
         });
         return plat;
     }
 
-    lastPlatform(){
+    lastPlatform() {
         let temp = -Infinity;
         let plat;
         this.platforms.forEach(platform => {
-            if(platform.position.x > temp){
+            if (platform.position.x > temp) {
                 temp = platform.position.x;
                 plat = platform;
-            }  
+            }
         });
         return plat;
     }
 
-    draw(){
+    draw() {
         this.platforms.forEach(platform => {
             platform.draw();
         });
@@ -307,8 +307,8 @@ if(speedMode){
     speed = 0.275;//0.275
     jumpforce = 55;//55
 }*/
-class Game{
-    constructor(levels, difficulty, multiplayer, speedMode){
+class Game {
+    constructor(levels, difficulty, multiplayer, speedMode) {
         this.levels = levels ?? [];
         this.difficulty = difficulty ?? 'normal';
         this.multiplayer = multiplayer ?? false;
@@ -324,35 +324,35 @@ class Game{
         this.lvlDistance = 0;
         //ratio
         this.ratioDistance = 0;
-        
+
         //coins
         this.coins = 0;
         this.lvlCoins = 0;
 
-        this.multiplier = 0.0025*2;//0.0025
-        this.gravity = height / 1700*5;
-        this.speed = width*this.multiplier;
-        this.jumpforce = height*(this.multiplier-0.0005)*10;
+        this.multiplier = 0.0025 * 2;//0.0025
+        this.gravity = height / 1700 * 5;
+        this.speed = width * this.multiplier;
+        this.jumpforce = height * (this.multiplier - 0.0005) * 10;
 
         //colors 
         this.platformShadow = JSON.parse(localStorage.getItem("platrainbow")) ?? '#ffffff';
         this.platformColor = localStorage.getItem("platcolor") ?? '#000000';
     }
 
-    getCurrentLevel(){
+    getCurrentLevel() {
         return this.levels[0];
     }
 
-    addLevel(level){
+    addLevel(level) {
         this.levels.push(level);
         console.log(this.levels.length);
-        if(this.levels < 3) return;
+        if (this.levels < 3) return;
         this.resetLevels();
     }
 
-    resetLevels(){
+    resetLevels() {
         this.levels.forEach(level => {
-            if(level) level.resetLevel();
+            if (level) level.resetLevel();
         });
         /*if(this.levels[0] && this.levels[0] != null){
             let temp1 = this.levels[0].lastPlatform().position.x;
@@ -360,21 +360,21 @@ class Game{
             let startx = -(temp1+temp2);
             this.levels[0].setLevelStart(startx);
         }*/
-        if(this.levels[1] && this.levels[1] != null){
+        if (this.levels[1] && this.levels[1] != null) {
             let temp1 = this.getCurrentLevel().getResetLevel().winx;
-            let temp2 = width/2;
+            let temp2 = width / 2;
             let startx = temp1 - temp2;
             this.levels[1].setLevelStart(startx);
         }
         console.log(this.levels);
     }
 
-    draw(){
+    draw() {
         players.forEach(player => {
             player.draw();
         });
         this.levels.forEach(level => {
-            if(level) level.draw();
+            if (level) level.draw();
         });
     }
 }
@@ -384,14 +384,14 @@ class Game{
 // Game Objects
 //creating players for playerCount
 let players = [new Player(true)];
-for(let i = 1; i < playerCount; i++){
+for (let i = 1; i < playerCount; i++) {
     players[i] = new Player();
 }
-if(localStorage.getItem("players") != undefined){
+if (localStorage.getItem("players") != undefined) {
     let max;
-    if(players.length < JSON.parse(localStorage.getItem("players")).length) max = players.length;
+    if (players.length < JSON.parse(localStorage.getItem("players")).length) max = players.length;
     else max = JSON.parse(localStorage.getItem("players")).length;
-    for(let i = 0; i < max; i++){
+    for (let i = 0; i < max; i++) {
         players[i].reassign = JSON.parse(localStorage.getItem("players"))[i].reassign;
     }
 }
@@ -400,20 +400,20 @@ let game = new Game([], localStorage.getItem("difficulty") ?? 'normal', false, l
 
 //listenersis
 let menu = false;
-function clickmenu(){
-    if(menu) closeMenu();
+function clickmenu() {
+    if (menu) closeMenu();
     else userMenu();
 }
 
 // FULLSCWEEN
 
 //mobile stuff
-let mobile = false; 
+let mobile = false;
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
     mobile = true;
     document.getElementById('right').addEventListener("touchstart", mobileRight);
     document.getElementById('right').addEventListener("touchend", mobileStop);
-    
+
     document.getElementById('left').addEventListener("touchstart", mobileLeft);
     document.getElementById('left').addEventListener("touchend", mobileStop);
 
@@ -421,39 +421,39 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phon
     document.getElementById('mobileJump').addEventListener('touchend', stopJump);
 
     document.getElementById('audiotags').innerHTML = '';
-    
+
     Array.from(document.getElementsByClassName('nomobile')).forEach(x => {
         x.innerHTML = '';
     });
     console.log("mobiletelefonii");
-}else{
+} else {
     document.getElementById('mobile').innerHTML = '';
 }
 
 
 //LEVELS
 
-function calcWinx(objArr){
-    if(!objArr) return -1;
+function calcWinx(objArr) {
+    if (!objArr) return -1;
     let calcw = 0;
     objArr.forEach(obj => {
-            if(obj.position.x+obj.width > calcw) calcw = obj.position.x+obj.width; 
+        if (obj.position.x + obj.width > calcw) calcw = obj.position.x + obj.width;
     });
     return calcw;
 }
 
-function level0(){
+function level0() {
     //winx = width*1.5;
     let lvlplatforms = [
-        new Platform(0, height*0.8, width*2, height*0.2),
-        
-        new Platform(width*0.05, height*0.4, width*0.05),
-        new Platform(width*0.15, height*0.5, width*0.05),
-        new Platform(width*0.25, height*0.6, width*0.05),
-        new Platform(width*0.35, height*0.7, width*0.05),
+        new Platform(0, height * 0.8, width * 2, height * 0.2),
 
-        new Platform(width*0.7, height*0.6, width*0.2),
-        new Platform(width*1.2, height*0.6, width*0.2),
+        new Platform(width * 0.05, height * 0.4, width * 0.05),
+        new Platform(width * 0.15, height * 0.5, width * 0.05),
+        new Platform(width * 0.25, height * 0.6, width * 0.05),
+        new Platform(width * 0.35, height * 0.7, width * 0.05),
+
+        new Platform(width * 0.7, height * 0.6, width * 0.2),
+        new Platform(width * 1.2, height * 0.6, width * 0.2),
         //new Platform(width*1.7, height*0.6, width*0.2)
     ];
 
@@ -466,137 +466,137 @@ function level0(){
 
     let lvlitems = [
         new Item(0, 0, 0, 0),
-        new Item(width*0.165, height*0.4, innerWidth/48, innerWidth/48),
-        new Item(width*0.265, height*0.5, innerWidth/48, innerWidth/48),
-        new Item(width*0.365, height*0.6, innerWidth/48, innerWidth/48)
+        new Item(width * 0.165, height * 0.4, innerWidth / 48, innerWidth / 48),
+        new Item(width * 0.265, height * 0.5, innerWidth / 48, innerWidth / 48),
+        new Item(width * 0.365, height * 0.6, innerWidth / 48, innerWidth / 48)
     ];
 
     let lvltexts = [
         //new GameText("Welcome to SpaceRunner", "rgbColor", -width*0.3, height*0.3, width*0.05),
-        new GameText("Home ->", "#000000", "#FFFfff99", -width*0.09, -height*0.075, 0.03),
-        new GameText("press", "#000000", "#9700bd", 0, height*0.15, 0.025),
-        new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#000000", "#9700bd", 0, height*0.25, 0.025),
-        new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#000000", "#9700bd", width*0.95, height*0.5, 0.025),
+        new GameText("Home ->", "#000000", "#FFFfff99", -width * 0.09, -height * 0.075, 0.03),
+        new GameText("press", "#000000", "#9700bd", 0, height * 0.15, 0.025),
+        new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#000000", "#9700bd", 0, height * 0.25, 0.025),
+        new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#000000", "#9700bd", width * 0.95, height * 0.5, 0.025),
     ];
 
     return new Level(lvlplatforms, lvlitems, lvltexts);
 }
-function level1(){
+function level1() {
     //winx = width*3;
     let lvlplatforms = [
-        new Platform(0, height*0.8, width*0.5, height*0.2),//, '#000000', '#00000000'),
-        new Platform(width, height*0.8, width*0.5, height*0.2),
-        new Platform(width*2, height*0.8, width*0.5, height*0.2),
-        new Platform(width*3, height*0.8, width*0.5, height*0.2),
+        new Platform(0, height * 0.8, width * 0.5, height * 0.2),//, '#000000', '#00000000'),
+        new Platform(width, height * 0.8, width * 0.5, height * 0.2),
+        new Platform(width * 2, height * 0.8, width * 0.5, height * 0.2),
+        new Platform(width * 3, height * 0.8, width * 0.5, height * 0.2),
 
-        new Platform(width*0.6, height*0.75, width*0.3),
-        new Platform(width*1.6, height*0.75, width*0.3),
-        new Platform(width*2.6, height*0.75, width*0.3),
+        new Platform(width * 0.6, height * 0.75, width * 0.3),
+        new Platform(width * 1.6, height * 0.75, width * 0.3),
+        new Platform(width * 2.6, height * 0.75, width * 0.3),
     ];
 
     let lvlitems = [
         new Item(0, 0, 0, 0),
-        new Item(width*0.95, height*0.45, innerWidth/48, innerWidth/48),
+        new Item(width * 0.95, height * 0.45, innerWidth / 48, innerWidth / 48),
 
-        new Item(width*1.25, height*0.74, innerWidth/48, innerWidth/48),
-        new Item(width*1.51, height*0.45, innerWidth/48, innerWidth/48),
-        new Item(width*1.95, height*0.45, innerWidth/48, innerWidth/48),
+        new Item(width * 1.25, height * 0.74, innerWidth / 48, innerWidth / 48),
+        new Item(width * 1.51, height * 0.45, innerWidth / 48, innerWidth / 48),
+        new Item(width * 1.95, height * 0.45, innerWidth / 48, innerWidth / 48),
 
-        new Item(width*2.25, height*0.74, innerWidth/48, innerWidth/48),
-        new Item(width*2.51, height*0.45, innerWidth/48, innerWidth/48),
-        new Item(width*2.95, height*0.45, innerWidth/48, innerWidth/48),
+        new Item(width * 2.25, height * 0.74, innerWidth / 48, innerWidth / 48),
+        new Item(width * 2.51, height * 0.45, innerWidth / 48, innerWidth / 48),
+        new Item(width * 2.95, height * 0.45, innerWidth / 48, innerWidth / 48),
     ];
-    
+
     return new Level(lvlplatforms, lvlitems);
 }
 // hi C:D
-function level2(){
+function level2() {
     //winx = width*3;
     let lvlplatforms = [
-        new Platform(0, height*0.8, width*0.5 , height*0.2),
-        new Platform(width, height*0.8, width*0.5, height*0.2),     // base platform - do over 15 when not let thru IS FALSCH IWIE klar is des falsch retard
-        new Platform(width*2, height*0.8, width*0.5, height*0.2),
-        new Platform(width*3, height*0.8, width*0.5, height*0.2),
-        
-        new Platform(width*0.6, height*0.45, width*0.3),
-        new Platform(width*0.6, height*0.75, width*0.3),
-        new Platform(width*1.6, height*0.75, width*0.3),
-        new Platform(width*2.6, height*0.75, width*0.3)
+        new Platform(0, height * 0.8, width * 0.5, height * 0.2),
+        new Platform(width, height * 0.8, width * 0.5, height * 0.2),     // base platform - do over 15 when not let thru IS FALSCH IWIE klar is des falsch retard
+        new Platform(width * 2, height * 0.8, width * 0.5, height * 0.2),
+        new Platform(width * 3, height * 0.8, width * 0.5, height * 0.2),
+
+        new Platform(width * 0.6, height * 0.45, width * 0.3),
+        new Platform(width * 0.6, height * 0.75, width * 0.3),
+        new Platform(width * 1.6, height * 0.75, width * 0.3),
+        new Platform(width * 2.6, height * 0.75, width * 0.3)
     ];
 
     let lvlitems = [
         new Item(0, 0, 0, 0),
-        new Item(width*0.51, height*0.45, innerWidth/48, innerWidth/48),
-        new Item(width*0.95, height*0.45, innerWidth/48, innerWidth/48),
+        new Item(width * 0.51, height * 0.45, innerWidth / 48, innerWidth / 48),
+        new Item(width * 0.95, height * 0.45, innerWidth / 48, innerWidth / 48),
 
-        new Item(width*1.25, height*0.74, innerWidth/48, innerWidth/48),
-        new Item(width*1.51, height*0.45, innerWidth/48, innerWidth/48),
-        new Item(width*1.95, height*0.45, innerWidth/48, innerWidth/48),
+        new Item(width * 1.25, height * 0.74, innerWidth / 48, innerWidth / 48),
+        new Item(width * 1.51, height * 0.45, innerWidth / 48, innerWidth / 48),
+        new Item(width * 1.95, height * 0.45, innerWidth / 48, innerWidth / 48),
 
-        new Item(width*2.25, height*0.74, innerWidth/48, innerWidth/48),
-        new Item(width*2.51, height*0.45, innerWidth/48, innerWidth/48),
-        new Item(width*2.95, height*0.45, innerWidth/48, innerWidth/48),
+        new Item(width * 2.25, height * 0.74, innerWidth / 48, innerWidth / 48),
+        new Item(width * 2.51, height * 0.45, innerWidth / 48, innerWidth / 48),
+        new Item(width * 2.95, height * 0.45, innerWidth / 48, innerWidth / 48),
     ];
 
     let lvltexts = [
-        new GameText(keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint,", "#000000", "#9700bd", width*0.125, height*0.65, 0.025),
+        new GameText(keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint,", "#000000", "#9700bd", width * 0.125, height * 0.65, 0.025),
     ];
-    
+
     return new Level(lvlplatforms, lvlitems, lvltexts);
 }
 
-function level3(){
+function level3() {
     //winx = width*3.5;
     let lvlplatforms = [
-        new Platform(0, height*0.8, width*0.5 , height*0.2),
+        new Platform(0, height * 0.8, width * 0.5, height * 0.2),
 
-        new Platform(width*0.65, height*0.7, width*0.1, height*0.015),
-        new Platform(width*0.9, height*0.5, width*0.1, height*0.015),
+        new Platform(width * 0.65, height * 0.7, width * 0.1, height * 0.015),
+        new Platform(width * 0.9, height * 0.5, width * 0.1, height * 0.015),
 
-        new Platform(width*1.15, height*0.3, width*0.2, height*0.015),
+        new Platform(width * 1.15, height * 0.3, width * 0.2, height * 0.015),
 
-        new Platform(width*1.5, height*0.5, width*0.1, height*0.015),
-        new Platform(width*1.75, height*0.7, width*0.1, height*0.015),
+        new Platform(width * 1.5, height * 0.5, width * 0.1, height * 0.015),
+        new Platform(width * 1.75, height * 0.7, width * 0.1, height * 0.015),
 
         //Platform
-        new Platform(width*2.1, height*0.81, width*0.025 , height*0.2),
-        new Platform(width*2.4, height*0.81, width*0.025 , height*0.2),
-        new Platform(width*2, height*0.8, width*0.5 , height*0.05),
+        new Platform(width * 2.1, height * 0.81, width * 0.025, height * 0.2),
+        new Platform(width * 2.4, height * 0.81, width * 0.025, height * 0.2),
+        new Platform(width * 2, height * 0.8, width * 0.5, height * 0.05),
         /*-------*/
 
-        new Platform(width*2.6, height*0.9, width*0.1, height*0.015),
-        new Platform(width*2.75, height*0.995, width*0.1, height*0.015),
-        new Platform(width*3.05, height*0.85, width*0.1, height*0.015),
-        
-        new Platform(width*3.3, height*0.8, width*0.7, height*0.2)
+        new Platform(width * 2.6, height * 0.9, width * 0.1, height * 0.015),
+        new Platform(width * 2.75, height * 0.995, width * 0.1, height * 0.015),
+        new Platform(width * 3.05, height * 0.85, width * 0.1, height * 0.015),
+
+        new Platform(width * 3.3, height * 0.8, width * 0.7, height * 0.2)
     ];
 
     let lvlitems = [
         new Item(0, 0, 0, 0),
-        new Item(width*0.69, height*0.6, innerWidth/48, innerWidth/48),
-        new Item(width*0.94, height*0.4, innerWidth/48, innerWidth/48),
-        
-        new Item(width*1.05, height*0.25, innerWidth/48, innerWidth/48),
-        new Item(width*1.4, height*0.3, innerWidth/48, innerWidth/48),
+        new Item(width * 0.69, height * 0.6, innerWidth / 48, innerWidth / 48),
+        new Item(width * 0.94, height * 0.4, innerWidth / 48, innerWidth / 48),
 
-        new Item(width*1.79, height*0.64, innerWidth/48, innerWidth/48),        
-        new Item(width*2.1, height*0.5, innerWidth/48, innerWidth/48),
-        new Item(width*2.4, height*0.74, innerWidth/48, innerWidth/48),
+        new Item(width * 1.05, height * 0.25, innerWidth / 48, innerWidth / 48),
+        new Item(width * 1.4, height * 0.3, innerWidth / 48, innerWidth / 48),
+
+        new Item(width * 1.79, height * 0.64, innerWidth / 48, innerWidth / 48),
+        new Item(width * 2.1, height * 0.5, innerWidth / 48, innerWidth / 48),
+        new Item(width * 2.4, height * 0.74, innerWidth / 48, innerWidth / 48),
     ];
-    
+
     let lvltexts = [
-        new GameText(keycodes[players[0].reassign.sneak].toUpperCase() + " to sneak,", "#000000", "#9700bd", width*0.125, height*0.65, 0.025),
-        new GameText("ESC to open the menu.", "#000000", "#9700bd", width*2.1, height*0.65, 0.025),
+        new GameText(keycodes[players[0].reassign.sneak].toUpperCase() + " to sneak,", "#000000", "#9700bd", width * 0.125, height * 0.65, 0.025),
+        new GameText("ESC to open the menu.", "#000000", "#9700bd", width * 2.1, height * 0.65, 0.025),
     ];
-    
+
     return new Level(lvlplatforms, lvlitems, lvltexts);
 }
 
-function randomGen(levelIndex){
+function randomGen(levelIndex) {
     let lvlplatforms = [];
     let lvlitems = [];
-    
-    lvlplatforms[0] = new Platform(0, height*0.8, width*0.5, height*0.2);
+
+    lvlplatforms[0] = new Platform(0, height * 0.8, width * 0.5, height * 0.2);
     lvlitems[0] = new Item(0, 0, 0, 0);
 
     // Seeded PRNG: mulberry32
@@ -609,91 +609,91 @@ function randomGen(levelIndex){
         t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
         return ((t ^ t >>> 14) >>> 0) / 4294967296;
     }
-    
-    if(seededRand() > 0.5){
-    const platpos = {
-        x: 0,
-        y: 0.8
-    };
-    const coinpos = {
-        x: 0,
-        y: 0
-    };
-    const platdim = {
-        x: 0.5,
-        y: 0.2
-    };
-    for(let i = 1; i < 9; i++){
-        platpos.x = seededRand() * ((platpos.x  + platdim.x)+ 0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
-        platpos.y = seededRand() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
 
-        platdim.x = seededRand() * (1 - 0.2) + 0.2;
-        platdim.y = seededRand() * (1 - 0.015) + 0.015;
+    if (seededRand() > 0.5) {
+        const platpos = {
+            x: 0,
+            y: 0.8
+        };
+        const coinpos = {
+            x: 0,
+            y: 0
+        };
+        const platdim = {
+            x: 0.5,
+            y: 0.2
+        };
+        for (let i = 1; i < 9; i++) {
+            platpos.x = seededRand() * ((platpos.x + platdim.x) + 0.28 - (platpos.x + platdim.x)) + (platpos.x + platdim.x);
+            platpos.y = seededRand() * (0.99 - (platpos.y - 0.25)) + (platpos.y - 0.25);
 
-        lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
+            platdim.x = seededRand() * (1 - 0.2) + 0.2;
+            platdim.y = seededRand() * (1 - 0.015) + 0.015;
 
-        //COINS man
-        if(game.difficulty != 'run'){
-            for(let j = 0; j < Math.floor(seededRand()*5); j++){
-                coinpos.x = seededRand() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
-                coinpos.y = seededRand() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
-                let tempItem = new Item(coinpos.x, coinpos.y, innerWidth/48, innerWidth/48);
-                console.log(tempItem);
-                if(tempItem && tempItem != null) lvlitems.push(tempItem);
+            lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width * platdim.x, height * platdim.y);
+
+            //COINS man
+            if (game.difficulty != 'run') {
+                for (let j = 0; j < Math.floor(seededRand() * 5); j++) {
+                    coinpos.x = seededRand() * (lvlplatforms[i].width + lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
+                    coinpos.y = seededRand() * (lvlplatforms[i].position.y - 0.06 * height - (lvlplatforms[i].position.y - 0.3 * height)) + (lvlplatforms[i].position.y - 0.3 * height);
+                    let tempItem = new Item(coinpos.x, coinpos.y, innerWidth / 48, innerWidth / 48);
+                    console.log(tempItem);
+                    if (tempItem && tempItem != null) lvlitems.push(tempItem);
+                }
             }
         }
-    }
 
-    }else{
-    const platpos = {
-        x: 0,
-        y: 0.8
-    };
-    const coinpos = {
-        x: 0,
-        y: 0
-    };
-    const platdim = {
-        x: 0.5,
-        y: 0.2
-    };
+    } else {
+        const platpos = {
+            x: 0,
+            y: 0.8
+        };
+        const coinpos = {
+            x: 0,
+            y: 0
+        };
+        const platdim = {
+            x: 0.5,
+            y: 0.2
+        };
 
-    for(let i = 1; i < 9; i++){
-        platpos.x = seededRand() * ((platpos.x  + platdim.x)+0.28 - (platpos.x  + platdim.x)) + (platpos.x  + platdim.x);
-        platpos.y = seededRand() * (0.99 - (platpos.y-0.25)) + (platpos.y-0.25);
+        for (let i = 1; i < 9; i++) {
+            platpos.x = seededRand() * ((platpos.x + platdim.x) + 0.28 - (platpos.x + platdim.x)) + (platpos.x + platdim.x);
+            platpos.y = seededRand() * (0.99 - (platpos.y - 0.25)) + (platpos.y - 0.25);
 
-        platdim.x = seededRand() * (0.3 - 0.1) + 0.1;
-        platdim.y = seededRand() * (0.025 - 0.015) + 0.015; 
-        lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width*platdim.x, height*platdim.y);
+            platdim.x = seededRand() * (0.3 - 0.1) + 0.1;
+            platdim.y = seededRand() * (0.025 - 0.015) + 0.015;
+            lvlplatforms[i] = new Platform(width * platpos.x, height * platpos.y, width * platdim.x, height * platdim.y);
 
-        //COINS man
-        if(game.difficulty != 'run' && seededRand() > 0.5){
-            coinpos.x = seededRand() * (lvlplatforms[i].width+lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
-            coinpos.y = seededRand() * (lvlplatforms[i].position.y-0.06*height - (lvlplatforms[i].position.y-0.3*height)) +  (lvlplatforms[i].position.y-0.3*height);
-            let tempItem = new Item(coinpos.x, coinpos.y, innerWidth/48, innerWidth/48);
-            console.log(tempItem);
-            if(tempItem && tempItem != null) lvlitems.push(tempItem);
-        } 
-    }
+            //COINS man
+            if (game.difficulty != 'run' && seededRand() > 0.5) {
+                coinpos.x = seededRand() * (lvlplatforms[i].width + lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
+                coinpos.y = seededRand() * (lvlplatforms[i].position.y - 0.06 * height - (lvlplatforms[i].position.y - 0.3 * height)) + (lvlplatforms[i].position.y - 0.3 * height);
+                let tempItem = new Item(coinpos.x, coinpos.y, innerWidth / 48, innerWidth / 48);
+                console.log(tempItem);
+                if (tempItem && tempItem != null) lvlitems.push(tempItem);
+            }
+        }
 
     }
     // Use seeded rand for last platform offset too
-    lvlplatforms[9] = new Platform(lvlplatforms[8].position.x+lvlplatforms[8].width + (seededRand()*0.3), height*0.8, width*0.5, height*0.2);
+    lvlplatforms[9] = new Platform(lvlplatforms[8].position.x + lvlplatforms[8].width + (seededRand() * 0.3), height * 0.8, width * 0.5, height * 0.2);
     console.log(lvlitems);
     return new Level(lvlplatforms, lvlitems);
 }
 
 ////TODO NOW
-function levelSwitch(victory){
+function levelSwitch(victory) {
     console.log(game.levels.length >= 2);
-    if(game.levels.length >= 2 && victory) game.levels.shift();
-    if(game.difficulty == "run"){
+    if (game.levels.length >= 2 && victory) game.levels.shift();
+    if (game.difficulty == "run") {
         game.addLevel(randomGen(game.level));
-        if(game.levels.length <= 1) game.addLevel(randomGen(game.level + 1));
+        if (game.levels.length <= 1) game.addLevel(randomGen(game.level + 1));
         return;
     }
     console.log("LEvel: " + game.level);
-    switch(game.level){
+    switch (game.level) {
         case 0:
             game.addLevel(level0());
             game.addLevel(level1());
@@ -721,10 +721,10 @@ function levelSwitch(victory){
 
 //TODO
 //maybe doch class? WIRKLICH NICHT SICHER is aber dann eh nur für tutorial
-function addText(text, x, y){
+function addText(text, x, y) {
     ctx.shadowBlur = 0;
     ctx.fillStyle = game.platformColor;
-    ctx.font = `${width/55}px Cascadia Code`;
+    ctx.font = `${width / 55}px Cascadia Code`;
     ctx.fillStyle = '#fff';
     ctx.fillText(text, x, y);
 }
@@ -777,7 +777,7 @@ function draw() {
     drawFrame();
 }
 
-function drawFrame(){
+function drawFrame() {
     //TODO fix rezize
     if (innerWidth != width || innerHeight != height) {
         const oldWidth = width;
@@ -834,33 +834,33 @@ function drawFrame(){
         });
     }
 
-    if(game.platformShadow == true && rgbCounter >= 100 || players.some(player => player.color === true) && rgbCounter >= 100){
+    if (game.platformShadow == true && rgbCounter >= 100 || players.some(player => player.color === true) && rgbCounter >= 100) {
         rgbCounter = 0;
-        rgbColor = '#'+(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
+        rgbColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0');
     }
     rgbCounter++;
-    
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
-/*
-
-    players.forEach(player => {
-        player.draw();
-    });
+    /*
     
-    platforms.forEach(platform => {
-        platform.draw();
-    });
-    
-    items.forEach(item => {
-        item.draw();
-    });
-*/
-    if(game.difficulty == 'impossible'){
-        game.coins = Math.floor(game.ratioDistance/3);
-        if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
-    } 
+        players.forEach(player => {
+            player.draw();
+        });
+        
+        platforms.forEach(platform => {
+            platform.draw();
+        });
+        
+        items.forEach(item => {
+            item.draw();
+        });
+    */
+    if (game.difficulty == 'impossible') {
+        game.coins = Math.floor(game.ratioDistance / 3);
+        if (game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
+    }
 
 
     game.draw();
@@ -869,89 +869,89 @@ function drawFrame(){
     ctx.restore();
 }
 let clickcount = 0;
-function updatePhysics(){
-    updateCameraPosition();   
+function updatePhysics() {
+    updateCameraPosition();
 
-    players.forEach(player =>{
-    if(!mobile && gamepad && player.gamepadIndex !== undefined){
-        const gamePads = navigator.getGamepads();
+    players.forEach(player => {
+        if (!mobile && gamepad && player.gamepadIndex !== undefined) {
+            const gamePads = navigator.getGamepads();
             const myGamepad = gamePads[player.id];
             //console.log(myGamepad);
             myGamepad.buttons.map(e => e.touched).forEach((isPressed, buttonIndex) => {
                 if (isPressed) {
                     // button is pressed; indicate this on the page
                     //console.log(`Button ${buttonIndex} is pressed`);
-                    if(buttonIndex === 0 || buttonIndex === 1 ){//|| buttonIndex === 12){
+                    if (buttonIndex === 0 || buttonIndex === 1) {//|| buttonIndex === 12){
                         player.keys.jump = true;
                         console.log("jump")
                     }
-                    if(buttonIndex === 13){
-                        player.keys.down = true;      
+                    if (buttonIndex === 13) {
+                        player.keys.down = true;
                         player.velocity.y += 15;
                     }
-                    if(buttonIndex === 4 || buttonIndex === 2 || buttonIndex === 3){
+                    if (buttonIndex === 4 || buttonIndex === 2 || buttonIndex === 3) {
                         player.keys.sprint = true;
                     }
-                    if(buttonIndex === 5){
+                    if (buttonIndex === 5) {
                         player.keys.sneak = true;
                     }
-                    if(buttonIndex === 15){
+                    if (buttonIndex === 15) {
                         player.keys.right = true;
                     }
-                    if(buttonIndex === 14){
+                    if (buttonIndex === 14) {
                         player.keys.left = true;
                     }
-                    if(buttonIndex === 9){
+                    if (buttonIndex === 9) {
                         window.location.assign('index.html');
                     }
                 }
-                if(!isPressed){
-                    setTimeout(function(){
-    
+                if (!isPressed) {
+                    setTimeout(function () {
+
                         player.keys.jump = false;
                         player.keys.left = false;
                         player.keys.right = false;
-                        player.keys.sprint = false;                    
+                        player.keys.sprint = false;
                         player.keys.down = false;
                         player.keys.sneak = false;
-                    }, 0); 
-                        
+                    }, 0);
+
                 }
             });
-        //const myGamepad = navigator.getGamepads()[player.gamepadIndex];      
-    }
-    
-});
+            //const myGamepad = navigator.getGamepads()[player.gamepadIndex];      
+        }
+
+    });
 
     players.forEach(player => {
-        if(game.difficulty == 'run') player.keys.left = false;
-        if(game.difficulty == 'run') player.keys.right = true;
+        if (game.difficulty == 'run') player.keys.left = false;
+        if (game.difficulty == 'run') player.keys.right = true;
         player.update();
     });
     players.forEach(player => {
         //border
-        if(player.position.x <= game.getCurrentLevel().firstPlatform().position.x){
+        if (player.position.x <= game.getCurrentLevel().firstPlatform().position.x) {
             player.position.x = game.getCurrentLevel().firstPlatform().position.x;
             player.keys.left = false;
         }
-        if(player.leader){
-            if(player.keys.jump && player.velocity.y == game.gravity){
+        if (player.leader) {
+            if (player.keys.jump && player.velocity.y == game.gravity) {
                 player.velocity.y -= game.jumpforce; // double jump mit counter <= 2 ig
             }
-            if(player.keys.sprint){
-                speed = width*(game.multiplier*2.24); //                                                             inc
-            }else if(player.keys.sneak){
-                speed = width*(game.multiplier*0.1);
-            }else{
-                speed = width*game.multiplier;
+            if (player.keys.sprint) {
+                speed = width * (game.multiplier * 2.24); //                                                             inc
+            } else if (player.keys.sneak) {
+                speed = width * (game.multiplier * 0.1);
+            } else {
+                speed = width * game.multiplier;
             }
-            if(player.keys.right && player.position.x < startScrollR){
+            if (player.keys.right && player.position.x < startScrollR) {
                 player.velocity.x = speed;
-            }else if(player.keys.left && player.position.x > startScrollL){
-                player.velocity.x = speed *-1;
-            }else if(player.leader){
+            } else if (player.keys.left && player.position.x > startScrollL) {
+                player.velocity.x = speed * -1;
+            } else if (player.leader) {
                 player.velocity.x = 0;
-                if(player.keys.right){
+                if (player.keys.right) {
                     //console.log(speed)
                     game.scrollOffset += speed;
                     game.distance += speed;
@@ -964,7 +964,7 @@ function updatePhysics(){
                     }*/
 
                     // fake next plat 
-                    if(game.levels[1]){
+                    if (game.levels[1]) {
                         game.levels[1].platforms.forEach(platform => {
                             platform.position.x -= speed;
                         });
@@ -975,7 +975,7 @@ function updatePhysics(){
                             text.position.x -= speed;
                         });
                     }
-                   
+
 
                     game.getCurrentLevel().platforms.forEach(platform => {
                         platform.position.x -= speed;
@@ -988,9 +988,9 @@ function updatePhysics(){
                     });
 
                     players.forEach(player => {
-                        if(!player.leader) player.position.x -= speed;
+                        if (!player.leader) player.position.x -= speed;
                     });
-                }else if(player.keys.left){
+                } else if (player.keys.left) {
                     game.scrollOffset -= speed;
                     game.distance -= speed;
 
@@ -1002,19 +1002,19 @@ function updatePhysics(){
                         });
                     }*/
                     // fake next plat
-                    if(game.levels[1]){
+                    if (game.levels[1]) {
                         game.levels[1].platforms.forEach(platform => {
                             platform.position.x += speed;
                         });
                         game.levels[1].items.forEach(item => {
                             item.position.x += speed;
                         });
-                        
+
                         game.levels[1].texts.forEach(text => {
                             text.position.x += speed;
                         });
                     }
-                    
+
                     game.getCurrentLevel().platforms.forEach(platform => {
                         platform.position.x += speed;
                     });
@@ -1026,80 +1026,80 @@ function updatePhysics(){
                     });
 
                     players.forEach(player => {
-                        if(!player.leader) player.position.x += speed;
+                        if (!player.leader) player.position.x += speed;
                     });
                 }
             }
         }
-        
-        if(!player.leader){
-            if(player.keys.jump && player.velocity.y == game.gravity){
+
+        if (!player.leader) {
+            if (player.keys.jump && player.velocity.y == game.gravity) {
                 player.velocity.y -= game.jumpforce; // double jump mit counter <= 2 ig
             }
-            if(player.keys.sprint){
-                speed = width*(game.multiplier*2.24); //                                                             inc
-            }else if(player.keys.sneak){
-                speed = width*(game.multiplier*0.1);
-            }else{
-                speed = width*game.multiplier;
+            if (player.keys.sprint) {
+                speed = width * (game.multiplier * 2.24); //                                                             inc
+            } else if (player.keys.sneak) {
+                speed = width * (game.multiplier * 0.1);
+            } else {
+                speed = width * game.multiplier;
             }
-            if(player.keys.right){
+            if (player.keys.right) {
                 player.velocity.x = speed;
-            }else if(player.keys.left){
-                player.velocity.x = speed *-1; //iohwrughseruighjpriughrhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
-            }else player.velocity.x = 0;
+            } else if (player.keys.left) {
+                player.velocity.x = speed * -1; //iohwrughseruighjpriughrhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+            } else player.velocity.x = 0;
         }
         // full platform collision (jump up from underneath)
         game.getCurrentLevel().platforms.forEach(platform => {
-            if(player.position.y + player.height <= platform.position.y 
+            if (player.position.y + player.height <= platform.position.y
                 && player.position.y + player.height + player.velocity.y >= platform.position.y
-                && player.position.x + player.width >= platform.position.x 
-                && player.position.x <= platform.position.x + platform.width){
+                && player.position.x + player.width >= platform.position.x
+                && player.position.x <= platform.position.x + platform.width) {
                 player.velocity.y = 0;
             }
         });
 
         // full Item collision
         game.getCurrentLevel().items.forEach(item => {
-            if(player.position.y + player.height >= item.position.y
-                && player.position.y<= item.position.y + item.height
+            if (player.position.y + player.height >= item.position.y
+                && player.position.y <= item.position.y + item.height
                 && player.position.x + player.width >= item.position.x
-                && player.position.x<= item.position.x + item.width){
-                    if(item.music){
-                        item.music.play();
-                    }
-                    game.coins++;
-                    //coinCollect.play();
-                    if(game.difficulty == 'impossible') gameOver();
-                    coins++;
-                    if(game.difficulty == 'hard') coins++;
-                    if(game.difficulty == 'easy') coins -= 0.5;
-                    game.lvlCoins++;
-                    if(game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
-                    item.width = 0;
-                    item.position.y = -9999;
+                && player.position.x <= item.position.x + item.width) {
+                if (item.music) {
+                    item.music.play();
+                }
+                game.coins++;
+                //coinCollect.play();
+                if (game.difficulty == 'impossible') gameOver();
+                coins++;
+                if (game.difficulty == 'hard') coins++;
+                if (game.difficulty == 'easy') coins -= 0.5;
+                game.lvlCoins++;
+                if (game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
+                item.width = 0;
+                item.position.y = -9999;
             }
         });
-        if(player.position.y >= height*2){
+        if (player.position.y >= height * 2) {
             gameOver();
         }
-        if(game.scrollOffset >= game.getCurrentLevel().winx -width/2){//- width){
+        if (game.scrollOffset >= game.getCurrentLevel().winx - width / 2) {//- width){
             victory();
         }
     });
 
-    if(localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function'){
+    if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
         window._emitPosition();
     }
     printScores();
 }
-if(game.difficulty == 'run')document.getElementById('coins').innerHTML = ' ';
+if (game.difficulty == 'run') document.getElementById('coins').innerHTML = ' ';
 else document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
 
 //TODO
-if(game.difficulty != 'impossible')coin.src = "img/coin.png";
+if (game.difficulty != 'impossible') coin.src = "img/coin.png";
 else coin.src = "img/skull.png";
-coin.onload = function() {
+coin.onload = function () {
     coinLoad = true;
     console.log("coinloaded");
     imgLoaded();
@@ -1122,8 +1122,8 @@ checkpoint.src = "img/checkpoint.png";
 }*/
 
 //TODO
-function imgLoaded(){
-    if(coinLoad /*&& checkpointLoad*/ /*&& musicLoad*/){
+function imgLoaded() {
+    if (coinLoad /*&& checkpointLoad*/ /*&& musicLoad*/) {
         //playMusic();
         levelSwitch();
         update();
@@ -1132,7 +1132,7 @@ function imgLoaded(){
 }
 
 // userMenu
-function userMenu(){
+function userMenu() {
     document.getElementById('blur').style.filter = "blur(10px)";
     document.getElementById('clearMenu').innerHTML = `
     <div id="menu">
@@ -1194,22 +1194,22 @@ function userMenu(){
     /*for(let i = 0; i < players.length; i++){
         if(i != x)$('#playerholder').append(`<h3 onclick="remapKeys(${i})">Player ${i+1}</h3>`);
     }*/
-    
-    for(let i = 0; i < players.length; i++){
-        $('#whatplayer').append(`<option value="${i}">Player ${i+1}</option>`);
+
+    for (let i = 0; i < players.length; i++) {
+        $('#whatplayer').append(`<option value="${i}">Player ${i + 1}</option>`);
     }
     console.log(players[document.getElementById('whatplayer').value ?? 0].color);
     console.log(game.platformShadow);
     console.log(game.platformColor);
     document.getElementById("Player-Color").value = "" + players[0].color;
-    if(game.platformShadow) document.getElementById("Platform-Shadow").value = "" + game.platformShadow;
+    if (game.platformShadow) document.getElementById("Platform-Shadow").value = "" + game.platformShadow;
     else document.getElementById("Platform-Shadow").value = '#ffffff';
     document.getElementById("Platform-Color").value = "" + game.platformColor;
-    
+
     colorInput();
 
     //$('#playerholder').append(``);
-            
+
     //remapKeys(0);
     /*charface = document.getElementById('charface');
     charface.addEventListener("keyup", function (event) {
@@ -1223,7 +1223,7 @@ function userMenu(){
     console.log(document.getElementById('whatplayer').value ?? 0);
     console.log(players[document.getElementById('whatplayer').value ?? 0].color == true);
     console.log(game.platformShadow);
-    if(players[document.getElementById('whatplayer').value ?? 0].color == true && game.platformShadow == true) document.getElementById("RGB").checked = true;
+    if (players[document.getElementById('whatplayer').value ?? 0].color == true && game.platformShadow == true) document.getElementById("RGB").checked = true;
     else document.getElementById("RGB").checked = false;
     $('#RGB').click(function () {
         if (this.checked) {
@@ -1234,26 +1234,26 @@ function userMenu(){
             players[document.getElementById('whatplayer').value ?? 0].color = false;
             game.platformShadow = false;
         }
-        if(players[document.getElementById('whatplayer').value ?? 0].color == true) document.getElementById("playerrgb").checked = true;
+        if (players[document.getElementById('whatplayer').value ?? 0].color == true) document.getElementById("playerrgb").checked = true;
         else document.getElementById("playerrgb").checked = false;
 
-        if(game.platformShadow == true) document.getElementById("platrgb").checked = true;
+        if (game.platformShadow == true) document.getElementById("platrgb").checked = true;
         else document.getElementById("platrgb").checked = false;
         colorInput();
     });
 
-    if(players[document.getElementById('whatplayer').value ?? 0].color == true) document.getElementById("playerrgb").checked = true;
+    if (players[document.getElementById('whatplayer').value ?? 0].color == true) document.getElementById("playerrgb").checked = true;
     else document.getElementById("playerrgb").checked = false;
     $('#playerrgb').click(function () {
         if (this.checked) {
             players[document.getElementById('whatplayer').value ?? 0].color = true;
         } else {
             players[document.getElementById('whatplayer').value ?? 0].color = false;
-        } 
+        }
         colorInput();
     });
 
-    if(game.platformShadow == true) document.getElementById("platrgb").checked = true;
+    if (game.platformShadow == true) document.getElementById("platrgb").checked = true;
     else document.getElementById("platrgb").checked = false;
     $('#platrgb').click(function () {
         if (this.checked) {
@@ -1286,38 +1286,38 @@ function userMenu(){
     console.log("------menu opened------");
     menu = true;
 
-    
+
 }
 
-function colorInput(){
+function colorInput() {
 
     //TODO for alli
-    if(players[document.getElementById('whatplayer').value ?? 0]?.color == true){
-        $('#Player-Color').fadeTo( "slow", 0.33 );
-        $( "#Player-Color" ).prop( "disabled", true );
-        $( "#Player-Color" ).css('cursor', 'not-allowed');
-    }else{
-        $('#Player-Color').fadeTo( "slow", 1 );
-        $( "#Player-Color" ).prop( "disabled", false );
-        $( "#Player-Color" ).css('cursor', 'pointer');
+    if (players[document.getElementById('whatplayer').value ?? 0]?.color == true) {
+        $('#Player-Color').fadeTo("slow", 0.33);
+        $("#Player-Color").prop("disabled", true);
+        $("#Player-Color").css('cursor', 'not-allowed');
+    } else {
+        $('#Player-Color').fadeTo("slow", 1);
+        $("#Player-Color").prop("disabled", false);
+        $("#Player-Color").css('cursor', 'pointer');
     }
-    if(game.platformShadow == true){
-        $('#Platform-Shadow').fadeTo( "slow", 0.33 );
-        $( "#Platform-Shadow" ).prop( "disabled", true );
-        $( "#Platform-Shadow" ).css('cursor', 'not-allowed');
-    }else{
-        $('#Platform-Shadow').fadeTo( "slow", 1 );
-        $( "#Platform-Shadow" ).prop( "disabled", false );
-        $( "#Platform-Shadow" ).css('cursor', 'pointer');
+    if (game.platformShadow == true) {
+        $('#Platform-Shadow').fadeTo("slow", 0.33);
+        $("#Platform-Shadow").prop("disabled", true);
+        $("#Platform-Shadow").css('cursor', 'not-allowed');
+    } else {
+        $('#Platform-Shadow').fadeTo("slow", 1);
+        $("#Platform-Shadow").prop("disabled", false);
+        $("#Platform-Shadow").css('cursor', 'pointer');
     }
 }
 
 function rgb2hex(rgb) {
     rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
     console.log((rgb && rgb.length === 4) ? "#" +
-    ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-    ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-    ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '');
+        ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+        ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+        ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '');
     return (rgb && rgb.length === 4) ? "#" +
         ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
         ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
@@ -1328,14 +1328,14 @@ function componentToHex(c) {
     return hex.length == 1 ? "0" + hex : hex;
 }
 
-function closeMenu(){
+function closeMenu() {
     //changeFace();
     document.getElementById('blur').style.filter = "blur(0px)";
     document.getElementById('clearMenu').style.opacity = 0;
     setTimeout(clearMenu, "501")
     console.log("------menu closed------");
     saveSettings();
-    
+
     //pressAnyButton();
     menu = false;
     update();
@@ -1346,12 +1346,12 @@ function clearMenu() {
 }
 
 // CUSTOMSTUFF
-function saveGame(){
+function saveGame() {
     localStorage.setItem("coins", game.coins);
     localStorage.setItem("level", game.level);
     localStorage.setItem("attempts", game.attempts);
 }
-function saveSettings(){
+function saveSettings() {
     localStorage.setItem("game", JSON.stringify(game));
     localStorage.setItem("players", JSON.stringify(players));
 
@@ -1359,13 +1359,13 @@ function saveSettings(){
     localStorage.setItem("platcolor", game.platformColor);
     localStorage.setItem("platshadow", game.platformShadow);
 
-    if(players[0].color == true) localStorage.setItem("playerrainbow", JSON.stringify(true));
+    if (players[0].color == true) localStorage.setItem("playerrainbow", JSON.stringify(true));
     else localStorage.setItem("playerrainbow", JSON.stringify(false));
-    if(game.platformColor == true) localStorage.setItem("platrainbow", JSON.stringify(true));
+    if (game.platformColor == true) localStorage.setItem("platrainbow", JSON.stringify(true));
     else localStorage.setItem("platrainbow", JSON.stringify(false));
 
     //todo so den rest bzw alles lassen weil eh players gespeichert wird
-    players.forEach(player => { 
+    players.forEach(player => {
         localStorage.setItem("charface" + player.id, player.text);
     });
 }
@@ -1377,7 +1377,7 @@ function changeFace(){
 }
 */
 
-function victory(){
+function victory() {
     game.scrollOffset = 0;
     game.lvlDistance = game.distance;
     game.lvlCoins = 0;
@@ -1388,7 +1388,7 @@ function victory(){
     }
 }
 
-function gameOver(){
+function gameOver() {
     // Generate a new random seed for next attempt if custom seed was not specified and NOT in multiplayer
     if (localStorage.getItem('customSeedUsed') !== 'true' && localStorage.getItem('multiplayer') !== 'true') {
         window._mapSeed = Math.floor(Math.random() * 999999999);
@@ -1397,19 +1397,19 @@ function gameOver(){
             seedEl.textContent = '🌱 ' + window._mapSeed;
         }
     }
-    
-    if(game.difficulty == 'hard' || game.difficulty == 'impossible' || game.difficulty == 'run') saveScore(game);
 
-    if(game.difficulty == 'easy'){
-        players.forEach(player => { 
+    if (game.difficulty == 'hard' || game.difficulty == 'impossible' || game.difficulty == 'run') saveScore(game);
+
+    if (game.difficulty == 'easy') {
+        players.forEach(player => {
             player.position.y = -200;
             player.position.x = startScrollL;
-            player.velocity.y = game.gravity*15;
+            player.velocity.y = game.gravity * 15;
         });
         game.attempts++;
     }
-    if(game.difficulty == 'normal'){
-        players.forEach(player => { 
+    if (game.difficulty == 'normal') {
+        players.forEach(player => {
             player.position.x = 120;
             player.position.y = 100;
             player.velocity.y = game.gravity;
@@ -1420,9 +1420,9 @@ function gameOver(){
         game.coins -= game.lvlCoins;
         game.lvlCoins = 0;
     }
-    if(game.difficulty == 'hard' || game.difficulty == 'run'){
+    if (game.difficulty == 'hard' || game.difficulty == 'run') {
         game.level = 0;
-        players.forEach(player => { 
+        players.forEach(player => {
             player.position.x = 120;
             player.position.y = 100;
             player.velocity.y = game.gravity;
@@ -1439,9 +1439,9 @@ function gameOver(){
             window._emitPosition();
         }
     }
-    if(game.difficulty == 'impossible'){
+    if (game.difficulty == 'impossible') {
         game.level = 0;
-        players.forEach(player => { 
+        players.forEach(player => {
             player.position.x = 120;
             player.position.y = 100;
             player.velocity.y = game.gravity;
@@ -1451,7 +1451,7 @@ function gameOver(){
         game.attempts++;
         game.coins = 0;
         game.lvlCoins = 0;
-        
+
         game.levels = [];
         levelSwitch();
         if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
@@ -1462,16 +1462,16 @@ function gameOver(){
 }
 
 document.getElementById('fullscreen').addEventListener('click', fullScreen);
-function fullScreen(){
+function fullScreen() {
     //document.body.requestFullscreen();
     console.log('eyman')
-    if(document.body.requestFullscreen) {
+    if (document.body.requestFullscreen) {
         document.body.requestFullscreen();
-      } else if(document.body.msRequestFullscreen) {      // for IE11 (remove June 15, 2022)
+    } else if (document.body.msRequestFullscreen) {      // for IE11 (remove June 15, 2022)
         document.body.msRequestFullscreen();
-      } else if(document.body.webkitRequestFullscreen) {  // iOS Safari
+    } else if (document.body.webkitRequestFullscreen) {  // iOS Safari
         document.body.webkitRequestFullscreen();
-      }
+    }
 }
 
 document.onkeydown = keyListenerDown;
@@ -1482,9 +1482,9 @@ function keyListenerDown(e) {
     console.log(e);
     console.log(e.keyCode);
     */
-    if(!menu){
-        players.forEach(player => { 
-            switch (e.keyCode){
+    if (!menu) {
+        players.forEach(player => {
+            switch (e.keyCode) {
                 // up
                 //case 38:        
                 //case 87:     
@@ -1493,7 +1493,7 @@ function keyListenerDown(e) {
                     break;
                 // right
                 //case 39:        
-                case player.reassign?.right:        
+                case player.reassign?.right:
                     player.keys.right = true;
                     break;
                 // left
@@ -1503,12 +1503,12 @@ function keyListenerDown(e) {
                     break;
                 // down
                 //case 40:        
-                case player.reassign?.down:  
-                    player.keys.down = true;      
+                case player.reassign?.down:
+                    player.keys.down = true;
                     player.velocity.y += 15;
                     break;
                 // shift
-                case player.reassign?.sprint:        
+                case player.reassign?.sprint:
                     player.keys.sprint = true;
                     break;
                 // sneak
@@ -1517,22 +1517,22 @@ function keyListenerDown(e) {
                     player.keys.sneak = true;
             }
         });
-        switch(e.keyCode){
+        switch (e.keyCode) {
             case 27:
                 userMenu();
         }
-    }else{
-        switch (e.keyCode){
+    } else {
+        switch (e.keyCode) {
             case 27:
                 closeMenu();
         }
     }
-    
+
 }
 
 function keyListenerUp(e) {
-    players.forEach(player => { 
-        switch (e.keyCode){
+    players.forEach(player => {
+        switch (e.keyCode) {
             case player.reassign?.sprint:        // shift
                 player.keys.sprint = false;
                 break;
@@ -1541,18 +1541,18 @@ function keyListenerUp(e) {
                 player.keys.left = false;
                 break;
             //case 39:        // right
-            case player.reassign?.right:        
+            case player.reassign?.right:
                 player.keys.right = false;
                 break;
             //case 38:        // up
             //case 87:     
-            case player.reassign?.jump: 
-                player.keys.jump = false;  
+            case player.reassign?.jump:
+                player.keys.jump = false;
                 break;
             //case 40:        // down
-            case player.reassign?.down:  
-                    player.keys.down = false;     
-                    break;
+            case player.reassign?.down:
+                player.keys.down = false;
+                break;
             // sneak
             //case 20:
             case player.reassign?.sneak:
@@ -1563,39 +1563,39 @@ function keyListenerUp(e) {
 }
 
 // mobile keypresses....
-function mobileJump(){
+function mobileJump() {
     players[0].keys.jump = true;
 }
-function mobileRight(){
+function mobileRight() {
     players[0].keys.right = true;
     players[0].keys.sprint = true;
 }
-function mobileLeft(){
+function mobileLeft() {
     players[0].keys.left = true;
     players[0].keys.sprint = true;
 }
-function mobileStop(){
+function mobileStop() {
     players[0].keys.right = false;
     players[0].keys.left = false;
 }
-function stopJump(){
+function stopJump() {
     players[0].keys.jump = false;
 }
 
 
 //reassign stuff
-function remapKeys(x){
-    if(!mobile){   
+function remapKeys(x) {
+    if (!mobile) {
         //remap keys https://codepen.io/jdoleary/pen/NqdmOM
 
         let actions = players[x].reassign;
         tempHtml = $("#whatplayer");
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#keybindbox').empty();
             $('#keybindbox').append(`<h2>Keybindings</h2>
                                     <div id="playerholder" ><select id="whatplayer" name="player"></select></div>
                                     <div id="keyinputholder" ></div>`);
-            
+
             //create inputs:
             for (let a in actions) {
                 $('#keyinputholder').append('<div class="keybox"><h3>' + a.charAt(0).toUpperCase() + a.substring(1, a.length) + ': ' + '</h3><input class="keyinput" name="' + a + '" value="' + keycodes[actions[a]] + '" type="text"/></div>');
@@ -1605,7 +1605,7 @@ function remapKeys(x){
                 $('#keymap').html(JSON.stringify(players[x].reassign, null, '<br/>'));
             }
             //set input handler for reassigning keys:
-            $('.keyinput').keyup(function() {
+            $('.keyinput').keyup(function () {
                 //show which key was pressed
                 this.value = keycodes[event.keyCode];
                 //set the new value in the reassign object
@@ -1622,25 +1622,25 @@ function remapKeys(x){
                 //$('#keybindbox').empty();
                 remapKeys(document.getElementById('whatplayer').value);
             });
-        
+
         });
-        if(players[x].reassign != actions){
+        if (players[x].reassign != actions) {
             reassigned = true;
         }
     }
 }
-if(players.length > 1)players[1].reassign = {jump: 38, left: 37, right: 39, down: 40, sneak: 17, sprint: 13};
+if (players.length > 1) players[1].reassign = { jump: 38, left: 37, right: 39, down: 40, sneak: 17, sprint: 13 };
 
-if(game.difficulty == 'run' && !buttonpressed) pressAnyButton();
-function pressAnyButton(){
+if (game.difficulty == 'run' && !buttonpressed) pressAnyButton();
+function pressAnyButton() {
     $(document).ready(function () {
         $("body").append(`<h2 id="buttonpressed" >PRESS ANY BUTTON</h2>`);
         document.getElementById('blur').style.filter = "blur(10px)";
         menu = true;
         $("body").keypress(function () {
             menu = false;
-            if(!buttonpressed) update();
-            if(!buttonpressed) draw();
+            if (!buttonpressed) update();
+            if (!buttonpressed) draw();
             $("#buttonpressed").empty();
             document.getElementById('buttonpressed').style.display = "none";
             document.getElementById('blur').style.filter = "blur(0px)";
@@ -1669,92 +1669,92 @@ window.addEventListener("gamepaddisconnected", function (e) {
 
 function updateCameraPosition() {
     players.forEach(player => {
-        if(player.leader){
-            camera.x += (player.position.x + player.width/2     - canvas.width/2.5    - camera.x) * cameraSpeed;
-            if(camera.y <= height*0.25){
+        if (player.leader) {
+            camera.x += (player.position.x + player.width / 2 - canvas.width / 2.5 - camera.x) * cameraSpeed;
+            if (camera.y <= height * 0.25) {
                 cameraSpeed = 0.1;
-                camera.y += (player.position.y + player.height/2    - canvas.height/1.8   - camera.y) * cameraSpeed;
-            }else{
+                camera.y += (player.position.y + player.height / 2 - canvas.height / 1.8 - camera.y) * cameraSpeed;
+            } else {
                 cameraSpeed *= 0.99;
-                if(cameraSpeed <= 0.01){
-                    cameraSpeed = 0.1;    
+                if (cameraSpeed <= 0.01) {
+                    cameraSpeed = 0.1;
                 }
-                camera.y += (player.position.y + player.height/2    - canvas.height/1.8   - camera.y) * cameraSpeed*0.5;
+                camera.y += (player.position.y + player.height / 2 - canvas.height / 1.8 - camera.y) * cameraSpeed * 0.5;
             }
-            
+
         }
     });
 }
 
 function moveProgressBar(percentage) {
-    let elem = document.getElementById("myBar");   
+    let elem = document.getElementById("myBar");
     elem.style.width = percentage + '%';
     //document.getElementById("demo").innerHTML = Math.round(percentage)  + '%'; //<p id="demo">0%</p>
     //danke w3schools oba eicha progressbar is verbuggt meine is bessa ;D
 }
 
-function printScores(){
-    let ratioWin = Math.round((game.getCurrentLevel().winx/100+game.lvlDistance/100) * (baseWidth/width));
-    let ratiolvlDistance = Math.round((game.getCurrentLevel().winx/100) * (baseWidth/width));
-    let ratioDistance = Math.round(game.distance/100 * (baseWidth/width));
+function printScores() {
+    let ratioWin = Math.round((game.getCurrentLevel().winx / 100 + game.lvlDistance / 100) * (baseWidth / width));
+    let ratiolvlDistance = Math.round((game.getCurrentLevel().winx / 100) * (baseWidth / width));
+    let ratioDistance = Math.round(game.distance / 100 * (baseWidth / width));
     /*document.getElementById('z').innerHTML = "Win: " + ratioWin;
     document.getElementById('a').innerHTML = "Distance: " + ratioDistance;
     */
     game.ratioDistance = ratioDistance;
     document.getElementById('a').innerHTML = "  " + ratioDistance;
-    
-    if(ratioDistance != 0){
-        moveProgressBar(((game.distance-game.lvlDistance)/(game.getCurrentLevel().winx))*100);
+
+    if (ratioDistance != 0) {
+        moveProgressBar(((game.distance - game.lvlDistance) / (game.getCurrentLevel().winx)) * 100);
     }
 }
 
 function getLoggedUser() {
-  let cookies = document.cookie.split(";");
-  let userId = null;
-  let username = "";
+    let cookies = document.cookie.split(";");
+    let userId = null;
+    let username = "";
 
-  for (let i = 0; i < cookies.length; i++) {
-    let cookie = cookies[i].trim();
+    for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i].trim();
 
-    if (cookie.indexOf("user_id=") === 0) {
-      userId = cookie.substring("user_id=".length);
+        if (cookie.indexOf("user_id=") === 0) {
+            userId = cookie.substring("user_id=".length);
+        }
+
+        if (cookie.indexOf("username=") === 0) {
+            username = cookie.substring("username=".length);
+        }
     }
 
-    if (cookie.indexOf("username=") === 0) {
-      username = cookie.substring("username=".length);
+    if (!window._guestName) {
+        if (localStorage.getItem('sr_guest_name')) {
+            window._guestName = localStorage.getItem('sr_guest_name');
+        } else {
+            const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
+            const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            window._guestName = 'sr_player_' + adj + noun;
+            localStorage.setItem('sr_guest_name', window._guestName);
+        }
     }
-  }
 
-  if (!window._guestName) {
-      if (localStorage.getItem('sr_guest_name')) {
-          window._guestName = localStorage.getItem('sr_guest_name');
-      } else {
-          const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
-          const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
-          const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-          const noun = nouns[Math.floor(Math.random() * nouns.length)];
-          window._guestName = 'sr_player_' + adj + noun;
-          localStorage.setItem('sr_guest_name', window._guestName);
-      }
-  }
+    console.log("User ID: " + userId + ", Username: " + username);
+    const displayUser = username || window._guestName;
+    document.getElementById("loggeduser").innerHTML = displayUser;
 
-  console.log("User ID: " + userId + ", Username: " + username);
-  const displayUser = username || window._guestName;
-  document.getElementById("loggeduser").innerHTML = displayUser;
+    if (typeof players !== 'undefined' && players[0]) {
+        if (username) {
+            players[0].text = username;
+        } else {
+            players[0].text = window._guestName;
+        }
+    }
 
-  if (typeof players !== 'undefined' && players[0]) {
-      if (username) {
-          players[0].text = username;
-      } else {
-          players[0].text = window._guestName;
-      }
-  }
-
-  return userId;
+    return userId;
 }
 
 getLoggedUser();
-  
+
 
 
 function saveScore(score) {
@@ -1768,24 +1768,24 @@ function saveScore(score) {
     data.append('level', score.level ?? 0);
     data.append('seed', window._mapSeed ?? '');
     console.log(...data);
-    
+
     fetch('./php/save_score.php', {
-      method: 'POST',
-      body: data,
+        method: 'POST',
+        body: data,
     })
-    .then(response => response.json())
-    .then(result => {
-      if (!result.success) {
-        console.error('Score save failed:', result.error);
-      } else {
-        // Show achievement notification
-        if (result.personalBest) showAchievement('🏆 New Personal Best!', '#f0c040');
-        else if (result.globalRank && result.globalRank <= 10) showAchievement(`🚀 Top ${result.globalRank} on Leaderboard!`, '#9700bd');
-      }
-    })
-    .catch(error => {
-      console.error('Error saving score:', error);
-    });
+        .then(response => response.json())
+        .then(result => {
+            if (!result.success) {
+                console.error('Score save failed:', result.error);
+            } else {
+                // Show achievement notification
+                if (result.personalBest) showAchievement('🏆 New Personal Best!', '#f0c040');
+                else if (result.globalRank && result.globalRank <= 10) showAchievement(`🚀 Top ${result.globalRank} on Leaderboard!`, '#9700bd');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving score:', error);
+        });
 }
 
 function showAchievement(text, color) {
@@ -1824,13 +1824,13 @@ const remotePlayers = {};
 (function setupSeed() {
     const isCustom = localStorage.getItem('customSeedUsed') === 'true';
     const stored = localStorage.getItem('mapSeed');
-    
+
     if (isCustom && stored) {
         window._mapSeed = parseInt(stored);
     } else {
         window._mapSeed = Math.floor(Math.random() * 999999999);
     }
-    
+
     const seedEl = document.getElementById('seed-display');
     if (seedEl) {
         seedEl.textContent = '🌱 ' + window._mapSeed;
@@ -1879,7 +1879,21 @@ if (localStorage.getItem('multiplayer') === 'true') {
         });
 
         socket.on('playerdata', (data) => {
-            remotePlayers[data.socketId || 'remote'] = data;
+            const id = data.socketId || 'remote';
+            if (!remotePlayers[id]) {
+                // First packet: initialize rendered coords to the received position
+                // so the player doesn't jump from (0,0) on first draw
+                data.rx = data.px;
+                data.ry = data.py;
+                data.roffset = data.offset;
+            } else {
+                // Subsequent packets: carry over the current rendered coords
+                // so LERP can continue smoothly from wherever we last drew
+                data.rx = remotePlayers[id].rx;
+                data.ry = remotePlayers[id].ry;
+                data.roffset = remotePlayers[id].roffset;
+            }
+            remotePlayers[id] = data;
         });
 
         console.log('Multiplayer initialized. Socket connected.');
@@ -1895,15 +1909,25 @@ function drawRemotePlayers() {
     const playerH = playerW;
     const myOffset = game.scrollOffset / width;
 
+    // Interpolation rate: move 15% closer to the target per frame.
+    // This smooths out the gap between infrequent network packets (~20-30/s)
+    // and the high-frequency render loop (~60 FPS), preventing jitter.
+    const lerpRate = 0.15;
+
     Object.values(remotePlayers).forEach(d => {
         // Only draw players on the exact same level as the local player
         const remoteLevel = (d.level !== undefined && d.level !== null) ? Number(d.level) : 0;
         const localLevel = Number(game.level);
         if (remoteLevel !== localLevel) return;
 
-        // Calculate dynamic relative screen position based on scrollOffset difference
-        const worldX = (d.px + d.offset - myOffset) * width;
-        const worldY = d.py * height;
+        // Smoothly interpolate rendered coords toward the latest network target
+        d.rx += (d.px - d.rx) * lerpRate;
+        d.ry += (d.py - d.ry) * lerpRate;
+        d.roffset += (d.offset - d.roffset) * lerpRate;
+
+        // Use interpolated coords for drawing
+        const worldX = (d.rx + d.roffset - myOffset) * width;
+        const worldY = d.ry * height;
 
         ctx.save();
         let drawColor = d.color;
@@ -1920,7 +1944,7 @@ function drawRemotePlayers() {
         // Draw name ABOVE the player
         const fontSize = Math.max(10, width / 70);
         ctx.font = `bold ${fontSize}px space, sans-serif`;
-        const label = d.text || '?';
+        const label = d.text || '?'; // Fix: emitPosition sends 'text', not 'username'
         const textWidth = ctx.measureText(label).width;
         // Name tag background
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
