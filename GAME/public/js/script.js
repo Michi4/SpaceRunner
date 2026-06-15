@@ -1851,11 +1851,12 @@ if (localStorage.getItem('multiplayer') === 'true') {
             const data = {
                 room: myRoom,
                 px: players[0].position.x / width,
-                py: players[0].position.y / height,
+                py: (players[0].position.y + players[0].height) / height, // feet position normalized
                 offset: game.scrollOffset / width,
                 color: players[0].color,
                 text: players[0].text || (window._guestName || '?'),
-                level: game.level
+                level: game.level,
+                difficulty: game.difficulty
             };
             socket.emit('move', data);
         }
@@ -1877,6 +1878,20 @@ if (localStorage.getItem('multiplayer') === 'true') {
 
         socket.on('playerdata', (data) => {
             const id = data.socketId || 'remote';
+            
+            // Sync difficulty changes from the host
+            if (data.difficulty && data.socketId === localStorage.getItem("hostId") && game.difficulty !== data.difficulty) {
+                game.difficulty = data.difficulty;
+                localStorage.setItem("difficulty", data.difficulty);
+                const selectEl = document.getElementById('menu-game-mode');
+                if (selectEl) {
+                    selectEl.value = data.difficulty;
+                }
+                if (typeof showAchievement === 'function') {
+                    showAchievement("Game Mode: " + data.difficulty.toUpperCase(), "#b700dd");
+                }
+            }
+
             if (!remotePlayers[id]) {
                 // First packet: initialize rendered coords to the received position
                 // so the player doesn't jump from (0,0) on first draw
