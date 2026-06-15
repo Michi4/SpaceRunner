@@ -1963,6 +1963,12 @@ if (localStorage.getItem('multiplayer') === 'true') {
             remotePlayers[id] = data;
         });
 
+        socket.on('player-left-game', (socketId) => {
+            if (remotePlayers[socketId]) {
+                delete remotePlayers[socketId];
+            }
+        });
+
         console.log('Multiplayer initialized. Socket connected.');
     };
     _initMP();
