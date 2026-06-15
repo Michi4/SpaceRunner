@@ -99,6 +99,27 @@ main{
     overflow-y: auto;
     flex: 1;
     box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(151, 0, 189, 0.5) rgba(0, 0, 0, 0.2);
+    -webkit-overflow-scrolling: touch;
+}
+
+.menu-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.menu-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.menu-content::-webkit-scrollbar-thumb {
+    background: rgba(151, 0, 189, 0.4);
+    border-radius: 10px;
+}
+
+.menu-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(151, 0, 189, 0.7);
 }
 
 #playerholder {

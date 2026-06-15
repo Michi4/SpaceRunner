@@ -104,6 +104,7 @@ function handleRoomDeparture(socket, roomName) {
 
   room.players = room.players.filter(p => p.id !== socket.id);
   socket.leave(roomName);
+  io.to(roomName).emit('player-left-game', socket.id);
 
   if (room.players.length === 0) {
     delete rooms[roomName];
