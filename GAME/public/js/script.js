@@ -86,7 +86,7 @@ class Player {
         ctx.shadowBlur = 0;
         ctx.font = `${width / 55}px space, sans-serif`;
         ctx.fillStyle = '#202124';
-        ctx.fillText(this.text, this.position.x + this.width * 0.1, this.position.y + this.height * 0.7);
+        ctx.fillText(/*this.text*/"", this.position.x + this.width * 0.1, this.position.y + this.height * 0.7);
     }
 
     update() {
@@ -1309,8 +1309,12 @@ function userMenu() {
             game.difficulty = newDifficulty;
             localStorage.setItem("difficulty", newDifficulty);
 
-            if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
-                window._emitPosition();
+            if (typeof resetRunToBeginning === 'function') {
+                resetRunToBeginning();
+            }
+
+            if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPositionRaw === 'function') {
+                window._emitPositionRaw();
             }
             if (typeof showAchievement === 'function') {
                 showAchievement("Game Mode: " + newDifficulty.toUpperCase(), "#b700dd");
@@ -1511,6 +1515,35 @@ function gameOver() {
         window._emitPosition();
     }
     // attemptcount element was removed from HTML
+}
+
+function resetRunToBeginning() {
+    game.level = 0;
+    players.forEach(player => {
+        player.position.x = 120;
+        player.position.y = 100;
+        player.velocity.y = game.gravity;
+        player.velocity.x = 0;
+    });
+    game.scrollOffset = 0;
+    game.distance = 0;
+    game.coins = 0;
+    game.lvlCoins = 0;
+    game.attempts = 1;
+    game.levels = [];
+    levelSwitch();
+
+    for (const key in remotePlayers) {
+        if (remotePlayers[key]) {
+            remotePlayers[key].px = 120 / width;
+            remotePlayers[key].py = (100 + players[0].height) / height;
+            remotePlayers[key].rx = 120 / width;
+            remotePlayers[key].ry = (100 + players[0].height) / height;
+            remotePlayers[key].offset = 0;
+            remotePlayers[key].roffset = 0;
+            remotePlayers[key].level = 0;
+        }
+    }
 }
 
 
@@ -1938,9 +1971,10 @@ if (localStorage.getItem('multiplayer') === 'true') {
             socket.emit('move', data);
         }
         window._emitPosition = emitPosition;
+        window._emitPositionRaw = emitPosition;
         // Throttle: only emit max 30 times per second
         let _lastEmit = 0;
-        window._emitPosition = function() {
+        window._emitPosition = function () {
             const now = Date.now();
             if (now - _lastEmit < 33) return; // ~30 fps
             _lastEmit = now;
@@ -1950,7 +1984,8 @@ if (localStorage.getItem('multiplayer') === 'true') {
         // Join room as soon as socket connects
         socket.on('connect', () => {
             if (myRoom) {
-                socket.emit('join-game', myRoom);
+                const myName = (players && players[0] && players[0].text) || window._guestName || 'sr_guest';
+                socket.emit('join-game', myRoom, myName);
                 // Send position immediately so peers see us right away
                 setTimeout(emitPosition, 100);
             }
@@ -1959,6 +1994,18 @@ if (localStorage.getItem('multiplayer') === 'true') {
         // When a new peer joins, immediately resend our position so they see us
         socket.on('player-joined-game', () => {
             emitPosition();
+        });
+
+        socket.on('room-sync', (roomPlayers, hostId) => {
+            const isHost = (socket.id === hostId);
+            localStorage.setItem("hostId", hostId);
+            localStorage.setItem("isHost", isHost ? "true" : "false");
+            
+            // Dynamically enable/disable difficulty dropdown in menu if it is currently open
+            const selectEl = document.getElementById('menu-game-mode');
+            if (selectEl) {
+                selectEl.disabled = !isHost;
+            }
         });
 
         socket.on('playerdata', (data) => {
@@ -1971,6 +2018,9 @@ if (localStorage.getItem('multiplayer') === 'true') {
                 const selectEl = document.getElementById('menu-game-mode');
                 if (selectEl) {
                     selectEl.value = data.difficulty;
+                }
+                if (typeof resetRunToBeginning === 'function') {
+                    resetRunToBeginning();
                 }
                 if (typeof showAchievement === 'function') {
                     showAchievement("Game Mode: " + data.difficulty.toUpperCase(), "#b700dd");

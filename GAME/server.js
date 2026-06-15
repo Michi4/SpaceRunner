@@ -43,7 +43,12 @@ io.on('connection', (socket) => {
 
     room.players.push({ id: socket.id, username: username });
     socket.join(roomName);
-    socket.emit('room-joined', roomName, room.players, room.host);
+    
+    if (room.inGame) {
+      socket.emit('game-starting', roomName, room.mode || 'normal', room.seed || null);
+    } else {
+      socket.emit('room-joined', roomName, room.players, room.host);
+    }
     
     // Notify room members
     io.to(roomName).emit('room-sync', room.players, room.host);
@@ -59,19 +64,38 @@ io.on('connection', (socket) => {
   socket.on('start-game', (roomName, mode, seed) => {
     const room = rooms[roomName];
     if (room && room.host === socket.id) {
-      io.to(roomName).emit('game-starting', roomName, mode || 'normal', seed || null);
-      // Clean up room room structure so it's not active in lobby list
-      delete rooms[roomName];
+      room.inGame = true;
+      room.mode = mode || 'normal';
+      room.seed = seed || null;
+      io.to(roomName).emit('game-starting', roomName, room.mode, room.seed);
       broadcastRooms();
     }
   });
 
   // Join active game room on game load
-  socket.on('join-game', (roomName) => {
+  socket.on('join-game', (roomName, username) => {
     socket.join(roomName);
+    const room = rooms[roomName];
+    if (room) {
+      // Find the player by username and update their socket ID
+      const player = room.players.find(p => p.username === username);
+      if (player) {
+        const oldId = player.id;
+        player.id = socket.id;
+        if (room.host === oldId) {
+          room.host = socket.id;
+        }
+      } else {
+        // Player joined mid-game directly, add them
+        room.players.push({ id: socket.id, username: username });
+      }
+      // Broadcast updated players and host
+      io.to(roomName).emit('room-sync', room.players, room.host);
+      broadcastRooms();
+    }
     // Notify other players in room to immediately re-send their position
     socket.to(roomName).emit('player-joined-game');
-    console.log(`Socket ${socket.id} joined game room: ${roomName}`);
+    console.log(`Socket ${socket.id} joined game room: ${roomName} as ${username}`);
   });
 
   // Client updates position
