@@ -1133,6 +1133,8 @@ function imgLoaded() {
 
 // userMenu
 function userMenu() {
+    const canChangeMode = (localStorage.getItem("multiplayer") !== "true" || localStorage.getItem("isHost") === "true");
+
     document.getElementById('blur').style.filter = "blur(10px)";
     document.getElementById('clearMenu').innerHTML = `
     <div id="menu">
@@ -1190,6 +1192,46 @@ function userMenu() {
             </div>
         </div>
         
+        <div class="menu-box" style="margin-left: 3vw;">
+            <h2>Settings</h2>
+            <div class="customholder">
+                <h3>Difficulty:</h3>
+                <select id="menu-game-mode" ${canChangeMode ? '' : 'disabled'} style="
+                    width: 10vw;
+                    height: 4.5vh;
+                    border-radius: 10px;
+                    background-color: #222;
+                    color: #fff;
+                    font-size: 1.1em;
+                    border: 0;
+                    font-family: inherit;
+                    cursor: ${canChangeMode ? 'pointer' : 'not-allowed'};
+                    margin-top: 1vh;
+                ">
+                    <option value="easy">Easy</option>
+                    <option value="normal">Normal</option>
+                    <option value="hard">Hard</option>
+                    <option value="impossible">Impossible</option>
+                    <option value="run">Run Mode</option>
+                </select>
+            </div>
+            ${!canChangeMode ? '<div style="font-size: 0.8em; color: rgba(255,255,255,0.4); margin-left: 2vw; margin-top: 0.5vh;">Host only</div>' : ''}
+            
+            <div style="margin-top: 5vh; text-align: left; margin-left: 2vw;">
+                <button id="menu-leave-btn" style="
+                    padding: 1vh 2vw;
+                    background-color: #9700bd;
+                    border: none;
+                    border-radius: 10px;
+                    color: #fff;
+                    font-family: space, sans-serif;
+                    font-size: 1.3em;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                " onmouseover="this.style.backgroundColor='#b700dd'" onmouseout="this.style.backgroundColor='#9700bd'">Leave Game</button>
+            </div>
+        </div>
     </div>`;
     /*for(let i = 0; i < players.length; i++){
         if(i != x)$('#playerholder').append(`<h3 onclick="remapKeys(${i})">Player ${i+1}</h3>`);
@@ -1281,6 +1323,42 @@ function userMenu() {
     $("#whatplayer").change(function () {
         remapKeys(document.getElementById('whatplayer').value);
     });
+
+    // Difficulty dropdown handler
+    const menuGameMode = document.getElementById('menu-game-mode');
+    if (menuGameMode) {
+        menuGameMode.value = game.difficulty;
+        $(menuGameMode).change(function () {
+            const newDifficulty = this.value;
+            game.difficulty = newDifficulty;
+            localStorage.setItem("difficulty", newDifficulty);
+            
+            if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
+                window._emitPosition();
+            }
+            if (typeof showAchievement === 'function') {
+                showAchievement("Game Mode: " + newDifficulty.toUpperCase(), "#b700dd");
+            }
+        });
+    }
+
+    // Leave button handler
+    const menuLeaveBtn = document.getElementById('menu-leave-btn');
+    if (menuLeaveBtn) {
+        menuLeaveBtn.onclick = function() {
+            if (localStorage.getItem('multiplayer') === 'true') {
+                if (typeof window.socket !== 'undefined' && window.socket) {
+                    window.socket.emit('leave-room', localStorage.getItem('multiplayerRoom'));
+                }
+                localStorage.removeItem('multiplayer');
+                localStorage.removeItem('multiplayerRoom');
+                localStorage.removeItem('multiplayerPlayers');
+                localStorage.removeItem('isHost');
+                localStorage.removeItem('hostId');
+            }
+            window.location.assign('/');
+        };
+    }
 
     document.getElementById('clearMenu').style.opacity = 1;
     console.log("------menu opened------");
