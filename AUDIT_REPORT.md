@@ -46,11 +46,11 @@ Remaining Phase 1 notes: no Lighthouse available in this environment (system nod
 
 ## Phase 3 — Security: 1 CRITICAL open (needs owner decision), rest fixed/clean
 
-### [CRITICAL] Live credentials are committed to git (working tree + history) — OPEN, needs decision
-**Where:** `.env`, `GAME/public/.env` (tracked, contain the live `DB_PASSWORD`/`DB_ROOT_PASSWORD` — values redacted here); history: `GAME/public/db/spacerunner.sql` (deleted since, but present in commits `4430d83`, `949b30c` with a real bcrypt hash + email), old `DB_PASSWORD` values in commit `d58a057`.
-**Evidence:** `git ls-files` listed both env files as tracked; `git log --all -S` for the bcrypt-hash marker and for `DB_PASSWORD=` hit the commits named below (since purged).
-**Impact:** anyone with repo read access owns the database. (Repo visibility to be confirmed — if `Michi4/SpaceRunner` is public, this is actively exposed.)
-**Fix (needs approval, NOT done):** rotate both passwords, purge history (`git filter-repo`) or rotate + accept history, add `.env` to `.gitignore` + provide `.env.example`, move runtime secrets to compose env / Docker secrets.
+### [CRITICAL] Live credentials are committed to git (working tree + history) — FIXED 2026-09-04
+**Where:** `.env`, `GAME/public/.env` (were tracked); history commits containing `GAME/public/db/spacerunner.sql` and a root `spacerunner.sql` (bcrypt hash + email), old `DB_PASSWORD` values.
+**Evidence:** `git ls-files` listed both env files; `git log --all -S` hits confirmed.
+**Impact:** anyone with repo read access owned the database.
+**Fix (approved + executed):** (1) rotated `DB_PASSWORD`/`DB_ROOT_PASSWORD` via `ALTER USER` + updated on-disk `.env` files + recreated dependents — app verified healthy (`/php/health.php` ok, signup→login→save→leaderboard all pass); (2) `git rm --cached` both env files + `.gitignore`d (`.env`, `GAME/public/.env`, `backups/daily|weekly`); (3) `git filter-repo --invert-paths` purged all three secret-bearing paths from **all** history; verified `git log --all -p | grep -c` for all four known password values = **0**; (4) force-pushed all branches (`main`, `clear`, `dev`, `levelgen`, `polish/publish-ready`) via SSH. Live secrets now exist only on disk + in the running DB. Note: check GitHub → Security tab for any secret-scanning alert from before the purge, and treat pre-rotation passwords as burned (they are rotated).
 
 ### [HIGH] No HSTS — FIXED
 **Evidence:** `curl -sI https://…/` showed no `strict-transport-security` (before fix).
@@ -72,7 +72,7 @@ Injection suite (all live, all neutralized — §Phase 2 list); CSRF on all stat
 - **Constraints/indexes:** FKs, UNIQUEs, CHECK, email 254, `u_created_at` — verified in schema; `EXPLAIN` on the leaderboard query shows `eq_ref` joins and `idx_score_type_score` available (unfiltered cross-type sort uses filesort — fine at this scale, index covers the filtered hot path).
 - **N+1:** none — endpoints run 1–3 bounded queries, no per-row queries.
 - **Migrations:** `db.php::run_migrations()` is guarded/idempotent but one-way (no down path) — acceptable for additive schema; noted.
-- **[HIGH] No backup/restore strategy — OPEN.** Evidence: no cron, no dump scripts, `docker volume spacerunner_db-data` is the only copy. Proposing (needs decision): nightly `mariadb-dump` to host + 7-day rotation + documented restore test.
+- **[HIGH] No backup/restore strategy — FIXED 2026-09-04.** `backups/backup.sh` (nightly 03:00 cron): `mariadb-dump --single-transaction`, 7-day daily rotation + Sunday copies kept 8 weeks, creds read from `.env` at runtime, dumps `chmod 600` + gitignored. Restore **verified** into a scratch `mariadb:11.4` container (all 4 tables + 3 score types recovered, scratch removed).
 
 ## Phase 5 — Infrastructure: CONDITIONAL
 
@@ -106,12 +106,12 @@ Driven in headless Chromium as a real user (forms, clicks, keyboard, two browser
 | 0 Recon | ✅ done | README still one line (LOW) |
 | 1 Frontend | ✅ clean | Web Vitals unmeasured (env limit) |
 | 2 Backend/API | ✅ clean | Score idempotency (MEDIUM, accepted) |
-| 3 Security | ⚠️ conditional | **CRITICAL: committed credentials**; CSP rollout (MEDIUM) |
-| 4 Data | ⚠️ conditional | **HIGH: no backups** |
-| 5 Infra | ⚠️ conditional | no CI/monitoring (proposals ready) |
+| 3 Security | ✅ closed (post-fix) | CSP rollout (MEDIUM, path documented) |
+| 4 Data | ✅ closed (post-fix) | — |
+| 5 Infra | ⚠️ proposals only | no CI/monitoring (non-blocking) |
 | 6 E2E | ✅ all pass | — |
 | 7 Tests | ✅ suite green | — |
 
-## Verdict: CONDITIONAL GO
+## Verdict: GO
 
-Ship-blocking, in order: **(1) rotate DB passwords + purge/history decision for committed secrets**, **(2) nightly DB backup + one verified restore**. Everything else is verified working. The three decisions needed from you are asked alongside this report (rotation scope, backup target, CSP strictness later).
+Blockers cleared: **credentials rotated + purged from history (verified 0 residual values), backups live + restore-tested, HSTS on, deps at 0 vulns, E2E + unit + smoke suites green.** Remaining items are non-blocking hardening: CSP `report-only` rollout, CI running `npm test` + `php -l`, uptime monitoring on `/php/health.php`, README expansion.

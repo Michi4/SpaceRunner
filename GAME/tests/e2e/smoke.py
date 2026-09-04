@@ -122,7 +122,9 @@ def main():
     check("leaderboard shows score",
           any(r["username"] == user and r["score"] == 4242 for r in data.get("scores", [])), body[:120])
 
-    # validation rejections
+    # validation rejections (respect the 3 s anti-spam throttle between saves)
+    import time as _time
+    _time.sleep(4)
     evil = urllib.parse.urlencode({
         "difficulty": "hax", "score": "-1", "level": "1",
         "csrf_token": token}).encode()
