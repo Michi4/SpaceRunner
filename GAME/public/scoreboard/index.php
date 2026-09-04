@@ -95,7 +95,7 @@
                 <a href="/lobby">Multiplayer</a><span aria-hidden="true"> · </span>
                 <a href="/login/login">Login</a>
             </nav>
-            <small>© 2026 SpaceRunner – free browser game.</small>
+            <small>© 2026 <a href="https://websters.at" rel="noopener">websters.at</a> · SpaceRunner – free browser game.</small>
         </footer>
         <noscript><p class="noscript-note">The leaderboard needs JavaScript to load scores.</p></noscript>
     </main>

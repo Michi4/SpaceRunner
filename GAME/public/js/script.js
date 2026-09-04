@@ -172,6 +172,27 @@ class Item {
         this.width = width ?? innerWidth / 48;
         this.height = height ?? innerWidth / 48;
         this.music = music ?? null;//new Audio('music/coin_collect.mp3');
+        this.snapshot();
+    }
+
+    // Remember the level-start state. Called at construction AND after the
+    // level normalizes/shifts (resetLevel/setLevelStart move items, so a
+    // construction-time snapshot would go stale). Collected items (width 0)
+    // keep their previous snapshot so a resize never resurrects them.
+    snapshot() {
+        if (this.width > 0) {
+            this.home = { x: this.position.x, y: this.position.y, w: this.width, h: this.height };
+        } else if (!this.home) {
+            this.home = { x: this.position.x, y: this.position.y, w: 0, h: 0 };
+        }
+    }
+
+    respawn() {
+        if (!this.home) return;
+        this.position.x = this.home.x;
+        this.position.y = this.home.y;
+        this.width = this.home.w;
+        this.height = this.home.h;
     }
 
     draw() {
@@ -271,6 +292,14 @@ class Level {
         });
 
         this.winx = calcWinx(this.platforms);
+        this.snapshotItems();
+    }
+
+    // Refresh every item's level-start snapshot (see Item.snapshot).
+    snapshotItems() {
+        this.items.forEach(item => {
+            if (typeof item.snapshot === 'function') item.snapshot();
+        });
     }
 
     setLevelStart(startx) {
@@ -283,6 +312,7 @@ class Level {
         this.texts.forEach(text => {
             text.position.x += startx;
         });
+        this.snapshotItems();
     }
 
     firstPlatform() {
@@ -1522,9 +1552,14 @@ function gameOver() {
         // BEFORE zeroing it, otherwise every platform stays shifted and the
         // respawned player faces a broken level.
         shiftWorld(game.scrollOffset);
+        // Collected items come back (their counter was reverted below).
+        game.getCurrentLevel().items.forEach(item => {
+            if (typeof item.respawn === 'function') item.respawn();
+        });
         players.forEach(player => {
             player.position.x = 120;
             player.position.y = 100;
+            player.velocity.x = 0;
             player.velocity.y = game.gravity;
         });
         game.scrollOffset = 0;
