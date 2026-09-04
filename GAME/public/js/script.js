@@ -1167,6 +1167,16 @@ function updatePhysics() {
     }
     printScores();
 }
+// SCORE-mode badge: tells the player this run counts toward the leaderboard
+function updateScoreBadge() {
+    const badge = document.getElementById('score-mode-badge');
+    if (!badge) return;
+    const counts = ['hard', 'impossible', 'run'].includes(game.difficulty);
+    badge.hidden = !counts;
+    if (counts) badge.textContent = 'SCORE · ' + game.difficulty.toUpperCase();
+}
+updateScoreBadge();
+
 // Coin HUD: static <img> lives in game.html, JS only updates the count
 // (cached — avoids innerHTML churn every frame / coin pickup).
 let _lastCoinRender = null;
@@ -1225,6 +1235,7 @@ function userMenu() {
                 <h2>Keybindings</h2>
                 <div id="playerholder"><select id="whatplayer" name="player"></select></div>
                 <div id="keyinputholder"></div>
+                <button type="button" class="menu-btn menu-reset-btn" onclick="resetKeyBindings()">Reset keys</button>
             </div>
             <div id="keymapHolder" class="nomobile">
                 <h2>Keymappings</h2>
@@ -1267,6 +1278,7 @@ function userMenu() {
                     <h3>Platform-Color:</h3>
                     <input class="colorinput" type="color" id="Platform-Color" name="platform-color" value="#ff0000">
                 </div>
+                <button type="button" class="menu-btn menu-reset-btn" onclick="resetAppearance()">Reset appearance</button>
             </div>
             
             <div class="menu-box">
@@ -1283,6 +1295,9 @@ function userMenu() {
                 </div>
                 ${!canChangeMode ? '<div class="host-only-label">Host only</div>' : ''}
                 
+                <div class="leave-btn-holder">
+                    <button type="button" class="menu-btn menu-reset-btn" onclick="resetAllSettings()">Reset all settings</button>
+                </div>
                 <div class="leave-btn-holder">
                     <button id="menu-leave-btn" class="menu-btn">Leave Game</button>
                 </div>
@@ -1381,6 +1396,7 @@ function userMenu() {
             const newDifficulty = this.value;
             game.difficulty = newDifficulty;
             localStorage.setItem("difficulty", newDifficulty);
+            if (typeof updateScoreBadge === 'function') updateScoreBadge();
 
             if (typeof resetRunToBeginning === 'function') {
                 resetRunToBeginning();
@@ -1494,6 +1510,76 @@ function saveSettings() {
     players.forEach(player => {
         localStorage.setItem("charface" + player.id, player.text);
     });
+
+    // Cloud sync: push to the account when logged in (guests stay local).
+    try {
+        if (window.SpaceRunner && window.SpaceRunner.pushSettings) {
+            window.SpaceRunner.pushSettings();
+        }
+    } catch (e) { /* best effort */ }
+}
+
+// Default control layout (matches the Player constructor).
+const DEFAULT_REASSIGN = { jump: 32, left: 65, right: 68, down: 83, sneak: 17, sprint: 16 };
+
+// Re-render the settings menu so a reset is visible immediately.
+function refreshSettingsMenu() {
+    try {
+        if (window.SpaceRunner && window.SpaceRunner.pushSettings) {
+            window.SpaceRunner.pushSettings();
+        }
+    } catch (e) { /* best effort */ }
+    if (menu) { closeMenu(); userMenu(); }
+}
+
+// Reset just the keybindings to defaults (all players).
+function resetKeyBindings() {
+    try {
+        localStorage.removeItem('players');
+        localStorage.removeItem('reassign');
+        if (typeof players !== 'undefined') {
+            players.forEach(p => { if (p) p.reassign = { ...DEFAULT_REASSIGN }; });
+        }
+    } catch (e) { /* best effort */ }
+    refreshSettingsMenu();
+}
+
+// Reset just the appearance (player/platform colors, rainbow toggles).
+function resetAppearance() {
+    try {
+        ['playerrainbow', 'platrainbow', 'platcolor', 'platshadow', 'playercolor'].forEach(k => {
+            try { localStorage.removeItem(k); } catch (e) { /* noop */ }
+        });
+        if (typeof players !== 'undefined') {
+            players.forEach(p => { if (p) p.color = true; });
+        }
+        if (typeof game !== 'undefined' && game) {
+            game.platformShadow = '#ffffff';
+            game.platformColor = '#000000';
+        }
+    } catch (e) { /* best effort */ }
+    refreshSettingsMenu();
+}
+
+// Reset every gameplay setting (keys + appearance), then re-render.
+function resetAllSettings() {
+    try {
+        ['reassign', 'players', 'playerrainbow', 'platrainbow', 'platcolor', 'platshadow', 'playercolor'].forEach(k => {
+            try { localStorage.removeItem(k); } catch (e) { /* noop */ }
+        });
+        if (typeof players !== 'undefined') {
+            players.forEach(p => {
+                if (!p) return;
+                p.reassign = { ...DEFAULT_REASSIGN };
+                p.color = true;
+            });
+        }
+        if (typeof game !== 'undefined' && game) {
+            game.platformShadow = '#ffffff';
+            game.platformColor = '#000000';
+        }
+    } catch (e) { /* best effort */ }
+    refreshSettingsMenu();
 }
 
 /*
@@ -1533,7 +1619,7 @@ function gameOver() {
         window._mapSeed = Math.floor(Math.random() * 999999999);
         const seedEl = document.getElementById('seed-display');
         if (seedEl) {
-            seedEl.textContent = '🌱 ' + window._mapSeed;
+            seedEl.textContent = 'Seed ' + window._mapSeed;
         }
     }
 
@@ -1801,7 +1887,8 @@ function remapKeys(x) {
             $('#keybindbox').empty();
             $('#keybindbox').append(`<h2>Keybindings</h2>
                                     <div id="playerholder" ><select id="whatplayer" name="player"></select></div>
-                                    <div id="keyinputholder" ></div>`);
+                                    <div id="keyinputholder" ></div>
+                                    <button type="button" class="menu-btn menu-reset-btn" onclick="resetKeyBindings()">Reset keys</button>`);
 
             //create inputs:
             for (let a in actions) {
@@ -1984,8 +2071,8 @@ async function saveScore(score) {
                 console.error('Score save failed:', result.error);
             } else {
                 // Show achievement notification
-                if (result.personalBest) showAchievement('🏆 New Personal Best!', '#f0c040');
-                else if (result.globalRank && result.globalRank <= 10) showAchievement(`🚀 Top ${result.globalRank} on Leaderboard!`, '#9700bd');
+                if (result.personalBest) showAchievement('New Personal Best!', '#f0c040');
+                else if (result.globalRank && result.globalRank <= 10) showAchievement(`Top ${result.globalRank} on the Leaderboard!`, '#9700bd');
             }
         })
         .catch(error => {
@@ -2038,7 +2125,7 @@ const remotePlayers = {};
 
     const seedEl = document.getElementById('seed-display');
     if (seedEl) {
-        seedEl.textContent = '🌱 ' + window._mapSeed;
+        seedEl.textContent = 'Seed ' + window._mapSeed;
         seedEl.style.display = 'inline';
     }
 })();
@@ -2113,6 +2200,7 @@ if (localStorage.getItem('multiplayer') === 'true') {
             if (data.difficulty && data.socketId === localStorage.getItem("hostId") && game.difficulty !== data.difficulty) {
                 game.difficulty = data.difficulty;
                 localStorage.setItem("difficulty", data.difficulty);
+                if (typeof updateScoreBadge === 'function') updateScoreBadge();
                 const selectEl = document.getElementById('menu-game-mode');
                 if (selectEl) {
                     selectEl.value = data.difficulty;

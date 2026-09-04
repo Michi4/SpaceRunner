@@ -88,6 +88,8 @@
             <div id="loading-spinner" class="loading-spinner" role="status">Loading scores...</div>
         </div>
 
+        <nav id="pagination" class="pagination" aria-label="Leaderboard pages" hidden></nav>
+
         <footer class="site-footer">
             <nav aria-label="Footer">
                 <a href="/">Home</a><span aria-hidden="true"> · </span>

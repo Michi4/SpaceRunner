@@ -247,6 +247,14 @@ if (loginForm) {
       const data = await response.json();
 
       if (data.success) {
+        // Pull cloud settings BEFORE leaving: a returning player on a new
+        // machine instantly gets their keys/colors (server wins on login).
+        try {
+          if (window.SpaceRunner && window.SpaceRunner.pullSettings) {
+            sessionStorage.removeItem('sr_settings_synced');
+            await window.SpaceRunner.pullSettings();
+          }
+        } catch (e) { /* best effort */ }
         window.location.href = '/';
       } else {
         showAlert(loginError, data.error ?? 'Invalid credentials. Please try again.');

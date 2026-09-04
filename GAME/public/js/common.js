@@ -73,6 +73,98 @@ window.SpaceRunner = window.SpaceRunner || {};
      not cookies. Updates #nav-user-text and #loggeduser safely. */
   let authState = { checked: false, loggedIn: false, username: '' };
 
+  // Client settings keys synced to the account (whitelist mirrors server).
+  const SETTINGS_KEYS = ['reassign', 'charface', 'players', 'playerrainbow',
+    'platrainbow', 'platcolor', 'platshadow', 'playercolor'];
+
+  function snapshotSettings() {
+    const out = {};
+    try {
+      SETTINGS_KEYS.forEach((k) => {
+        const v = localStorage.getItem(k);
+        if (typeof v === 'string' && v.length <= 4096) out[k] = v;
+      });
+    } catch (e) { /* private mode */ }
+    return out;
+  }
+
+  function applySettings(obj) {
+    if (!obj || typeof obj !== 'object') return;
+    try {
+      SETTINGS_KEYS.forEach((k) => {
+        const v = obj[k];
+        if (typeof v === 'string' && v.length <= 4096) localStorage.setItem(k, v);
+      });
+    } catch (e) { /* private mode */ }
+    applyLiveSettings();
+  }
+
+  // Push localStorage values into live game objects (the game reads them
+  // once at load, so a post-load cloud pull must patch them directly).
+  function applyLiveSettings() {
+    try {
+      let storedPlayers = null;
+      try { storedPlayers = JSON.parse(localStorage.getItem('players') || 'null'); } catch (e) { /* keep */ }
+      if (typeof players !== 'undefined' && Array.isArray(players)) {
+        let rainbow = null;
+        try { rainbow = JSON.parse(localStorage.getItem('playerrainbow') || 'null'); } catch (e) { /* keep */ }
+        players.forEach((p, i) => {
+          if (!p) return;
+          if (storedPlayers && storedPlayers[i] && storedPlayers[i].reassign) {
+            p.reassign = storedPlayers[i].reassign;
+          }
+          // Rainbow toggle: true = cycle colors, false = keep chosen color
+          if (rainbow === true) p.color = true;
+        });
+      }
+      if (typeof game !== 'undefined' && game) {
+        const ps = localStorage.getItem('platshadow');
+        if (ps !== null) { try { game.platformShadow = JSON.parse(ps); } catch (e) { game.platformShadow = ps; } }
+        const pcl = localStorage.getItem('platcolor');
+        if (pcl !== null) game.platformColor = pcl;
+      }
+    } catch (e) { /* best effort */ }
+  }
+
+  // Pull account settings once per session (server wins on login).
+  async function pullSettings() {
+    try {
+      if (sessionStorage.getItem('sr_settings_synced')) return true;
+      const res = await fetch('/php/get_settings.php', { credentials: 'same-origin' });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (data && data.success && data.settings) applySettings(data.settings);
+      sessionStorage.setItem('sr_settings_synced', '1');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Push local settings to the account (guests stay local-only).
+  let lastPush = 0;
+  async function pushSettings() {
+    try {
+      if (!authState.loggedIn) return false;
+      const now = Date.now();
+      if (now - lastPush < 5000) return false;
+      lastPush = now;
+      const data = new FormData();
+      data.set('settings', JSON.stringify(snapshotSettings()));
+      data.set('csrf_token', await csrfToken());
+      const res = await fetch('/php/save_settings.php', {
+        method: 'POST', body: data, credentials: 'same-origin',
+      });
+      return res.ok;
+    } catch (e) {
+      return false;
+    }
+  }
+  window.SpaceRunner.snapshotSettings = snapshotSettings;
+  window.SpaceRunner.applySettings = applySettings;
+  window.SpaceRunner.pullSettings = pullSettings;
+  window.SpaceRunner.pushSettings = pushSettings;
+
   async function refreshAuthUI() {
     let username = '';
     try {
@@ -89,6 +181,10 @@ window.SpaceRunner = window.SpaceRunner || {};
     }
 
     authState = { checked: true, loggedIn: username !== '', username };
+
+    // Fresh login on this machine: pull cloud settings once per session
+    // so the player instantly plays with their own setup.
+    if (authState.loggedIn) pullSettings();
 
     const display = username || guestName();
     setText('loggeduser', display);

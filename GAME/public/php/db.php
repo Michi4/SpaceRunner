@@ -93,4 +93,17 @@ function run_migrations(mysqli $conn): void
     if ($resIdx2 && $resIdx2->num_rows === 0) {
         $conn->query('CREATE INDEX idx_score_user ON sr_score (s_user_id)');
     }
+
+    // Per-account settings table (added with cloud-settings feature)
+    $resSettings = $conn->query("SHOW TABLES LIKE 'sr_settings'");
+    if ($resSettings && $resSettings->num_rows === 0) {
+        $conn->query(
+            'CREATE TABLE IF NOT EXISTS sr_settings (
+                st_user_id INT(11) UNSIGNED NOT NULL PRIMARY KEY,
+                st_data LONGTEXT NOT NULL,
+                st_updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (st_user_id) REFERENCES sr_user(u_id)
+            )'
+        );
+    }
 }

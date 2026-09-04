@@ -298,3 +298,14 @@ main.lobby-container {
     padding-top: 0;
     padding-bottom: 0;
 }
+
+/* Host marker: text tag instead of an emoji crown */
+.host-tag {
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    color: #0a0a0c;
+    background: gold;
+    border-radius: 4px;
+    padding: 2px 6px;
+}

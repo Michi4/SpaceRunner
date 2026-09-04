@@ -160,7 +160,13 @@
       const badge = document.createElement('div');
       badge.className = 'player-badge' + (p.id === hostId ? ' host' : '');
       const label = document.createElement('span');
-      label.textContent = (p.id === hostId ? '👑 ' : '') + (p.username || '?');
+      if (p.id === hostId) {
+                    const tag = document.createElement('span');
+                    tag.className = 'host-tag';
+                    tag.textContent = 'HOST';
+                    badge.appendChild(tag);
+                }
+                label.textContent = p.username || '?';
       badge.appendChild(label);
       playerBadgeContainer.appendChild(badge);
     });

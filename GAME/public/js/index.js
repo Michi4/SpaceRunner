@@ -243,6 +243,11 @@ function remapKeys() {
 function saveSettings() {
     if (reassign) localStorage.setItem("reassign", JSON.stringify(reassign));
     if (text) localStorage.setItem("charface", text);
+    try {
+        if (window.SpaceRunner && window.SpaceRunner.pushSettings) {
+            window.SpaceRunner.pushSettings();
+        }
+    } catch (e) { /* best effort */ }
 }
 
 /*

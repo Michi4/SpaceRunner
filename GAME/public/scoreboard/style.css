@@ -574,3 +574,72 @@ button.seed-badge {
         display: inline;
     }
 }
+
+/* Copy affordance inside seed buttons (text, not an emoji) */
+.copy-hint {
+    font-size: 0.7rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Leaderboard pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.pagination[hidden] {
+    display: none;
+}
+
+.page-btn {
+    min-width: 40px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(151, 0, 189, 0.35);
+    border-radius: 8px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: rgba(151, 0, 189, 0.3);
+    border-color: #b700dd;
+}
+
+.page-btn.active {
+    background: #9700bd;
+    border-color: #9700bd;
+    font-weight: bold;
+}
+
+.page-btn:disabled:not(.active) {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-btn:focus-visible {
+    outline: 2px solid #e07bff;
+    outline-offset: 2px;
+}
+
+.page-gap {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0 2px;
+}
+
+.page-info {
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 2px;
+}

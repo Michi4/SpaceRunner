@@ -1412,3 +1412,43 @@ textarea:focus-visible,
         display: inline;
     }
 }
+
+/* SCORE-mode HUD badge: visible only when the run counts for the leaderboard */
+.score-mode-badge {
+    font-family: space-mono, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: #0a0a0c;
+    background: gold;
+    border-radius: 4px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
+.score-mode-badge[hidden] {
+    display: none;
+}
+
+/* Secondary reset buttons inside the settings menu */
+.menu-btn.menu-reset-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    font-size: 0.95rem;
+    margin-top: 1rem;
+}
+
+.menu-btn.menu-reset-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: none;
+}
+
+#menu-reset-all-btn {
+    border-color: rgba(255, 107, 107, 0.45);
+}
+
+#menu-reset-all-btn:hover {
+    background: rgba(255, 107, 107, 0.14);
+    border-color: rgba(255, 107, 107, 0.7);
+}

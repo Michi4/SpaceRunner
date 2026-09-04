@@ -40,6 +40,15 @@ CREATE TABLE IF NOT EXISTS sr_score (
 CREATE INDEX IF NOT EXISTS idx_score_type_score ON sr_score (s_scoretype_id, s_score DESC);
 CREATE INDEX IF NOT EXISTS idx_score_user ON sr_score (s_user_id);
 
+-- Per-account settings sync (keybindings, appearance, colors).
+-- Values are opaque short strings owned by the client.
+CREATE TABLE IF NOT EXISTS sr_settings (
+    st_user_id INT(11) UNSIGNED NOT NULL PRIMARY KEY,
+    st_data LONGTEXT NOT NULL,
+    st_updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (st_user_id) REFERENCES sr_user(u_id)
+);
+
 -- Seed score types (ignore duplicates)
 INSERT IGNORE INTO sr_scoretype (st_scoretype) VALUES
 ('hard'),
