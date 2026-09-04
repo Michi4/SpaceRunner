@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../php/config.php';
 require_once __DIR__ . '/../php/db.php';
+require_once __DIR__ . '/../php/session.php';
+require_once __DIR__ . '/../php/csrf.php';
+require_once __DIR__ . '/../php/rate_limit.php';
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 /**
  * Send a JSON error response and exit.
@@ -31,6 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     send_error('Method not allowed.', 405);
 }
 
+sr_session_start();
+
+// CSRF check (token issued by /php/csrf.php, stored in session)
+if (!sr_csrf_validate($_POST['csrf_token'] ?? null)) {
+    send_error('Invalid request. Please reload the page and try again.', 403);
+}
+
+// Mass-registration protection: max 5 signups per hour per IP
+if (!sr_rate_limit('signup', 5, 3600)) {
+    send_error('Too many registrations. Please try again later.', 429);
+}
+
 // --- Input & validation ---
 $username = trim($_POST['username'] ?? '');
 $email = trim($_POST['email'] ?? '');
@@ -40,16 +56,18 @@ if (!preg_match('/^[a-zA-Z0-9_-]{3,16}$/', $username)) {
     send_error('Invalid username. Use 3-16 characters: letters, numbers, _ or -.');
 }
 
-if (strncasecmp($username, 'sr_', 10) === 0) {
+// Guest names (sr_*) are reserved for anonymous players
+if (strncasecmp($username, 'sr_', 3) === 0) {
     send_error('Username cannot start with "sr_".');
 }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+if (strlen($email) > 254 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     send_error('Invalid email address.');
 }
 
-if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
-    send_error('Password must be at least 8 characters and include uppercase, lowercase, and a number.');
+if (!is_string($password) || strlen($password) < 8 || strlen($password) > 72
+    || !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,72}$/', $password)) {
+    send_error('Password must be 8-72 characters and include uppercase, lowercase, and a number.');
 }
 
 // --- Database ---

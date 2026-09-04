@@ -1,0 +1,300 @@
+/* SpaceRunner – multiplayer lobby styles.
+   Shares tokens (colors, header) with css/style.css. */
+
+body {
+    font-family: space-mono, monospace;
+    background-color: #121214;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: calc(clamp(40px, 6vh, 60px) + 16px) 12px 64px;
+    box-sizing: border-box;
+}
+
+.lobby-container {
+    background-color: rgba(20, 20, 25, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    width: 100%;
+    max-width: 800px;
+    border: 1px solid rgba(151, 0, 189, 0.3);
+    border-radius: 16px;
+    padding: clamp(18px, 4vw, 30px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.lobby-container h1 {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(151, 0, 189, 0.6), 0 0 20px rgba(151, 0, 189, 0.4);
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    font-size: clamp(1.3rem, 5vw, 2rem);
+}
+
+.section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.lobby-container input[type="text"],
+.lobby-container select {
+    padding: 12px;
+    background-color: rgba(30, 30, 35, 0.7);
+    border: 1px solid rgba(151, 0, 189, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-family: inherit;
+    width: 250px;
+    max-width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.lobby-container input[type="text"]:focus,
+.lobby-container select:focus {
+    border-color: #9700bd;
+    box-shadow: 0 0 8px rgba(151, 0, 189, 0.3);
+    outline: 2px solid rgba(183, 0, 221, 0.6);
+    outline-offset: 1px;
+}
+
+.lobby-container button {
+    padding: 12px 24px;
+    background-color: #9700bd;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.lobby-container button:hover {
+    background-color: #b700dd;
+    box-shadow: 0 0 10px rgba(151, 0, 189, 0.5);
+    transform: translateY(-1px);
+}
+
+.lobby-container button:disabled {
+    background-color: #444;
+    color: #c2c2c2;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.lobby-container button:focus-visible {
+    outline: 2px solid #e07bff;
+    outline-offset: 2px;
+}
+
+.rooms-list {
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.rooms-empty {
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.room-item:last-child {
+    border-bottom: none;
+}
+
+.room-meta {
+    text-align: left;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.room-sub {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.room-live {
+    color: #e066ff;
+    font-weight: bold;
+}
+
+.player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.player-badge {
+    background: rgba(151, 0, 189, 0.15);
+    border: 1px solid rgba(151, 0, 189, 0.3);
+    border-radius: 20px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.player-badge.host {
+    border-color: gold;
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.mode-row {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mode-row label {
+    font-weight: bold;
+}
+
+.seed-input {
+    width: 180px;
+}
+
+.random-seed-btn {
+    padding: 10px;
+    font-size: 0.85em;
+    background: rgba(151, 0, 189, 0.3);
+}
+
+.seed-hint {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.lobby-actions button + button {
+    margin-left: 10px;
+}
+
+.btn-secondary {
+    background-color: #444 !important;
+}
+
+.back-btn {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.back-icon {
+    width: 28px;
+    height: 28px;
+    fill: #fff;
+    opacity: 0.8;
+    transition: opacity 0.2s, fill 0.2s;
+    transform: rotate(180deg);
+}
+
+.back-icon:hover {
+    opacity: 1;
+    fill: #9700bd;
+}
+
+@media (max-width: 520px) {
+    .input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lobby-container input[type="text"],
+    .lobby-container select {
+        width: 100%;
+    }
+
+    .room-item {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .room-meta {
+        text-align: center;
+    }
+
+    .lobby-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .lobby-actions button + button {
+        margin-left: 0;
+    }
+
+    .back-btn {
+        top: auto;
+        bottom: 16px;
+        left: 16px;
+    }
+
+    .seed-input {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lobby-container button:hover {
+        transform: none;
+    }
+}
+
+/* Override the global main{} rule from css/style.css (100vh flex is wrong
+   for a scrolling lobby page) */
+main.lobby-container {
+    display: block;
+    height: auto;
+    min-height: 0;
+    width: 100%;
+    overflow: visible;
+    padding-top: 0;
+    padding-bottom: 0;
+}

@@ -1,49 +1,76 @@
 <?php
 declare(strict_types=1);
 
-session_start();
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/session.php';
+require_once __DIR__ . '/csrf.php';
+require_once __DIR__ . '/rate_limit.php';
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Not authenticated.']);
+function send_error(string $message, int $status): never
+{
+    http_response_code($status);
+    echo json_encode(['success' => false, 'error' => $message]);
     exit();
 }
 
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/db.php';
+// Only accept POST
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+    send_error('Method not allowed.', 405);
+}
 
-/**
- * Maps difficulty string to scoretype ID.
- */
-function get_scoretype_id(string $difficulty): int
-{
-    return match ($difficulty) {
-        'hard'       => 1,
-        'impossible' => 2,
-        'run'        => 3,
-        default      => 1,
-    };
+sr_session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    send_error('Not authenticated.', 401);
+}
+
+// CSRF check (token issued by /php/csrf.php, stored in session)
+if (!sr_csrf_validate($_POST['csrf_token'] ?? null)) {
+    send_error('Invalid request. Please reload the game and try again.', 403);
+}
+
+// Score-spam protection: min 3 seconds between submissions
+if (!sr_throttle('save_score', 3)) {
+    send_error('Please wait a moment before saving again.', 429);
 }
 
 if (!isset($_POST['difficulty'], $_POST['score'], $_POST['level'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Missing required fields: difficulty, score, level.']);
-    exit();
+    send_error('Missing required fields: difficulty, score, level.', 400);
 }
 
-$difficulty  = (string) $_POST['difficulty'];
-$score       = (int)    $_POST['score'];
-$level       = (int)    $_POST['level'];
-$userId      = (int)    $_SESSION['user_id'];
-$scoreTypeId = get_scoretype_id($difficulty);
-$seed        = isset($_POST['seed']) ? (string) $_POST['seed'] : null;
+$difficulty = (string) $_POST['difficulty'];
+$score      = $_POST['score'];
+$level      = $_POST['level'];
+$userId     = (int) $_SESSION['user_id'];
 
-if ($score < 0 || $level < 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Score and level must be non-negative.']);
-    exit();
+// Strict difficulty allowlist — unknown values are rejected, not remapped
+$scoretypeIds = ['hard' => 1, 'impossible' => 2, 'run' => 3];
+if (!isset($scoretypeIds[$difficulty])) {
+    send_error('Invalid difficulty.', 400);
+}
+$scoreTypeId = $scoretypeIds[$difficulty];
+
+// Numeric sanity bounds (anti-cheat: forged clients can't submit absurd values)
+if (!is_numeric($score) || !is_numeric($level)) {
+    send_error('Score and level must be numbers.', 400);
+}
+$score = (int) $score;
+$level = (int) $level;
+if ($score < 0 || $score > 100000000 || $level < 0 || $level > 10000) {
+    send_error('Score or level out of range.', 400);
+}
+
+// Optional map seed: short alphanumeric token only
+$seed = null;
+if (isset($_POST['seed']) && $_POST['seed'] !== '' && $_POST['seed'] !== null) {
+    $seed = (string) $_POST['seed'];
+    if (strlen($seed) > 50 || !preg_match('/^[A-Za-z0-9_-]{1,50}$/', $seed)) {
+        send_error('Invalid seed.', 400);
+    }
 }
 
 try {
@@ -91,10 +118,8 @@ try {
     ]);
 
 } catch (RuntimeException $e) {
-    http_response_code(503);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    send_error($e->getMessage(), 503);
 } catch (mysqli_sql_exception $e) {
     error_log('[SpaceRunner] save_score error: ' . $e->getMessage());
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'An internal error occurred.']);
+    send_error('An internal error occurred.', 500);
 }

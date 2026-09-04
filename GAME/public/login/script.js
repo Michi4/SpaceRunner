@@ -68,11 +68,11 @@ function checkPasswordStrength() {
 
   const levels = [
     { label: '',           color: '' },
-    { label: 'Weak',       color: '#d8000c' },
-    { label: 'Weak',       color: '#d8000c' },
+    { label: 'Weak',       color: '#ff8080' },
+    { label: 'Weak',       color: '#ff8080' },
     { label: 'Moderate',   color: '#f0ad4e' },
-    { label: 'Strong',     color: '#4f8a10' },
-    { label: 'Very Strong',color: '#4f8a10' },
+    { label: 'Strong',     color: '#9dff57' },
+    { label: 'Very Strong',color: '#9dff57' },
   ];
 
   const { label, color } = levels[score] ?? levels[0];
@@ -97,10 +97,10 @@ function checkPasswordsMatch() {
   }
   if (passwordInput.value === confirmInput.value) {
     matchEl.textContent = '✓ Passwords match';
-    matchEl.style.color = '#4f8a10';
+    matchEl.style.color = '#9dff57';
   } else {
     matchEl.textContent = '✗ Passwords do not match';
-    matchEl.style.color = '#d8000c';
+    matchEl.style.color = '#ff8080';
   }
 }
 
@@ -130,8 +130,8 @@ if (signupForm) {
     } else if (!/^[a-zA-Z0-9_-]{3,16}$/.test(usernameVal)) {
       showError(usernameInput, 'Use 3–16 characters: letters, numbers, _ or -.');
       valid = false;
-    } else if (usernameVal.toLowerCase().startsWith('sr_player_')) {
-      showError(usernameInput, 'Username cannot start with "sr_player_".');
+    } else if (usernameVal.toLowerCase().startsWith('sr_')) {
+      showError(usernameInput, 'Username cannot start with "sr_".');
       valid = false;
     } else {
       showSuccess(usernameInput);
@@ -153,6 +153,9 @@ if (signupForm) {
     const passwordVal = passwordInput.value;
     if (!passwordVal) {
       showError(passwordInput, 'Password is required.');
+      valid = false;
+    } else if (passwordVal.length > 72) {
+      showError(passwordInput, 'Password must be at most 72 characters.');
       valid = false;
     } else if (!passwordRegex.test(passwordVal)) {
       showError(passwordInput, 'Min 8 characters with uppercase, lowercase and a number.');
@@ -180,7 +183,9 @@ if (signupForm) {
     signupBtn.textContent = 'Signing up…';
 
     try {
-      const formData = new FormData(signupForm);
+      const formData = (window.SpaceRunner && window.SpaceRunner.withCsrf)
+        ? await window.SpaceRunner.withCsrf(signupForm)
+        : new FormData(signupForm);
       const response = await fetch('signup.php', { method: 'POST', body: formData });
       const data = await response.json();
 
@@ -235,7 +240,9 @@ if (loginForm) {
     loginBtn.textContent = 'Logging in…';
 
     try {
-      const formData = new FormData(loginForm);
+      const formData = (window.SpaceRunner && window.SpaceRunner.withCsrf)
+        ? await window.SpaceRunner.withCsrf(loginForm)
+        : new FormData(loginForm);
       const response = await fetch('login.php', { method: 'POST', body: formData });
       const data = await response.json();
 
@@ -261,10 +268,12 @@ document.querySelectorAll('.pw-toggle').forEach(button => {
     const svg = button.querySelector('svg');
     if (input.type === 'password') {
       input.type = 'text';
+      button.setAttribute('aria-label', 'Hide password');
       // Open eye SVG path
       svg.innerHTML = '<path fill="currentColor" d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.4 78.1-95.4 92.9-131.1c3.3-7.9 3.3-16.7 0-24.6C558.7 208 527.4 156 480.6 112.6C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3C204.4 262.4 208 259.6 208 256c0-26.5-21.5-48-48-48c-3.6 0-6.4 3.6-6.7 4.3C151.2 205.9 150 199.1 150 192c0-35.3 28.7-64 64-64s64 28.7 64 64z"/>';
     } else {
       input.type = 'password';
+      button.setAttribute('aria-label', 'Show password');
       // Slashed eye (eye-off) SVG path
       svg.innerHTML = '<path fill="currentColor" d="M38.4 33.6c-11.9 11.9-11.9 31.3 0 43.2L109 147.4c-25.2 22.4-46.1 48.7-59.5 76.9c-3.2 6.7-3.2 14.5 0 21.2C70.3 289 123.6 357.2 192 398.2c41.3 24.7 89 39.5 139.7 41.5l55.9 55.9c11.9 11.9 31.3 11.9 43.2 0c11.9-11.9 11.9-31.3 0-43.2L81.6 33.6c-11.9-11.9-31.3-11.9-43.2 0zM192 256c0-26.5 21.5-48 48-48c3.6 0 6.9 1.1 9.9 2.9l-55 55c-1.8-2.9-2.9-6.2-2.9-9.9zm167.3 75.3l-48.4-48.4c5.1-8.4 8.1-18.2 8.1-28.9c0-30.9-25.1-56-56-56c-10.7 0-20.5 3-28.9 8.1l-48.4-48.4c16.3-9.5 35.3-15.1 55.7-15.1c61.9 0 112 50.1 112 112c0 20.4-5.6 39.4-15.1 55.7zM368 400a160 160 0 0 1 -19.4-1.2L297.8 348c15.1 7.7 32 12 49.8 12a144 144 0 1 0 144-144c0-17.8-4.3-34.7-12-49.8l50.8 50.8A160 160 0 0 1 528 256c0 68.4-53.2 136.6-121.6 177.6c-11.8 7.1-25.3 11.5-38.4 16.4z"/>';
     }

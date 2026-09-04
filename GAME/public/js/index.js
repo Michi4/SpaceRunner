@@ -52,12 +52,21 @@ function genBtns(slider) {
     <div class="block" id="settings"><button onclick="setDifficulty('normal')" style="color:lightgrey;">Normal</button></div>
     <div class="block" id="settings"><button onclick="setDifficulty('hard')" style="color:red;"><p class="tiny-info">SCORE</p>Hard</button></div>
     <div class="block" id="settings"><button onclick="setDifficulty('impossible')" style="color:purple;"><p class="tiny-info">SCORE</p>Impossible</button></div>`;
-    // Show seed row
+    // Show seed row + wire the dice button (defined in index.html)
     const seedRow = document.getElementById('seed-row');
-    if (seedRow) seedRow.style.display = 'flex';
-    // Enter on seed input triggers setDifficulty('normal')
+    if (seedRow) seedRow.hidden = false;
+    const seedDice = document.getElementById('seed-random-btn');
     const seedInput = document.getElementById('solo-seed');
-    if (seedInput) {
+    if (seedDice && seedInput && !seedDice.dataset.wired) {
+        seedDice.dataset.wired = '1';
+        seedDice.addEventListener('click', () => {
+            seedInput.value = Math.floor(Math.random() * 999999999);
+            seedInput.focus();
+        });
+    }
+    // Enter on seed input triggers setDifficulty('normal')
+    if (seedInput && !seedInput.dataset.wired) {
+        seedInput.dataset.wired = '1';
         seedInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') setDifficulty('normal');
         });
@@ -65,7 +74,7 @@ function genBtns(slider) {
 }
 
 function updateTextInput(value) {
-    document.getElementById('count').innerHTML = `${value} Players:`
+    document.getElementById('count').textContent = `${value} Players:`
 }
 
 function setDifficulty(a) {
@@ -95,8 +104,11 @@ function setDifficulty(a) {
 
 
 let mobile = false;
-//  add mobile stuff
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+// Touch-first devices get the mobile UI: UA sniff (legacy) OR coarse primary
+// pointer with touch support (covers modern mobile browsers).
+const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent) || (coarsePointer && hasTouch)) {
     mobile = true;
     $(".nomobile").remove();
 }
@@ -209,11 +221,11 @@ function remapKeys() {
                 $('#keymap').html(JSON.stringify(reassign, null, '<br/>'));
             }
             //set input handler for reassigning keys:
-            $('input').keyup(function () {
+            $('input').keyup(function (e) {
                 //show which key was pressed
-                this.value = keycodes[event.keyCode];
+                this.value = keycodes[e.keyCode];
                 //set the new value in the reassign object
-                reassign[this.name] = event.keyCode;
+                reassign[this.name] = e.keyCode;
                 //update the #keymap div to show the contents of reassign
                 $('#keymap').html(JSON.stringify(reassign, null, '<br/>'));
                 //unfocus input
@@ -259,69 +271,5 @@ function changeTheme(){
 }
 */
 
-/*NEWNEW ig*/
-
-function getLoggedUser() {
-    let cookies = document.cookie.split(";");
-    let userId = null;
-    let username = "";
-
-    for (let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i].trim();
-
-        if (cookie.indexOf("user_id=") === 0) {
-            userId = cookie.substring("user_id=".length);
-        }
-
-        if (cookie.indexOf("username=") === 0) {
-            username = cookie.substring("username=".length);
-        }
-    }
-
-    if (!username) {
-        if (!localStorage.getItem('sr_guest_name')) {
-            const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
-            const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
-            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-            const noun = nouns[Math.floor(Math.random() * nouns.length)];
-            localStorage.setItem('sr_guest_name', 'sr_' + adj + noun);
-        }
-    }
-
-    const displayUser = username || localStorage.getItem('sr_guest_name');
-    console.log("User ID: " + userId + ", Username: " + username + ", Display: " + displayUser);
-
-    const loggedUserEl = document.getElementById("loggeduser");
-    if (loggedUserEl) {
-        loggedUserEl.innerHTML = displayUser;
-    }
-
-    const navUserText = document.getElementById("nav-user-text");
-    if (navUserText && username) {
-        navUserText.innerText = username;
-    }
-
-    return userId;
-}
-
-getLoggedUser();
-
-function toggleFullScreen() {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        if (document.body.requestFullscreen) {
-            document.body.requestFullscreen();
-        } else if (document.body.webkitRequestFullscreen) {
-            document.body.webkitRequestFullscreen();
-        } else if (document.body.msRequestFullscreen) {
-            document.body.msRequestFullscreen();
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-    }
-}
+/* Auth UI + fullscreen live in js/common.js (single implementation).
+   getLoggedUser()/toggleFullScreen() were removed here to avoid drift. */

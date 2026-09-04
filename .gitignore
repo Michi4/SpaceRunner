@@ -68,9 +68,14 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-#.env
-#.env.test
+# dotenv environment variables file - LIVE SECRETS, never commit.
+# Deployment reads these from disk; see .env.example for the shape.
+.env
+GAME/public/.env
+
+# Database backups (contain password hashes) - never commit
+backups/daily/
+backups/weekly/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

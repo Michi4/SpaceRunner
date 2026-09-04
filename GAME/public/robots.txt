@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /php/
+Disallow: /login/*.php
+Disallow: /scoreboard/get_scores.php
+Disallow: /socket.io/
+
+Sitemap: https://spacerunner.websters.at/sitemap.xml

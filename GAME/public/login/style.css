@@ -1,4 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono&display=swap");
+/* Local fonts (no render-blocking external @import) */
+@font-face {
+	font-family: "Space Mono";
+	src: url(../font/SpaceMono.ttf);
+	font-display: swap;
+}
 
 * {
 	margin: 0;
@@ -9,7 +14,8 @@ body {
 	background-color: #202124;
 	color: #ffffff;
 	font-family: "Space Mono", monospace;
-	background-image: url("../img/galaxyAll.gif");
+	background-image: url("../img/galaxy-bg.webp");
+	background-image: image-set(url("../img/galaxy-bg.webp") type("image/webp"), url("../img/galaxyAll.gif") type("image/gif"));
 	background-size: cover;
 }
 
@@ -41,6 +47,8 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding-top: 80px;
+	box-sizing: border-box;
 }
 
 .form-wrapper {
@@ -59,7 +67,7 @@ body {
 	padding-bottom: 2.5vmin;
 }
 
-h2 {
+h1, h2 {
 	font-size: 2em;
 	color: rgba(0, 0, 0, 1);
 	color: #fff;
@@ -127,7 +135,7 @@ input:focus {
 	padding: 0;
 	margin: 0;
 	cursor: pointer;
-	color: #ffffff90;
+	color: #ffffffb3;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -138,7 +146,7 @@ input:focus {
 }
 
 .pw-toggle:hover {
-	color: #9700bd;
+	color: #c93ff0;
 	transform: translateY(-50%) scale(1.1);
 }
 
@@ -164,18 +172,18 @@ input:focus {
 }
 
 .form-control.error input {
-	border-color: #d8000c;
+	border-color: #ff5252;
 	background-color: #3d2020;
 }
 
 .form-control.success input {
-	border-color: #4f8a10;
+	border-color: #7bc043;
 }
 
 .error-text {
 	display: block;
 	font-size: 0.78em;
-	color: #d8000c;
+	color: #ff8080;
 	min-height: 1em;
 	margin-top: 0.2vmin;
 }
@@ -184,7 +192,7 @@ input:focus {
 
 .alert-error {
 	background-color: rgba(216, 0, 12, 0.15);
-	border: 1px solid #d8000c;
+	border: 1px solid #ff5252;
 	border-radius: 1vmin;
 	color: #ff6b6b;
 	font-size: 0.9em;
@@ -229,7 +237,7 @@ button[type="submit"]:hover {
 	padding: 1vmin;
 	border: none;
 	border-radius: 2vmin;
-	background-color: grey;
+	background-color: #5a5a5a;
 	color: #ffffff;
 	font-size: 1.2em;
 	font-weight: 600;
@@ -250,8 +258,13 @@ form p{
 	color: #ffffffaa;
 }
 form p a{
-	text-decoration: none;
-	color: #0063b1ee;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	color: #7cc4ff;
+}
+
+form p a:hover {
+	color: #a8d8ff;
 }
 @media (min-width: 1400px) {
 	.form-wrapper{
@@ -333,7 +346,7 @@ form p a{
 }
 
 .header-logo a:hover {
-    color: #9700bd;
+    color: #d67bff;
     text-shadow: 0 0 12px #9700bd, 0 0 20px #9700bd;
 }
 
@@ -369,4 +382,142 @@ form p a{
     width: 18px;
     height: 18px;
     fill: currentColor;
+}
+/* ── v2 consistency overrides: align header/footer/utils with main theme ── */
+.game-header {
+    height: clamp(40px, 6vh, 60px);
+    padding: 0 clamp(10px, 4vw, 40px);
+    background: rgba(20, 20, 24, 0.75);
+    border-bottom: 1px solid rgba(151, 0, 189, 0.2);
+}
+
+.header-logo a {
+    font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+}
+
+.header-nav {
+    gap: clamp(10px, 2vw, 20px);
+}
+
+.nav-btn {
+    font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+    padding: clamp(6px, 1.2vh, 10px) clamp(10px, 1.5vw, 16px);
+}
+
+.nav-btn:focus-visible,
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+    outline: 2px solid #e07bff;
+    outline-offset: 2px;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.site-footer {
+    position: absolute;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.65);
+    z-index: 5;
+}
+
+.site-footer nav {
+    margin-bottom: 2px;
+}
+
+.site-footer a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: #e07bff;
+    text-decoration: underline;
+}
+
+.noscript-note {
+    margin-top: 16px;
+    color: #ffd75e;
+}
+
+@media (max-width: 560px) {
+    .nav-label {
+        display: none;
+    }
+
+    .header-logo a {
+        font-size: 1.1rem;
+    }
+
+    .nav-btn {
+        padding: 6px 10px;
+    }
+
+    .container {
+        padding-top: 70px;
+    }
+
+    .site-footer small {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-btn:hover {
+        transform: none;
+    }
+}
+
+/* main.container scrolls on short viewports instead of clipping the form */
+main.container {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+}
+
+/* ── v2 exact-match: nav buttons identical to main theme ── */
+.nav-btn {
+    background: rgba(255, 255, 255, 0.08);
+    gap: clamp(4px, 1vw, 8px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.nav-btn:hover {
+    border-color: rgba(183, 0, 221, 0.95);
+    box-shadow: 0 0 15px rgba(183, 0, 221, 0.5);
+}
+
+.nav-svg {
+    width: clamp(12px, 2vw, 18px);
+    height: clamp(12px, 2vw, 18px);
+}
+
+/* Collapsible wordmark (matches main theme) */
+.logo-short {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .header-logo .logo-full {
+        display: none;
+    }
+
+    .header-logo .logo-short {
+        display: inline;
+    }
 }

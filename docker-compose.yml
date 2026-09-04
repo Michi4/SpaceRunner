@@ -1,10 +1,13 @@
+# SpaceRunner on Websters PaaS (Traefik + Let's Encrypt)
+# Based on upstream docker-compose.prod.yaml:
+#  - no published ports (Traefik routes spacerunner.websters.at -> webserver:80)
+#  - webserver joins the external proxy network + internal app network
+#  - service names php/node/database are kept: nginx.conf references them
 services:
   webserver:
-    container_name: nginx
+    container_name: spacerunner-nginx
     image: nginx:1.26-alpine
     restart: unless-stopped
-    ports:
-      - "${WEB_PORT:-80}:80"
     volumes:
       - ./GAME/public:/var/www/html:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -14,9 +17,21 @@ services:
       - database
     networks:
       - spacerunner-network
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK}"
+      - "traefik.http.routers.${ROUTER_NAME}.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${ROUTER_NAME}.entrypoints=http"
+      - "traefik.http.middlewares.${ROUTER_NAME}-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.${ROUTER_NAME}.middlewares=${ROUTER_NAME}-redirect"
+      - "traefik.http.routers.${ROUTER_NAME}-secure.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${ROUTER_NAME}-secure.entrypoints=https"
+      - "traefik.http.routers.${ROUTER_NAME}-secure.tls=true"
+      - "traefik.http.routers.${ROUTER_NAME}-secure.tls.certresolver=letsencrypt"
 
   php:
-    container_name: php
+    container_name: spacerunner-php
     build:
       context: .
       dockerfile: Dockerfile
@@ -36,27 +51,24 @@ services:
       - spacerunner-network
 
   node:
-    container_name: node_app
+    container_name: spacerunner-node
     build:
       context: .
       dockerfile: Dockerfile.node
     restart: unless-stopped
-    ports:
-      - "${NODE_PORT:-3000}:3000"
     environment:
+      NODE_ENV: production
       PORT: 3000
+      CORS_ORIGIN: https://${DOMAIN}
     networks:
       - spacerunner-network
 
   database:
-    container_name: mariadb
+    container_name: spacerunner-db
     image: mariadb:11.4
     restart: unless-stopped
-    ports:
-      - "${DB_PORT:-3306}:3306"
     volumes:
       - db-data:/var/lib/mysql
-      - ./GAME/db:/docker-entrypoint-initdb.d:ro
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-spacerunner}
       MYSQL_DATABASE: ${DB_NAME:-spacerunner}
@@ -68,6 +80,9 @@ services:
 networks:
   spacerunner-network:
     driver: bridge
+  proxy:
+    external: true
+    name: ${TRAEFIK_NETWORK}
 
 volumes:
   db-data:

@@ -3,466 +3,139 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lobby – SpaceRunner</title>
-    <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            font-family: space-mono, monospace;
-            background-color: #121214;
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: auto;
-        }
-
-        .lobby-container {
-            background-color: rgba(20, 20, 25, 0.85);
-            backdrop-filter: blur(12px);
-            width: 90%;
-            max-width: 800px;
-            border: 1px solid rgba(151, 0, 189, 0.3);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-
-        h1 {
-            color: #fff;
-            text-shadow: 0 0 10px rgba(151, 0, 189, 0.6), 0 0 20px rgba(151, 0, 189, 0.4);
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
-
-        .section {
-            margin-bottom: 25px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .section:last-of-type {
-            border-bottom: none;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        input[type="text"] {
-            padding: 12px;
-            background-color: rgba(30, 30, 35, 0.7);
-            border: 1px solid rgba(151, 0, 189, 0.3);
-            border-radius: 8px;
-            color: #fff;
-            font-family: inherit;
-            width: 250px;
-            text-align: center;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #9700bd;
-            box-shadow: 0 0 8px rgba(151, 0, 189, 0.3);
-        }
-
-        button {
-            padding: 12px 24px;
-            background-color: #9700bd;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-family: inherit;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        button:hover {
-            background-color: #b700dd;
-            box-shadow: 0 0 10px rgba(151, 0, 189, 0.5);
-            transform: translateY(-1px);
-        }
-
-        button:disabled {
-            background-color: #444;
-            color: #888;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .rooms-list {
-            margin-top: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .room-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .room-item:last-child {
-            border-bottom: none;
-        }
-
-        .player-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        .player-badge {
-            background: rgba(151, 0, 189, 0.15);
-            border: 1px solid rgba(151, 0, 189, 0.3);
-            border-radius: 20px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .player-badge.host {
-            border-color: gold;
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        .back-btn {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-        }
-
-        .back-icon {
-            width: 28px;
-            height: 28px;
-            fill: #fff;
-            opacity: 0.8;
-            transition: opacity 0.2s, fill 0.2s;
-            transform: rotate(180deg);
-        }
-
-        .back-icon:hover {
-            opacity: 1;
-            fill: #9700bd;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Multiplayer Lobby – SpaceRunner</title>
+    <meta name="description" content="Create or join a SpaceRunner multiplayer room. Race up to 4 players on seeded maps, right in the browser.">
+    <link rel="canonical" href="https://spacerunner.websters.at/lobby">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#9700bd">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SpaceRunner">
+    <meta property="og:title" content="Multiplayer Lobby – SpaceRunner">
+    <meta property="og:description" content="Create or join a room and race up to 4 players on seeded maps.">
+    <meta property="og:url" content="https://spacerunner.websters.at/lobby">
+    <meta property="og:image" content="https://spacerunner.websters.at/img/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Multiplayer Lobby – SpaceRunner">
+    <meta name="twitter:description" content="Create or join a room and race up to 4 players on seeded maps.">
+    <meta name="twitter:image" content="https://spacerunner.websters.at/img/og-image.png">
+    <link rel="icon" href="img/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <link rel="stylesheet" href="css/lobby.css?v=2">
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="js/common.js?v=2" defer></script>
+    <script src="js/lobby.js?v=2" defer></script>
 </head>
 
 <body>
     <header class="game-header">
-        <div class="header-logo"><a href="/">SpaceRunner</a></div>
-        <nav class="header-nav">
+        <div class="header-logo"><a href="/" aria-label="SpaceRunner – home"><span class="logo-full">SpaceRunner</span><span class="logo-short" aria-hidden="true">SR</span></a></div>
+        <nav class="header-nav" aria-label="Main navigation">
             <a href="/" class="nav-btn" title="Back to Main Menu">
-                <svg viewBox="0 0 576 512" class="nav-svg">
+                <svg viewBox="0 0 576 512" class="nav-svg" aria-hidden="true">
                     <path fill="currentColor"
                         d="M575.8 255.5c0 18-15 32.1-32 32.1h-32v224c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V384H256v128c0 17.7-14.3 32-32 32H112c-17.7 0-32-14.3-32-32V287.6H48c-18 0-32-14.1-32-32.1c0-9 3-17 10-24L265 7c6-6 15-10 23-10s17 4 23 10L565 231.5c7 7 10.8 15 10.8 24z" />
                 </svg>
-                <span>Home</span>
+                <span class="nav-label">Home</span>
             </a>
             <a href="/scoreboard" class="nav-btn" title="Scoreboard">
-                <svg viewBox="0 0 512 512" class="nav-svg">
+                <svg viewBox="0 0 512 512" class="nav-svg" aria-hidden="true">
                     <path fill="currentColor"
                         d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z" />
                 </svg>
-                <span>Scores</span>
+                <span class="nav-label">Scores</span>
             </a>
             <a href="/login/login" class="nav-btn" id="login-nav-btn" title="Login/Signup">
-                <svg viewBox="0 0 448 512" class="nav-svg">
+                <svg viewBox="0 0 448 512" class="nav-svg" aria-hidden="true">
                     <path fill="currentColor"
                         d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-16.7a174.1 174.1 0 0 1-145.8 0h-16.7A111.6 111.6 0 0 0 24 399.6v40.4A72 72 0 0 0 96 512h256a72 72 0 0 0 72-72v-40.4A111.6 111.6 0 0 0 313.6 288z" />
                 </svg>
-                <span id="nav-user-text">Login</span>
+                <span id="nav-user-text" class="nav-label">Login</span>
             </a>
-            <button id="fullscreen-btn" class="nav-btn" title="Toggle Fullscreen" onclick="toggleFullScreen()">
-                <svg id="fullscreen-icon" viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
+            <button id="fullscreen-btn" class="nav-btn" title="Toggle Fullscreen" data-action="fullscreen" aria-label="Toggle fullscreen">
+                <svg id="fullscreen-icon" viewBox="0 0 448 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
             </button>
         </nav>
     </header>
 
-    <div class="lobby-container">
+    <main class="lobby-container">
         <h1>Multiplayer Lobby</h1>
 
         <!-- View 1: Join/Create Room -->
         <div id="setup-view" class="view">
-            <div class="section">
-                <h3>Create a Room</h3>
+            <section class="section" aria-labelledby="create-heading">
+                <h2 id="create-heading">Create a Room</h2>
                 <div class="input-group">
-                    <input type="text" id="create-room-name" placeholder="Enter Room Name" maxlength="20">
-                    <button id="create-btn">Create</button>
+                    <label class="visually-hidden" for="create-room-name">Room name</label>
+                    <input type="text" id="create-room-name" placeholder="Enter Room Name" maxlength="20"
+                        autocomplete="off" spellcheck="false" pattern="[A-Za-z0-9_\-]{1,20}"
+                        title="Letters, numbers, _ or -, max 20 characters">
+                    <button id="create-btn" type="button">Create</button>
                 </div>
-            </div>
+            </section>
 
-            <div class="section">
-                <h3>Available Rooms</h3>
-                <div class="rooms-list" id="rooms-list-container">
-                    <div style="padding: 20px; color: rgba(255, 255, 255, 0.4);">No rooms active. Create one above!
-                    </div>
+            <section class="section" aria-labelledby="rooms-heading">
+                <h2 id="rooms-heading">Available Rooms</h2>
+                <div class="rooms-list" id="rooms-list-container" role="status" aria-live="polite">
+                    <div class="rooms-empty">Connecting to the lobby…</div>
                 </div>
-            </div>
+            </section>
         </div>
 
         <!-- View 2: Room Lobby -->
-        <div id="lobby-view" class="view" style="display: none;">
-            <h2 id="current-room-title">Room: ...</h2>
+        <div id="lobby-view" class="view" hidden>
+            <h2 id="current-room-title">Room: …</h2>
 
-            <div class="section">
-                <h3>Players</h3>
+            <section class="section" aria-labelledby="players-heading">
+                <h3 id="players-heading">Players</h3>
                 <div class="player-list" id="player-badge-container">
                     <!-- Dynamic badges -->
                 </div>
-            </div>
+            </section>
 
-            <div class="section" id="mode-selector-section" style="display: none; margin-bottom: 20px;">
-                <label for="game-mode" style="margin-right: 10px; font-weight: bold; font-family: inherit;">Select
-                    Mode:</label>
-                <select id="game-mode"
-                    style="padding: 10px; background: rgba(30, 30, 35, 0.9); border: 1px solid rgba(151,0,189,0.3); color: white; border-radius: 6px; font-family: inherit; cursor: pointer;">
+            <section class="section" id="mode-selector-section" hidden aria-labelledby="mode-heading">
+                <h3 id="mode-heading"><label for="game-mode">Select Mode:</label></h3>
+                <select id="game-mode">
                     <option value="normal">Normal</option>
                     <option value="easy">Easy</option>
                     <option value="hard">Hard (Score)</option>
                     <option value="impossible">Impossible (Score)</option>
                     <option value="run">Run Mode</option>
                 </select>
-                <div style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <label for="seed-input" style="font-weight: bold; font-family: inherit;">🌱 Seed:</label>
-                    <input type="text" id="seed-input" placeholder="Random (leave blank)" maxlength="20"
-                        style="width: 180px;">
-                    <button id="random-seed-btn"
-                        style="padding: 10px; font-size: 0.85em; background: rgba(151,0,189,0.3);">🎲 Random</button>
+                <div class="mode-row">
+                    <label for="seed-input">🌱 Seed:</label>
+                    <input type="text" id="seed-input" class="seed-input" placeholder="Random (leave blank)"
+                        maxlength="20" autocomplete="off" spellcheck="false">
+                    <button id="random-seed-btn" class="random-seed-btn" type="button" title="Random seed">🎲 Random</button>
                 </div>
-                <div style="margin-top: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.45);">Seeds only apply to
-                    random levels (after level 3). Same seed = same map!</div>
-            </div>
+                <p class="seed-hint">Seeds only apply to random levels (after level 3). Same seed = same map!</p>
+            </section>
 
-            <div class="section">
-                <button id="start-game-btn" disabled>Waiting for Host...</button>
-                <button id="leave-btn" style="background-color: #444; margin-left: 10px;">Leave Room</button>
+            <div class="section lobby-actions">
+                <button id="start-game-btn" type="button" disabled>Waiting for Host…</button>
+                <button id="leave-btn" class="btn-secondary" type="button">Leave Room</button>
             </div>
         </div>
-    </div>
+    </main>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
+    <p id="loggeduser" aria-live="polite"></p>
 
-        const setupView = document.getElementById('setup-view');
-        const lobbyView = document.getElementById('lobby-view');
-        const createRoomNameInput = document.getElementById('create-room-name');
-        const createBtn = document.getElementById('create-btn');
-        const roomsListContainer = document.getElementById('rooms-list-container');
-        const currentRoomTitle = document.getElementById('current-room-title');
-        const playerBadgeContainer = document.getElementById('player-badge-container');
-        const startGameBtn = document.getElementById('start-game-btn');
-        const leaveBtn = document.getElementById('leave-btn');
-
-        let myUsername = "";
-        let currentRoom = null;
-        let isHost = false;
-        let roomPlayers = [];
-
-        // Fetch logged username from cookie or generate a persistent funny guest name starting with sr_
-        function getUsername() {
-            let cookies = document.cookie.split(";");
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.indexOf("username=") === 0) {
-                    return decodeURIComponent(cookie.substring("username=".length));
-                }
-            }
-            if (!localStorage.getItem('sr_guest_name')) {
-                const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
-                const nouns = ['Runner', 'Monkey', 'Alien', 'Banana', 'Donut', 'Potato', 'Ninja', 'Cat', 'Frog', 'Cactus', 'Burger', 'Panda', 'Robot'];
-                const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-                const noun = nouns[Math.floor(Math.random() * nouns.length)];
-                localStorage.setItem('sr_guest_name', 'sr_' + adj + noun);
-            }
-            return localStorage.getItem('sr_guest_name');
-        }
-
-        myUsername = getUsername();
-        const navUserText = document.getElementById("nav-user-text");
-        if (navUserText && myUsername && !myUsername.startsWith("sr_")) {
-            navUserText.innerText = myUsername;
-        }
-        const loggedUserEl = document.getElementById("loggeduser");
-        if (loggedUserEl) {
-            loggedUserEl.innerHTML = myUsername;
-        }
-
-        // Join Lobby main room
-        socket.emit('get-rooms');
-
-        // Socket listener: Rooms List
-        socket.on('rooms-update', (rooms) => {
-            roomsListContainer.innerHTML = '';
-            const roomKeys = Object.keys(rooms);
-            if (roomKeys.length === 0) {
-                roomsListContainer.innerHTML = '<div style="padding: 20px; color: rgba(255, 255, 255, 0.4);">No rooms active. Create one above!</div>';
-                return;
-            }
-
-            roomKeys.forEach(roomName => {
-                const room = rooms[roomName];
-                const item = document.createElement('div');
-                item.className = 'room-item';
-                item.innerHTML = `
-                    <div style="text-align: left;">
-                        <strong>${escapeHtml(roomName)}</strong>
-                        <div style="font-size: 0.8rem; color: #aaa;">Players: ${room.players.length}/4 ${room.inGame ? '<span style="color:#b700dd; font-weight:bold;">(In Game)</span>' : ''}</div>
-                    </div>
-                    <button onclick="joinRoom('${escapeHtml(roomName)}')">${room.inGame ? 'Join Mid-Game' : 'Join'}</button>
-                `;
-                roomsListContainer.appendChild(item);
-            });
-        });
-
-        // Create Room click
-        createBtn.addEventListener('click', () => {
-            const name = createRoomNameInput.value.trim();
-            if (!name) return;
-            socket.emit('create-room', name, myUsername);
-        });
-        createRoomNameInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') createBtn.click();
-        });
-
-        // Join Room function
-        window.joinRoom = function (roomName) {
-            socket.emit('join-room', roomName, myUsername);
-        };
-
-        // Socket listener: Joined successfully
-        socket.on('room-joined', (roomName, players, hostId) => {
-            currentRoom = roomName;
-            isHost = (socket.id === hostId);
-            roomPlayers = players;
-
-            localStorage.setItem("hostId", hostId);
-            localStorage.setItem("isHost", isHost ? "true" : "false");
-
-            setupView.style.display = 'none';
-            lobbyView.style.display = 'block';
-            currentRoomTitle.textContent = `Room: ${roomName}`;
-
-            updatePlayerBadges(players, hostId);
-        });
-
-        // Socket listener: Room Sync
-        socket.on('room-sync', (players, hostId) => {
-            isHost = (socket.id === hostId);
-            roomPlayers = players;
-            localStorage.setItem("hostId", hostId);
-            localStorage.setItem("isHost", isHost ? "true" : "false");
-            updatePlayerBadges(players, hostId);
-        });
-
-        function updatePlayerBadges(players, hostId) {
-            playerBadgeContainer.innerHTML = '';
-            players.forEach(p => {
-                const badge = document.createElement('div');
-                badge.className = 'player-badge' + (p.id === hostId ? ' host' : '');
-                badge.innerHTML = `
-                    <span>${p.id === hostId ? '👑 ' : ''}${escapeHtml(p.username)}</span>
-                `;
-                playerBadgeContainer.appendChild(badge);
-            });
-
-            if (isHost) {
-                startGameBtn.disabled = false;
-                startGameBtn.textContent = "Start Game";
-                startGameBtn.style.backgroundColor = '#9700bd';
-                document.getElementById('mode-selector-section').style.display = 'block';
-            } else {
-                startGameBtn.disabled = true;
-                startGameBtn.textContent = "Waiting for Host...";
-                startGameBtn.style.backgroundColor = '#444';
-                document.getElementById('mode-selector-section').style.display = 'none';
-            }
-        }
-
-        // Leave Room click
-        leaveBtn.addEventListener('click', () => {
-            socket.emit('leave-room', currentRoom);
-            setupView.style.display = 'block';
-            lobbyView.style.display = 'none';
-            currentRoom = null;
-            socket.emit('get-rooms');
-        });
-
-        // Random seed button
-        const randomSeedBtn = document.getElementById('random-seed-btn');
-        if (randomSeedBtn) {
-            randomSeedBtn.addEventListener('click', () => {
-                document.getElementById('seed-input').value = Math.floor(Math.random() * 999999999);
-            });
-        }
-
-        // Start Game click
-        startGameBtn.addEventListener('click', () => {
-            if (isHost) {
-                const selectedMode = document.getElementById('game-mode').value;
-                const seedVal = document.getElementById('seed-input')?.value.trim() || null;
-                const seed = seedVal ? parseInt(seedVal) || seedVal.split('').reduce((a, c) => a + c.charCodeAt(0), 0) : Math.floor(Math.random() * 999999999);
-                socket.emit('start-game', currentRoom, selectedMode, seed);
-            }
-        });
-
-        // Socket listener: Game Starting
-        socket.on('game-starting', (roomName, mode, seed) => {
-            localStorage.setItem("multiplayer", "true");
-            localStorage.setItem("difficulty", mode || "normal");
-            localStorage.setItem("multiplayerRoom", roomName);
-            localStorage.setItem("multiplayerPlayers", JSON.stringify(roomPlayers));
-            localStorage.setItem("isHost", isHost ? "true" : "false");
-            if (seed !== null && seed !== undefined) {
-                localStorage.setItem("mapSeed", seed);
-                localStorage.setItem("customSeedUsed", "true");
-            } else {
-                localStorage.removeItem("mapSeed");
-                localStorage.setItem("customSeedUsed", "false");
-            }
-            window.location.assign('game');
-        });
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-    </script>
-    <p id="loggeduser"></p>
-    <script>
-        function toggleFullScreen() {
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                if (document.body.requestFullscreen) document.body.requestFullscreen();
-                else if (document.body.webkitRequestFullscreen) document.body.webkitRequestFullscreen();
-                else if (document.body.msRequestFullscreen) document.body.msRequestFullscreen();
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                else if (document.msExitFullscreen) document.msExitFullscreen();
-            }
-        }
-    </script>
+    <footer class="site-footer">
+        <nav aria-label="Footer">
+            <a href="/">Home</a><span aria-hidden="true"> · </span>
+            <a href="/game">Play</a><span aria-hidden="true"> · </span>
+            <a href="/scoreboard">Scores</a><span aria-hidden="true"> · </span>
+            <a href="/login/login">Login</a>
+        </nav>
+        <small>© 2026 SpaceRunner – free browser game.</small>
+    </footer>
+    <noscript><p class="noscript-note">The multiplayer lobby needs JavaScript.</p></noscript>
 </body>
 
 </html>

@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../php/config.php';
 require_once __DIR__ . '/../php/db.php';
+require_once __DIR__ . '/../php/session.php';
+require_once __DIR__ . '/../php/csrf.php';
+require_once __DIR__ . '/../php/rate_limit.php';
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 /**
  * Send a JSON error response and exit.
@@ -31,12 +35,27 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     send_error('Method not allowed.', 405);
 }
 
+sr_session_start();
+
+// CSRF check (token issued by /php/csrf.php, stored in session)
+if (!sr_csrf_validate($_POST['csrf_token'] ?? null)) {
+    send_error('Invalid request. Please reload the page and try again.', 403);
+}
+
+// Brute-force protection: max 10 attempts per 5 minutes per IP
+if (!sr_rate_limit('login', 10, 300)) {
+    send_error('Too many login attempts. Please wait a few minutes.', 429);
+}
+
 // --- Input ---
 $identifier = trim($_POST['username-email'] ?? '');
 $password   = $_POST['login-password']      ?? '';
 
 if ($identifier === '' || $password === '') {
     send_error('Username/email and password are required.');
+}
+if (strlen($identifier) > 254 || strlen($password) > 256) {
+    send_error('Invalid credentials.', 401);
 }
 
 // --- Database ---
@@ -76,19 +95,29 @@ try {
     $conn->close();
 
     // --- Session ---
-    session_start();
     session_regenerate_id(true); // Prevent session fixation
-    $_SESSION['user_id']  = $user['u_id'];
-    $_SESSION['username'] = $user['u_username'];
+    $_SESSION['user_id']  = (int) $user['u_id'];
+    $_SESSION['username'] = (string) $user['u_username'];
 
-    // --- Cookies (HttpOnly flag for XSS protection) ---
+    // --- Display cookie (NOT HttpOnly on purpose: the UI shows the name).
+    // It carries no privilege — auth always uses the server-side session.
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
     $expires = time() + (3 * 24 * 60 * 60); // 3 days
-    setcookie('user_id',  (string) $user['u_id'],  $expires, '/', '', false, true);
-    setcookie('username', $user['u_username'],      $expires, '/', '', false, true);
+    setcookie('sr_display_name', (string) $user['u_username'], [
+        'expires'  => $expires,
+        'path'     => '/',
+        'secure'   => $https,
+        'httponly' => false,
+        'samesite' => 'Lax',
+    ]);
+    // Remove legacy cookies from previous versions
+    sr_clear_cookie('user_id');
+    sr_clear_cookie('username');
 
     send_success([
-        'user_id'  => $user['u_id'],
-        'username' => $user['u_username'],
+        'user_id'  => (int) $user['u_id'],
+        'username' => (string) $user['u_username'],
     ]);
 
 } catch (RuntimeException $e) {

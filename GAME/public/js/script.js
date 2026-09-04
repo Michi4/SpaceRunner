@@ -24,9 +24,27 @@ let cameraSpeed = 0.1;
 // CANVAS
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
+// HiDPI: render at device pixel ratio (capped at 2x for performance) so the
+// game stays sharp on retina phones/tablets. All game logic keeps working
+// in CSS pixels; only the backing store is scaled.
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+function fitCanvas() {
+    canvas.width = Math.max(1, Math.round(width * DPR));
+    canvas.height = Math.max(1, Math.round(height * DPR));
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+}
 //SET width height (window.inner----)
-canvas.width = width;
-canvas.height = height;
+fitCanvas();
+
+// Cached HUD refs: the hot loop runs at 75Hz – never query the DOM per frame
+const scoreEl = document.getElementById('a');
+const myBarEl = document.getElementById('myBar');
+const progressWrapEl = document.getElementById('progressWrapper');
+const coinCountEl = document.getElementById('coin-count');
+// Multiplayer flag is set before navigation and never changes mid-session,
+// so read once instead of hitting synchronous localStorage every frame
+const ONLINE_MP = (() => { try { return localStorage.getItem('multiplayer') === 'true'; } catch (e) { return false; } })();
 
 let keycodes = { // https://codepen.io/jdoleary/pen/NqdmOM
     8: "BCKSP", 13: "ENTER", 16: "SHIFT", 17: "ALTRIGHT", 18: "ALT", 27: "ESC", 32: "SPACE", 37: "LEFT", 38: "UP", 39: "RIGHT", 40: "DOWN", 46: "DEL", 91: "MAC", 112: "F1", 113: "F2", 114: "F3", 115: "F4", 116: "F5", 117: "F6", 118: "F7", 119: "F8", 120: "F9", 121: "F10", 122: "F11", 123: "F12", 8: "backspace", 9: "tab", 13: "enter", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause_break", 20: "caps_lock", 27: "escape", 33: "page_up", 34: "page down", 35: "end", 36: "home", 37: "left_arrow", 38: "up_arrow", 39: "right_arrow", 40: "down_arrow", 45: "insert", 46: "delete", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 65: "a", 66: "b", 67: "c", 68: "d", 69: "e", 70: "f", 71: "g", 72: "h", 73: "i", 74: "j", 75: "k", 76: "l", 77: "m", 78: "n", 79: "o", 80: "p", 81: "q", 82: "r", 83: "s", 84: "t", 85: "u", 86: "v", 87: "w", 88: "x", 89: "y", 90: "z", 91: "left_window key", 92: "right_window key", 93: "select_key", 96: "numpad 0", 97: "numpad 1", 98: "numpad 2", 99: "numpad 3", 100: "numpad 4", 101: "numpad 5", 102: "numpad 6", 103: "numpad 7", 104: "numpad 8", 105: "numpad 9", 106: "multiply", 107: "add", 109: "subtract", 110: "decimal point", 111: "divide", 112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8", 120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "num_lock", 145: "scroll_lock", 186: "semi_colon", 187: "equal_sign", 188: "comma", 189: "dash", 190: "period", 191: "forward_slash", 192: "grave_accent", 219: "open_bracket", 220: "backslash", 221: "closebracket", 222: "single_quote"
@@ -38,7 +56,9 @@ let keycodes = { // https://codepen.io/jdoleary/pen/NqdmOM
 // needed for Player
 let rgbCounter = 0;
 let playerCounter = 1;
-let rgbColor = "#000000";
+// Vivid default: a black first frame on dark background reads as broken.
+// RGB mode re-randomizes this within ~2s of play anyway.
+let rgbColor = "#ff0000";
 class Player {
     constructor(leader, color, shadow, text, reassigned) {//if true rgb = on
         this.id = playerCounter++;
@@ -74,13 +94,15 @@ class Player {
 
     draw() {
         if (this.color == true) {
-            ctx.shadowColor = `${rgbColor}`;
-            ctx.fillStyle = `${rgbColor}`;
+            ctx.shadowColor = rgbColor;
+            ctx.fillStyle = rgbColor;
         } else {
-            ctx.shadowColor = `${this.color}`;
-            ctx.fillStyle = `${this.color}`;
+            ctx.shadowColor = this.color;
+            ctx.fillStyle = this.color;
         }
-        ctx.shadowBlur = width * 0.9;
+        // Capped glow: a full-screen shadowBlur per player per frame
+        // destroys mobile GPUs. The cap looks identical, costs ~nothing.
+        ctx.shadowBlur = Math.min(width * 0.02, 28);
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         ctx.shadowBlur = 0;
@@ -93,7 +115,8 @@ class Player {
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
 
-        if ((this.position.y + this.height + this.velocity.y) <= canvas.height) {
+        // NOTE: `height` (CSS px), not canvas.height (device px under DPR scaling)
+        if ((this.position.y + this.height + this.velocity.y) <= height) {
             this.velocity.y += game.gravity;
         }
     }
@@ -113,15 +136,15 @@ class Platform {
 
     draw() {
         if (game.platformShadow == true) {
-            ctx.shadowColor = `${rgbColor}`;
+            ctx.shadowColor = rgbColor;
         } else if (this.shadow) {
-            ctx.shadowColor = `${this.shadow}`;
+            ctx.shadowColor = this.shadow;
         } else if (game.platformShadow) {
-            ctx.shadowColor = `${game.platformShadow}`;
+            ctx.shadowColor = game.platformShadow;
         } else {
             ctx.shadowColor = `#ffffff`;
         }
-        ctx.shadowBlur = width / 384;
+        ctx.shadowBlur = Math.min(width / 384, 12);
         ctx.fillStyle = this.color ?? game.platformColor;
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
@@ -154,7 +177,7 @@ class Item {
     draw() {
         if (game.difficulty != 'impossible') ctx.shadowColor = 'gold';
         else ctx.shadowColor = '#000';
-        ctx.shadowBlur = width * 0.04;
+        ctx.shadowBlur = Math.min(width * 0.015, 24);
         //bad - coin TODO!
         ctx.drawImage(coin, this.position.x, this.position.y, this.width, this.height);
     }
@@ -174,7 +197,7 @@ class GameText {
     }
 
     draw() {
-        ctx.shadowBlur = width / 128;
+        ctx.shadowBlur = Math.min(width / 128, 12);
         ctx.shadowColor = this.shadow ?? "#ffffff00";
         if (this.color == "rgbColor") ctx.fillStyle = rgbColor;
         else ctx.fillStyle = this.color;
@@ -186,7 +209,7 @@ class GameText {
             fontSizePx = width / 55;
         }
         ctx.font = `${fontSizePx}px space-mono, monospace`;
-        ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
+        // Two passes for a faux-bold look (was three – same look, cheaper)
         ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
         ctx.fillText(this.text, this.position.x, this.position.y, this.maxWidth);
     }
@@ -345,8 +368,9 @@ class Game {
 
     addLevel(level) {
         this.levels.push(level);
-        console.log(this.levels.length);
-        if (this.levels < 3) return;
+        // NOTE: resetLevels() must run after EVERY push – the next level's
+        // start position is computed from the current level here. Do NOT
+        // "optimize" this into a length check; chaining breaks without it.
         this.resetLevels();
     }
 
@@ -366,7 +390,6 @@ class Game {
             let startx = temp1 - temp2;
             this.levels[1].setLevelStart(startx);
         }
-        console.log(this.levels);
     }
 
     draw() {
@@ -407,28 +430,50 @@ function clickmenu() {
 
 // FULLSCWEEN
 
-//mobile stuff
+// Touch controls: shown on touch-first devices.
+// Feature-detected (coarse pointer + touch support), UA sniff kept as fallback.
 let mobile = false;
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+const hasTouchInput = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent) || (coarsePointer && hasTouchInput)) {
     mobile = true;
-    document.getElementById('right').addEventListener("touchstart", mobileRight);
-    document.getElementById('right').addEventListener("touchend", mobileStop);
+}
 
-    document.getElementById('left').addEventListener("touchstart", mobileLeft);
-    document.getElementById('left').addEventListener("touchend", mobileStop);
+(function initTouchControls() {
+    const panel = document.getElementById('touch-controls');
+    if (!panel) return;
+    if (!mobile) {
+        panel.hidden = true;
+        panel.remove();
+        return;
+    }
+    panel.hidden = false;
+    // Pointer Events cover touch, pen and mouse with one code path.
+    // preventDefault + touch-action:none (CSS) stop scroll/zoom/double-tap.
+    const press = (id, down, up) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            try { el.setPointerCapture(e.pointerId); } catch (err) { /* noop */ }
+            down();
+        });
+        el.addEventListener('pointerup', (e) => { e.preventDefault(); up(); });
+        el.addEventListener('pointercancel', () => up());
+        el.addEventListener('lostpointercapture', () => up());
+        el.addEventListener('contextmenu', (e) => e.preventDefault());
+    };
+    press('right', mobileRight, mobileStop);
+    press('left', mobileLeft, mobileStop);
+    press('mobileJump', mobileJump, stopJump);
 
-    document.getElementById('mobileJump').addEventListener('touchstart', mobileJump);
-    document.getElementById('mobileJump').addEventListener('touchend', stopJump);
-
-    document.getElementById('audiotags').innerHTML = '';
+    const audio = document.getElementById('audiotags');
+    if (audio) audio.innerHTML = '';
 
     Array.from(document.getElementsByClassName('nomobile')).forEach(x => {
         x.innerHTML = '';
     });
-    console.log("mobiletelefonii");
-} else {
-    document.getElementById('mobile').innerHTML = '';
-}
+})();
 
 
 //LEVELS
@@ -473,10 +518,10 @@ function level0() {
 
     let lvltexts = [
         //new GameText("Welcome to SpaceRunner", "rgbColor", -width*0.3, height*0.3, width*0.05),
-        new GameText("Home ->", "#000000", "#FFFfff99", -width * 0.09, -height * 0.075, 0.03),
-        new GameText("press", "#000000", "#9700bd", 0, height * 0.15, 0.025),
-        new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#000000", "#9700bd", 0, height * 0.25, 0.025),
-        new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#000000", "#9700bd", width * 0.95, height * 0.5, 0.025),
+        new GameText("Home ->", "#ffffff", "#FFFfff99", -width * 0.09, -height * 0.075, 0.03),
+        new GameText("press", "#ffffff", "#b700dd", 0, height * 0.15, 0.025),
+        new GameText(keycodes[players[0].reassign.left].toUpperCase() + keycodes[players[0].reassign.down].toUpperCase() + keycodes[players[0].reassign.right].toUpperCase() + " to move,", "#ffffff", "#b700dd", 0, height * 0.25, 0.025),
+        new GameText(keycodes[players[0].reassign.jump].toUpperCase() + " to jump,", "#ffffff", "#b700dd", width * 0.95, height * 0.5, 0.025),
     ];
 
     return new Level(lvlplatforms, lvlitems, lvltexts);
@@ -507,7 +552,11 @@ function level1() {
         new Item(width * 2.95, height * 0.45, innerWidth / 48, innerWidth / 48),
     ];
 
-    return new Level(lvlplatforms, lvlitems);
+    let lvltexts = [
+        new GameText("Hold " + keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint-jump the gap!", "#ffffff", "#b700dd", width * 0.05, height * 0.6, 0.025),
+    ];
+
+    return new Level(lvlplatforms, lvlitems, lvltexts);
 }
 // hi C:D
 function level2() {
@@ -539,7 +588,7 @@ function level2() {
     ];
 
     let lvltexts = [
-        new GameText(keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint,", "#000000", "#9700bd", width * 0.125, height * 0.65, 0.025),
+        new GameText(keycodes[players[0].reassign.sprint].toUpperCase() + " to sprint,", "#ffffff", "#b700dd", width * 0.125, height * 0.65, 0.025),
     ];
 
     return new Level(lvlplatforms, lvlitems, lvltexts);
@@ -585,8 +634,8 @@ function level3() {
     ];
 
     let lvltexts = [
-        new GameText(keycodes[players[0].reassign.sneak].toUpperCase() + " to sneak,", "#000000", "#9700bd", width * 0.125, height * 0.65, 0.025),
-        new GameText("ESC to open the menu.", "#000000", "#9700bd", width * 2.1, height * 0.65, 0.025),
+        new GameText(keycodes[players[0].reassign.sneak].toUpperCase() + " to sneak,", "#ffffff", "#b700dd", width * 0.125, height * 0.65, 0.025),
+        new GameText("ESC to open the menu.", "#ffffff", "#b700dd", width * 2.1, height * 0.65, 0.025),
     ];
 
     return new Level(lvlplatforms, lvlitems, lvltexts);
@@ -638,7 +687,6 @@ function randomGen(levelIndex) {
                     coinpos.x = seededRand() * (lvlplatforms[i].width + lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
                     coinpos.y = seededRand() * (lvlplatforms[i].position.y - 0.06 * height - (lvlplatforms[i].position.y - 0.3 * height)) + (lvlplatforms[i].position.y - 0.3 * height);
                     let tempItem = new Item(coinpos.x, coinpos.y, innerWidth / 48, innerWidth / 48);
-                    console.log(tempItem);
                     if (tempItem && tempItem != null) lvlitems.push(tempItem);
                 }
             }
@@ -671,7 +719,6 @@ function randomGen(levelIndex) {
                 coinpos.x = seededRand() * (lvlplatforms[i].width + lvlplatforms[i].position.x - lvlplatforms[i].position.x) + lvlplatforms[i].position.x;
                 coinpos.y = seededRand() * (lvlplatforms[i].position.y - 0.06 * height - (lvlplatforms[i].position.y - 0.3 * height)) + (lvlplatforms[i].position.y - 0.3 * height);
                 let tempItem = new Item(coinpos.x, coinpos.y, innerWidth / 48, innerWidth / 48);
-                console.log(tempItem);
                 if (tempItem && tempItem != null) lvlitems.push(tempItem);
             }
         }
@@ -679,20 +726,17 @@ function randomGen(levelIndex) {
     }
     // Use seeded rand for last platform offset too
     lvlplatforms[9] = new Platform(lvlplatforms[8].position.x + lvlplatforms[8].width + (seededRand() * 0.3), height * 0.8, width * 0.5, height * 0.2);
-    console.log(lvlitems);
     return new Level(lvlplatforms, lvlitems);
 }
 
 ////TODO NOW
 function levelSwitch(victory) {
-    console.log(game.levels.length >= 2);
     if (game.levels.length >= 2 && victory) game.levels.shift();
     if (game.difficulty == "run") {
         game.addLevel(randomGen(game.level));
         if (game.levels.length <= 1) game.addLevel(randomGen(game.level + 1));
         return;
     }
-    console.log("LEvel: " + game.level);
     switch (game.level) {
         case 0:
             game.addLevel(level0());
@@ -716,7 +760,6 @@ function levelSwitch(victory) {
             if(level) level.resetLevel();
         });
     }*/
-    console.log("Added Level: " + (game.level));
 }
 
 //TODO
@@ -785,8 +828,7 @@ function drawFrame() {
 
         width = innerWidth;
         height = innerHeight;
-        canvas.width = width;
-        canvas.height = height;
+        fitCanvas();
 
         startScrollR = width * 0.4;
         startScrollL = width * 0.15;
@@ -840,7 +882,10 @@ function drawFrame() {
     }
     rgbCounter++;
 
+    // Clear in device pixels, then draw in CSS pixels (DPR transform)
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
     /*
@@ -859,7 +904,7 @@ function drawFrame() {
     */
     if (game.difficulty == 'impossible') {
         game.coins = Math.floor(game.ratioDistance / 3);
-        if (game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
+        renderCoins();
     }
 
 
@@ -883,7 +928,6 @@ function updatePhysics() {
                     //console.log(`Button ${buttonIndex} is pressed`);
                     if (buttonIndex === 0 || buttonIndex === 1) {//|| buttonIndex === 12){
                         player.keys.jump = true;
-                        console.log("jump")
                     }
                     if (buttonIndex === 13) {
                         player.keys.down = true;
@@ -1075,7 +1119,7 @@ function updatePhysics() {
                 if (game.difficulty == 'hard') coins++;
                 if (game.difficulty == 'easy') coins -= 0.5;
                 game.lvlCoins++;
-                if (game.difficulty != 'run') document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
+                renderCoins();
                 item.width = 0;
                 item.position.y = -9999;
             }
@@ -1088,25 +1132,31 @@ function updatePhysics() {
         }
     });
 
-    if (localStorage.getItem('multiplayer') === 'true' && typeof window._emitPosition === 'function') {
+    if (ONLINE_MP && typeof window._emitPosition === 'function') {
         window._emitPosition();
     }
     printScores();
 }
-if (game.difficulty == 'run') document.getElementById('coins').innerHTML = ' ';
-else document.getElementById('coins').innerHTML = `<img class="coinDispImg" src="./img/coin.png" alt="">  ${game.coins}`;
+// Coin HUD: static <img> lives in game.html, JS only updates the count
+// (cached — avoids innerHTML churn every frame / coin pickup).
+let _lastCoinRender = null;
+function renderCoins() {
+    const val = (game.difficulty == 'run') ? '' : String(game.coins);
+    if (_lastCoinRender === val) return;
+    _lastCoinRender = val;
+    if (coinCountEl) coinCountEl.textContent = val;
+}
+renderCoins();
 
 //TODO
 if (game.difficulty != 'impossible') coin.src = "img/coin.png";
 else coin.src = "img/skull.png";
 coin.onload = function () {
     coinLoad = true;
-    console.log("coinloaded");
     imgLoaded();
 };/*
 checkpoint.onload = function() {
     checkpointLoad = true;
-    console.log("checkpointloaded");
     imgLoaded();
 };
 checkpoint.src = "img/checkpoint.png";
@@ -1216,9 +1266,6 @@ function userMenu() {
     for (let i = 0; i < players.length; i++) {
         $('#whatplayer').append(`<option value="${i}">Player ${i + 1}</option>`);
     }
-    console.log(players[document.getElementById('whatplayer').value ?? 0].color);
-    console.log(game.platformShadow);
-    console.log(game.platformColor);
     document.getElementById("Player-Color").value = "" + players[0].color;
     if (game.platformShadow) document.getElementById("Platform-Shadow").value = "" + game.platformShadow;
     else document.getElementById("Platform-Shadow").value = '#ffffff';
@@ -1238,9 +1285,6 @@ function userMenu() {
     });
 */
     //from CUSTOM SETTINGS
-    console.log(document.getElementById('whatplayer').value ?? 0);
-    console.log(players[document.getElementById('whatplayer').value ?? 0].color == true);
-    console.log(game.platformShadow);
     if (players[document.getElementById('whatplayer').value ?? 0].color == true && game.platformShadow == true) document.getElementById("RGB").checked = true;
     else document.getElementById("RGB").checked = false;
     $('#RGB').click(function () {
@@ -1284,8 +1328,7 @@ function userMenu() {
 
     $('#Player-Color').change(function () {
         players[document.getElementById('whatplayer').value ?? 0].color = document.getElementById("Player-Color").value;
-        console.log(players[document.getElementById('whatplayer').value ?? 0].color);
-    });
+        });
 
     $('#Platform-Color').change(function () {
         game.platformColor = document.getElementById("Platform-Color").value;
@@ -1342,7 +1385,6 @@ function userMenu() {
     }
 
     document.getElementById('clearMenu').style.opacity = 1;
-    console.log("------menu opened------");
     menu = true;
 
 
@@ -1373,10 +1415,6 @@ function colorInput() {
 
 function rgb2hex(rgb) {
     rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-    console.log((rgb && rgb.length === 4) ? "#" +
-        ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-        ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-        ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '');
     return (rgb && rgb.length === 4) ? "#" +
         ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
         ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
@@ -1392,7 +1430,6 @@ function closeMenu() {
     document.getElementById('blur').style.filter = "blur(0px)";
     document.getElementById('clearMenu').style.opacity = 0;
     setTimeout(clearMenu, "501")
-    console.log("------menu closed------");
     saveSettings();
 
     //pressAnyButton();
@@ -1431,7 +1468,6 @@ function saveSettings() {
 
 /*
 function changeFace(){
-    console.log(charface.value);
     if(charface.value && charface.value != '[object HTMLInputElement]') text = charface?.value;
 }
 */
@@ -1589,7 +1625,16 @@ function keyListenerDown(e) {
     console.log(e);
     console.log(e.keyCode);
     */
+    // Never hijack keys while typing in a form field (settings inputs, seeds)
+    const tag = e.target && e.target.tagName ? e.target.tagName : '';
+    const typing = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
     if (!menu) {
+        if (typing) return;
+        // Stop the page from scrolling/activating buttons on game keys
+        // (Space, arrows). Remappable keys are matched via player.reassign.
+        if (e.keyCode === 32 || e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40) {
+            e.preventDefault();
+        }
         players.forEach(player => {
             switch (e.keyCode) {
                 // up
@@ -1638,6 +1683,8 @@ function keyListenerDown(e) {
 }
 
 function keyListenerUp(e) {
+    const tag = e.target && e.target.tagName ? e.target.tagName : '';
+    if (!menu && (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) return;
     players.forEach(player => {
         switch (e.keyCode) {
             case player.reassign?.sprint:        // shift
@@ -1712,15 +1759,14 @@ function remapKeys(x) {
                 $('#keymap').html(JSON.stringify(players[x].reassign, null, '<br/>'));
             }
             //set input handler for reassigning keys:
-            $('.keyinput').keyup(function () {
+            $('.keyinput').keyup(function (e) {
                 //show which key was pressed
-                this.value = keycodes[event.keyCode];
+                this.value = keycodes[e.keyCode];
                 //set the new value in the reassign object
-                players[x].reassign[this.name] = event.keyCode;
+                players[x].reassign[this.name] = e.keyCode;
                 //update the #keymap div to show the contents of reassign
                 $('#keymap').html(JSON.stringify(players[x].reassign, null, '<br/>'));
                 //unfocus input
-                console.log('blur');
                 $('input').blur();
             });
 
@@ -1775,18 +1821,20 @@ window.addEventListener("gamepaddisconnected", function (e) {
 // NEW MEW
 
 function updateCameraPosition() {
+    // NOTE: world/camera math runs in CSS px (`width`/`height`),
+    // never canvas.width/height (device px under DPR scaling).
     players.forEach(player => {
         if (player.leader) {
-            camera.x += (player.position.x + player.width / 2 - canvas.width / 2.5 - camera.x) * cameraSpeed;
+            camera.x += (player.position.x + player.width / 2 - width / 2.5 - camera.x) * cameraSpeed;
             if (camera.y <= height * 0.25) {
                 cameraSpeed = 0.1;
-                camera.y += (player.position.y + player.height / 2 - canvas.height / 1.8 - camera.y) * cameraSpeed;
+                camera.y += (player.position.y + player.height / 2 - height / 1.8 - camera.y) * cameraSpeed;
             } else {
                 cameraSpeed *= 0.99;
                 if (cameraSpeed <= 0.01) {
                     cameraSpeed = 0.1;
                 }
-                camera.y += (player.position.y + player.height / 2 - canvas.height / 1.8 - camera.y) * cameraSpeed * 0.5;
+                camera.y += (player.position.y + player.height / 2 - height / 1.8 - camera.y) * cameraSpeed * 0.5;
             }
 
         }
@@ -1794,8 +1842,9 @@ function updateCameraPosition() {
 }
 
 function moveProgressBar(percentage) {
-    let elem = document.getElementById("myBar");
-    elem.style.width = percentage + '%';
+    const clamped = Math.max(0, Math.min(100, percentage));
+    if (myBarEl) myBarEl.style.width = clamped + '%';
+    if (progressWrapEl) progressWrapEl.setAttribute('aria-valuenow', String(Math.round(clamped)));
     //document.getElementById("demo").innerHTML = Math.round(percentage)  + '%'; //<p id="demo">0%</p>
     //danke w3schools oba eicha progressbar is verbuggt meine is bessa ;D
 }
@@ -1808,32 +1857,28 @@ function printScores() {
     document.getElementById('a').innerHTML = "Distance: " + ratioDistance;
     */
     game.ratioDistance = ratioDistance;
-    document.getElementById('a').innerHTML = "  " + ratioDistance;
+    if (scoreEl) scoreEl.textContent = "  " + ratioDistance;
 
     if (ratioDistance != 0) {
         moveProgressBar(((game.distance - game.lvlDistance) / (game.getCurrentLevel().winx)) * 100);
     }
 }
 
-function getLoggedUser() {
-    let cookies = document.cookie.split(";");
-    let userId = null;
-    let username = "";
-
-    for (let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i].trim();
-
-        if (cookie.indexOf("user_id=") === 0) {
-            userId = cookie.substring("user_id=".length);
+async function getLoggedUser() {
+    // Source of truth is the server session (see js/common.js).
+    // Falls back to a persistent guest name when logged out/offline.
+    let username = '';
+    try {
+        if (window.SpaceRunner && window.SpaceRunner.refreshAuthUI) {
+            const auth = await window.SpaceRunner.refreshAuthUI();
+            username = auth.username || '';
         }
-
-        if (cookie.indexOf("username=") === 0) {
-            username = cookie.substring("username=".length);
-        }
-    }
+    } catch (e) { /* offline — guest mode */ }
 
     if (!window._guestName) {
-        if (localStorage.getItem('sr_guest_name')) {
+        if (window.SpaceRunner && window.SpaceRunner.guestName) {
+            window._guestName = window.SpaceRunner.guestName();
+        } else if (localStorage.getItem('sr_guest_name')) {
             window._guestName = localStorage.getItem('sr_guest_name');
         } else {
             const adjectives = ['Cosmic', 'Speedy', 'Quantum', 'Nebula', 'Cyber', 'Rocket', 'Shadow', 'Super', 'Turbo', 'Neon', 'Astro', 'Gravity', 'Star'];
@@ -1845,26 +1890,22 @@ function getLoggedUser() {
         }
     }
 
-    console.log("User ID: " + userId + ", Username: " + username);
     const displayUser = username || window._guestName;
-    document.getElementById("loggeduser").innerHTML = displayUser;
+    const loggedUserEl = document.getElementById("loggeduser");
+    if (loggedUserEl) loggedUserEl.textContent = displayUser;
 
     if (typeof players !== 'undefined' && players[0]) {
-        if (username) {
-            players[0].text = username;
-        } else {
-            players[0].text = window._guestName;
-        }
+        players[0].text = displayUser;
     }
 
-    return userId;
+    return username;
 }
 
 getLoggedUser();
 
 
 
-function saveScore(score) {
+async function saveScore(score) {
     if (players[0] && players[0].text && players[0].text.startsWith('sr_')) {
         console.log('Guest score not saved.');
         return;
@@ -1874,7 +1915,11 @@ function saveScore(score) {
     data.append('score', score.ratioDistance ?? 0);
     data.append('level', score.level ?? 0);
     data.append('seed', window._mapSeed ?? '');
-    console.log(...data);
+    try {
+        if (window.SpaceRunner && window.SpaceRunner.csrfToken) {
+            data.set('csrf_token', await window.SpaceRunner.csrfToken());
+        }
+    } catch (e) { /* best effort — server rejects without token */ }
 
     fetch('./php/save_score.php', {
         method: 'POST',
@@ -2057,7 +2102,7 @@ if (localStorage.getItem('multiplayer') === 'true') {
 // Draw remote players – called inside ctx.translate(-camera.x, -camera.y) in drawFrame()
 // All drawing must be in world-space coordinates (same as platforms/player positions).
 function drawRemotePlayers() {
-    if (localStorage.getItem('multiplayer') !== 'true') return;
+    if (!ONLINE_MP) return;
     const playerW = width / 38.4;
     const playerH = playerW;
     const myOffset = game.scrollOffset / width;
@@ -2099,7 +2144,7 @@ function drawRemotePlayers() {
         }
         const col = drawColor || '#ffffff';
         ctx.shadowColor = col;
-        ctx.shadowBlur = width * 0.015; // small glow, not full-screen blur
+        ctx.shadowBlur = Math.min(width * 0.015, 24); // small glow, not full-screen blur
         ctx.fillStyle = col;
         ctx.fillRect(worldX, worldY, playerW, playerH);
         ctx.shadowBlur = 0;

@@ -1,42 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Login – SpaceRunner</title>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+	<title>Login – SpaceRunner</title>
+	<meta name="description" content="Log in to your SpaceRunner account to save scores, join the leaderboard and play online multiplayer.">
+	<link rel="canonical" href="https://spacerunner.websters.at/login/login">
+	<meta name="robots" content="index, follow">
+	<meta name="theme-color" content="#9700bd">
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="SpaceRunner">
+	<meta property="og:title" content="Login – SpaceRunner">
+	<meta property="og:description" content="Log in to save scores and climb the leaderboard.">
+	<meta property="og:url" content="https://spacerunner.websters.at/login/login">
+	<meta property="og:image" content="https://spacerunner.websters.at/img/og-image.png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="Login – SpaceRunner">
+	<meta name="twitter:description" content="Log in to save scores and climb the leaderboard.">
+	<meta name="twitter:image" content="https://spacerunner.websters.at/img/og-image.png">
+	<link rel="icon" href="../img/favicon.png" type="image/png">
+	<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+	<link rel="manifest" href="../manifest.webmanifest">
+	<link rel="stylesheet" href="style.css?v=2">
+	<script src="../js/common.js?v=2" defer></script>
 </head>
 <body>
 	<header class="game-header">
-		<div class="header-logo"><a href="/">SpaceRunner</a></div>
-		<nav class="header-nav">
+		<div class="header-logo"><a href="/" aria-label="SpaceRunner – home"><span class="logo-full">SpaceRunner</span><span class="logo-short" aria-hidden="true">SR</span></a></div>
+		<nav class="header-nav" aria-label="Main navigation">
 			<a href="/" class="nav-btn" title="Back to Main Menu">
-				<svg viewBox="0 0 576 512" class="nav-svg"><path fill="currentColor" d="M575.8 255.5c0 18-15 32.1-32 32.1h-32v224c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V384H256v128c0 17.7-14.3 32-32 32H112c-17.7 0-32-14.3-32-32V287.6H48c-18 0-32-14.1-32-32.1c0-9 3-17 10-24L265 7c6-6 15-10 23-10s17 4 23 10L565 231.5c7 7 10.8 15 10.8 24z"/></svg>
-				<span>Home</span>
+				<svg viewBox="0 0 576 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M575.8 255.5c0 18-15 32.1-32 32.1h-32v224c0 17.7-14.3 32-32 32H352c-17.7 0-32-14.3-32-32V384H256v128c0 17.7-14.3 32-32 32H112c-17.7 0-32-14.3-32-32V287.6H48c-18 0-32-14.1-32-32.1c0-9 3-17 10-24L265 7c6-6 15-10 23-10s17 4 23 10L565 231.5c7 7 10.8 15 10.8 24z"/></svg>
+				<span class="nav-label">Home</span>
 			</a>
 			<a href="/scoreboard" class="nav-btn" title="Scoreboard">
-				<svg viewBox="0 0 512 512" class="nav-svg"><path fill="currentColor" d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>
-				<span>Scores</span>
+				<svg viewBox="0 0 512 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>
+				<span class="nav-label">Scores</span>
 			</a>
 			<a href="/login/signup" class="nav-btn" title="Sign Up">
-				<svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M256 256c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C111.6 288 24 375.6 24 483.6c0 15.6 12.8 28.4 28.4 28.4H403.6c15.6 0 28.4-12.8 28.4-28.4 0-108-87.6-195.6-195.6-195.6z"/></svg>
-				<span>Sign Up</span>
+				<svg viewBox="0 0 448 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M256 256c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C111.6 288 24 375.6 24 483.6c0 15.6 12.8 28.4 28.4 28.4H403.6c15.6 0 28.4-12.8 28.4-28.4 0-108-87.6-195.6-195.6-195.6z"/></svg>
+				<span class="nav-label">Sign Up</span>
 			</a>
-			<button class="nav-btn" title="Toggle Fullscreen" onclick="toggleFullScreen()">
-				<svg id="fullscreen-icon" viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
+			<button class="nav-btn" title="Toggle Fullscreen" data-action="fullscreen" aria-label="Toggle fullscreen">
+				<svg id="fullscreen-icon" viewBox="0 0 448 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
 			</button>
 		</nav>
 	</header>
 
-	<div class="container" style="padding-top: 80px;">
+	<main class="container">
 		<div class="form-wrapper">
-			<form id="login-form" class="form">
-				<h2>Login</h2>
+			<form id="login-form" class="form" novalidate>
+				<h1>Login</h1>
 
 				<div class="form-control">
 					<label for="username-email"><span>Username or Email</span></label>
 					<input type="text" id="username-email" name="username-email"
-					       placeholder="Enter your username or email" required autocomplete="username">
+					       placeholder="Username or email" required autocomplete="username">
 					<small class="error-text"></small>
 				</div>
 
@@ -44,9 +62,9 @@
 					<label for="login-password"><span>Password</span></label>
 					<div class="pw-wrapper">
 						<input type="password" id="login-password" name="login-password"
-						       placeholder="Enter your password" required autocomplete="current-password">
-						<button type="button" class="pw-toggle" aria-label="Toggle password visibility">
-							<svg viewBox="0 0 576 512" class="eye-icon eye-off"><path fill="currentColor" d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.4 78.1-95.4 92.9-131.1c3.3-7.9 3.3-16.7 0-24.6C558.7 208 527.4 156 480.6 112.6C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3C204.4 262.4 208 259.6 208 256c0-26.5-21.5-48-48-48c-3.6 0-6.4 3.6-6.7 4.3C151.2 205.9 150 199.1 150 192c0-35.3 28.7-64 64-64s64 28.7 64 64z"/></svg>
+						       placeholder="Your password" required autocomplete="current-password">
+						<button type="button" class="pw-toggle" aria-label="Show password">
+							<svg viewBox="0 0 576 512" class="eye-icon eye-off" aria-hidden="true"><path fill="currentColor" d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.4 78.1-95.4 92.9-131.1c3.3-7.9 3.3-16.7 0-24.6C558.7 208 527.4 156 480.6 112.6C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3C204.4 262.4 208 259.6 208 256c0-26.5-21.5-48-48-48c-3.6 0-6.4 3.6-6.7 4.3C151.2 205.9 150 199.1 150 192c0-35.3 28.7-64 64-64s64 28.7 64 64z"/></svg>
 						</button>
 					</div>
 					<small class="error-text"></small>
@@ -55,23 +73,20 @@
 				<div id="login-error" class="alert-error" role="alert" hidden></div>
 
 				<button type="submit" id="login-btn">Login</button>
-				<p>Don't have an account? <a href="./signup.html">Sign Up</a></p>
-				<p><a href="./logout.php">Logout</a></p>
+				<p>Don't have an account? <a href="/login/signup">Sign Up</a></p>
 			</form>
 		</div>
-	</div>
+	</main>
 
-	<script src="script.js" defer></script>
-	<script>
-		function toggleFullScreen() {
-			if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-				if (document.body.requestFullscreen) document.body.requestFullscreen();
-				else if (document.body.webkitRequestFullscreen) document.body.webkitRequestFullscreen();
-			} else {
-				if (document.exitFullscreen) document.exitFullscreen();
-				else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-			}
-		}
-	</script>
+	<footer class="site-footer">
+		<nav aria-label="Footer">
+			<a href="/">Home</a><span aria-hidden="true"> · </span>
+			<a href="/game">Play</a><span aria-hidden="true"> · </span>
+			<a href="/scoreboard">Scores</a>
+		</nav>
+		<small>© 2026 SpaceRunner – free browser game.</small>
+	</footer>
+
+	<script src="script.js?v=2" defer></script>
 </body>
 </html>

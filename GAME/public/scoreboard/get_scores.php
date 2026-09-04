@@ -2,7 +2,8 @@
 /**
  * Scoreboard API – fetches scores securely with prepared statements
  */
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: public, max-age=15');
 require_once '../php/config.php';
 require_once '../php/db.php';
 
@@ -12,8 +13,8 @@ try {
     // Check query params
     $order_by = $_GET['order_by'] ?? 's_score';
     $sort_order = $_GET['sort_order'] ?? 'DESC';
-    $search = $_GET['search'] ?? '';
-    $scoretype = $_GET['scoretype'] ?? '';
+    $search = mb_substr($_GET['search'] ?? '', 0, 30);
+    $scoretype = mb_substr($_GET['scoretype'] ?? '', 0, 20);
 
     // Allowlist for ordering to prevent SQL injection
     $allowed_columns = [
@@ -66,12 +67,12 @@ try {
     while ($row = $result->fetch_assoc()) {
         $scores[] = [
             'rank' => (int)$row['s_rank'],
-            'username' => htmlspecialchars($row['u_username']),
+            'username' => (string)$row['u_username'],
             'score' => (int)$row['s_score'],
             'level' => (int)$row['s_level_reached'],
-            'scoretype' => $row['st_scoretype'],
-            'seed' => $row['s_seed'],
-            'date' => $row['s_date_achieved']
+            'scoretype' => (string)$row['st_scoretype'],
+            'seed' => $row['s_seed'] !== null ? (string)$row['s_seed'] : null,
+            'date' => (string)$row['s_date_achieved']
         ];
     }
 
@@ -89,9 +90,10 @@ try {
     ]);
 
 } catch (Exception $e) {
+    error_log('[SpaceRunner] get_scores error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
+        'error' => 'Could not load scores. Please try again.'
     ]);
 }

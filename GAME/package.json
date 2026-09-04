@@ -1,17 +1,19 @@
 {
   "name": "game",
   "version": "1.0.0",
-  "description": "",
+  "description": "SpaceRunner multiplayer server (Socket.IO room sync)",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test tests/",
     "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
     "express": "^4.17.2",
     "socket.io": "^4.5.0"
+  },
+  "overrides": {
+    "qs": "^6.14.1"
   }
 }

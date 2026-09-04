@@ -2,87 +2,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpaceRunner</title>
-    <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="./css/style.css">
-    <script src="./js/jquery.min.js" defer></script>
-    <script src="./js/index.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SpaceRunner – Fast Canvas Platformer | Solo, Co-op &amp; Multiplayer</title>
+    <meta name="description" content="SpaceRunner is a fast, free browser platformer with seeded runs, online multiplayer and a global leaderboard. No install – just play.">
+    <link rel="canonical" href="https://spacerunner.websters.at/">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#9700bd">
+    <meta name="application-name" content="SpaceRunner">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SpaceRunner">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SpaceRunner">
+    <meta property="og:title" content="SpaceRunner – Fast Canvas Platformer">
+    <meta property="og:description" content="Seeded runs, online multiplayer and a global leaderboard. Free in the browser, no install.">
+    <meta property="og:url" content="https://spacerunner.websters.at/">
+    <meta property="og:image" content="https://spacerunner.websters.at/img/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="SpaceRunner logo over a galaxy background">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SpaceRunner – Fast Canvas Platformer">
+    <meta name="twitter:description" content="Seeded runs, online multiplayer and a global leaderboard. Free in the browser.">
+    <meta name="twitter:image" content="https://spacerunner.websters.at/img/og-image.png">
+    <link rel="icon" href="img/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="preload" as="image" href="img/galaxy-bg.webp" fetchpriority="high">
+    <link rel="stylesheet" href="./css/style.css?v=2">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "SpaceRunner",
+        "url": "https://spacerunner.websters.at/",
+        "image": "https://spacerunner.websters.at/img/og-image.png",
+        "description": "A fast canvas platformer with seeded runs, online multiplayer and a global leaderboard.",
+        "genre": ["Platformer", "Action"],
+        "playMode": ["SinglePlayer", "CoOp", "MultiPlayer"],
+        "applicationCategory": "Game",
+        "operatingSystem": "Web browser",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+    }
+    </script>
+    <script src="./js/jquery.min.js?v=2" defer></script>
+    <script src="./js/common.js?v=2" defer></script>
+    <script src="./js/index.js?v=2" defer></script>
 </head>
 <body>
     <header class="game-header">
-        <div class="header-logo" style="display: none;"><a href="/">SpaceRunner</a></div>
-        <nav class="header-nav">
+        <div class="header-logo"><a href="/" aria-label="SpaceRunner – home"><span class="logo-full">SpaceRunner</span><span class="logo-short" aria-hidden="true">SR</span></a></div>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/lobby" class="nav-btn" title="Multiplayer Lobby">
+                <svg viewBox="0 0 640 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M192 64C86 64 0 150 0 256s86 192 192 192h176c106 0 192-86 192-192s-86-192-192-192H192zm0 64h176c70.7 0 128 57.3 128 128s-57.3 128-128 128H192c-70.7 0-128-57.3-128-128S121.3 128 192 128zm96 48c-8.8 0-16 7.2-16 16v32h-32c-8.8 0-16 7.2-16 16s7.2 16 16 16h32v32c0 8.8 7.2 16 16 16s16-7.2 16-16v-32h32c8.8 0 16-7.2 16-16s-7.2-16-16-16h-32v-32c0-8.8-7.2-16-16-16zm168 40a24 24 0 1 0 0 48 24 24 0 1 0 0-48zm40 72a24 24 0 1 0 0 48 24 24 0 1 0 0-48z"/></svg>
+                <span class="nav-label">Multiplayer</span>
+            </a>
             <a href="/scoreboard" class="nav-btn" title="Scoreboard">
-                <svg viewBox="0 0 512 512" class="nav-svg"><path fill="currentColor" d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>
-                <span>Scores</span>
+                <svg viewBox="0 0 512 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9V380.8c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>
+                <span class="nav-label">Scores</span>
             </a>
             <a href="/login/login" class="nav-btn" id="login-nav-btn" title="Login/Signup">
-                <svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-16.7a174.1 174.1 0 0 1-145.8 0h-16.7A111.6 111.6 0 0 0 24 399.6v40.4A72 72 0 0 0 96 512h256a72 72 0 0 0 72-72v-40.4A111.6 111.6 0 0 0 313.6 288z"/></svg>
-                <span id="nav-user-text">Login</span>
+                <svg viewBox="0 0 448 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm89.6 32h-16.7a174.1 174.1 0 0 1-145.8 0h-16.7A111.6 111.6 0 0 0 24 399.6v40.4A72 72 0 0 0 96 512h256a72 72 0 0 0 72-72v-40.4A111.6 111.6 0 0 0 313.6 288z"/></svg>
+                <span id="nav-user-text" class="nav-label">Login</span>
             </a>
-            <button id="fullscreen-btn" class="nav-btn" title="Toggle Fullscreen" onclick="toggleFullScreen()">
-                <svg viewBox="0 0 448 512" class="nav-svg"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
-                <span>Fullscreen</span>
+            <button id="fullscreen-btn" class="nav-btn" title="Toggle Fullscreen" data-action="fullscreen" aria-label="Toggle fullscreen">
+                <svg viewBox="0 0 448 512" class="nav-svg" aria-hidden="true"><path fill="currentColor" d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM288 64c0 17.7 14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320c-17.7 0-32 14.3-32 32zm128 288c-17.7 0-32 14.3-32 32v64h-64c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32v-96c0-17.7-14.3-32-32-32zM32 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64v-64c0-17.7-14.3-32-32-32z"/></svg>
+                <span class="nav-label">Fullscreen</span>
             </button>
         </nav>
     </header>
-	
+
     <main id="blur">
-        <a href="/" class="home"><h1 class="headline">SpaceRunner</h1></a>
-        <!--<label class="themeswitch">
-            <input id="themetoggle" type="checkbox">
-            <span class="themeslider round"></span>
-        </label>!-->
-        
+        <h1 class="headline"><a href="/" class="home">SpaceRunner</a></h1>
+
         <div class="btnwrapper">
             <div class="block"><button class="playBtn" onclick="pressedPlay()">Play</button></div>
-            <div class="block nomobile" id="playBtn"><button onclick="pressedCoop()">Coop</button></div>
-            <div class="block"><button class="playBtn" onclick="setDifficulty('run')"><p class="tiny-info">SCORE</p>Run Mode</button></div>
-            <div class="block noserver" id="playBtn"><button onclick="pressedMultiplayer()">Multiplayer</button></div>
-            <!--<div class="block nomobile" id="settings"><button onclick="clickmenu()">Settings</button></div>!-->
+            <div class="block nomobile" id="coopBtn"><button onclick="pressedCoop()">Coop</button></div>
+            <div class="block"><button class="playBtn" onclick="setDifficulty('run')"><span class="tiny-info">SCORE</span>Run Mode</button></div>
+            <div class="block noserver" id="multiplayerBtn"><button onclick="pressedMultiplayer()">Multiplayer</button></div>
             <div class="block"><button class="playBtn" onclick="window.location.assign('/scoreboard');">Scores</button></div>
-            <!--<div class="block"><button onclick="closeWindow()">Exit</button></div>!-->
         </div>
-        <div id="seed-row" style="display:none; margin-top:8px; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap;">
-            <label for="solo-seed" style="font-family:space-mono,monospace; font-size:0.8rem; color:rgba(255,255,255,0.55);">&#x1F331; Seed:</label>
-            <input id="solo-seed" type="text" maxlength="20" placeholder="Leave blank for random" style="
-                padding:6px 10px; background:rgba(20,20,25,0.8); border:1px solid rgba(151,0,189,0.4);
-                border-radius:6px; color:#fff; font-family:space-mono,monospace; font-size:0.78rem;
-                width:160px; text-align:center; outline:none;">
-            <button onclick="document.getElementById('solo-seed').value=Math.floor(Math.random()*999999999)" style="
-                padding:5px 10px; background:rgba(151,0,189,0.3); border:1px solid rgba(151,0,189,0.5);
-                border-radius:6px; color:#fff; font-family:space-mono,monospace; font-size:0.78rem; cursor:pointer;">&#x1F3B2;</button>
+        <div id="seed-row" hidden>
+            <label for="solo-seed">&#x1F331; Seed:</label>
+            <input id="solo-seed" type="text" maxlength="20" placeholder="Leave blank for random" autocomplete="off" spellcheck="false">
+            <button type="button" id="seed-random-btn" title="Random seed" aria-label="Generate random seed">&#x1F3B2;</button>
         </div>
+        <noscript><p class="noscript-note">SpaceRunner needs JavaScript to run.</p></noscript>
     </main>
-    
-    <a href="https://paypal.me/michaelruep">
-        <div id="donate-button-container">
-            <div id="donate-button"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" alt=""></div>
-            <!--
-            <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
-            <script>
-                PayPal.Donation.Button({
-                    env: 'production',
-                    hosted_button_id: '5K8VCUZB7KCQS',
-                    image: {
-                        src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif',
-                        alt: 'Donate with PayPal button',
-                        title: 'PayPal - The safer, easier way to pay online!',
-                    }
-                }).render('#donate-button');
-            </script>
-            !-->
-        </div>
+
+    <a class="donate-link" href="https://paypal.me/michaelruep" rel="noopener" title="Support SpaceRunner">
+        <span class="donate-heart" aria-hidden="true">♥</span><span>Support</span>
     </a>
-
-
-
 
     <div id="clearMenu">
     </div>
-    
-    <p id="loggeduser"></p>
+
+    <p id="loggeduser" aria-live="polite"></p>
+
+    <footer class="site-footer">
+        <nav aria-label="Footer">
+            <a href="/">Home</a><span aria-hidden="true"> · </span>
+            <a href="/game">Play</a><span aria-hidden="true"> · </span>
+            <a href="/lobby">Multiplayer</a><span aria-hidden="true"> · </span>
+            <a href="/scoreboard">Scores</a><span aria-hidden="true"> · </span>
+            <a href="/login/login">Login</a>
+        </nav>
+        <small>© 2026 SpaceRunner – free browser game.</small>
+    </footer>
 </body>
 </html>

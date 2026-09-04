@@ -12,9 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSearch = '';
     let currentOrderBy = 's_score';
     let currentSortOrder = 'DESC';
+    // Monotonic request id: overlapping fetches (search while initial load
+    // is in flight) must not render out of order and clobber newer results.
+    let latestRequestId = 0;
 
     // Fetch and render scoreboard data
     async function loadScores() {
+        const requestId = ++latestRequestId;
         loadingSpinner.hidden = false;
         scoresBody.innerHTML = '';
         noResults.hidden = true;
@@ -23,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const url = `get_scores.php?order_by=${encodeURIComponent(currentOrderBy)}&sort_order=${encodeURIComponent(currentSortOrder)}&search=${encodeURIComponent(currentSearch)}&scoretype=${encodeURIComponent(currentType)}`;
             const response = await fetch(url);
             const data = await response.json();
+
+            // A newer request has started since – drop this stale response
+            if (requestId !== latestRequestId) return;
 
             loadingSpinner.hidden = true;
 
@@ -48,19 +55,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Date formatting (relative / readable)
                 const formattedDate = formatAchievedDate(row.date);
 
-                tr.innerHTML = `
-                    <td>${rankContent}</td>
-                    <td>${escapeHtml(row.username)}</td>
-                    <td><span class="score-highlight">${row.score.toLocaleString()}</span></td>
-                    <td><span class="level-highlight">${row.level}</span></td>
-                    <td><span class="difficulty-badge badge-${escapeHtml(row.scoretype)}">${escapeHtml(row.scoretype)}</span></td>
-                    <td>${row.seed ? `<span class="seed-badge" onclick="copySeed('${escapeHtml(row.seed)}')" title="Click to copy and play seed">${escapeHtml(row.seed)} 📋</span>` : '-'}</td>
-                    <td title="${escapeHtml(row.date)}">${formattedDate}</td>
-                `;
+                const rankCell = document.createElement('td');
+                rankCell.innerHTML = rankContent;
+
+                const userCell = document.createElement('td');
+                userCell.textContent = row.username;
+
+                const scoreCell = document.createElement('td');
+                const scoreSpan = document.createElement('span');
+                scoreSpan.className = 'score-highlight';
+                scoreSpan.textContent = Number(row.score).toLocaleString();
+                scoreCell.appendChild(scoreSpan);
+
+                const levelCell = document.createElement('td');
+                const levelSpan = document.createElement('span');
+                levelSpan.className = 'level-highlight';
+                levelSpan.textContent = row.level;
+                levelCell.appendChild(levelSpan);
+
+                const typeCell = document.createElement('td');
+                const typeSpan = document.createElement('span');
+                typeSpan.className = 'difficulty-badge badge-' + String(row.scoretype).replace(/[^a-z]/g, '');
+                typeSpan.textContent = row.scoretype;
+                typeCell.appendChild(typeSpan);
+
+                const seedCell = document.createElement('td');
+                if (row.seed) {
+                    const seedBtn = document.createElement('button');
+                    seedBtn.type = 'button';
+                    seedBtn.className = 'seed-badge';
+                    seedBtn.dataset.seed = row.seed;
+                    seedBtn.title = 'Click to copy and play seed';
+                    seedBtn.textContent = row.seed + ' 📋';
+                    seedCell.appendChild(seedBtn);
+                } else {
+                    seedCell.textContent = '-';
+                }
+
+                const dateCell = document.createElement('td');
+                dateCell.title = row.date;
+                dateCell.textContent = formattedDate;
+
+                tr.append(rankCell, userCell, scoreCell, levelCell, typeCell, seedCell, dateCell);
                 scoresBody.appendChild(tr);
             });
 
         } catch (error) {
+            if (requestId !== latestRequestId) return;
             loadingSpinner.hidden = true;
             scoresBody.innerHTML = `<tr><td colspan="7" style="color: #ff4d4d; text-align: center;">Network error occurred.</td></tr>`;
             console.error('Scoreboard fetch error:', error);
@@ -117,64 +158,65 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = e.target.closest('.tab-btn');
         if (!btn) return;
 
-        tabContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        tabContainer.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
         btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
 
         currentType = btn.getAttribute('data-type');
         loadScores();
     });
 
-    // Dynamic sort headers
+    // Sort trigger shared by mouse + keyboard
+    function triggerSort(th) {
+        const orderBy = th.getAttribute('data-order-by');
+
+        // Toggle directions
+        if (currentOrderBy === orderBy) {
+            currentSortOrder = (currentSortOrder === 'DESC') ? 'ASC' : 'DESC';
+        } else {
+            currentOrderBy = orderBy;
+            currentSortOrder = 'DESC'; // Default to DESC on new column click
+        }
+
+        // Update header classes + aria for sorting arrows UI
+        headers.forEach(h => {
+            h.classList.remove('sorted', 'asc', 'desc');
+            h.removeAttribute('aria-sort');
+        });
+        th.classList.add('sorted', currentSortOrder.toLowerCase());
+        th.setAttribute('aria-sort', currentSortOrder === 'DESC' ? 'descending' : 'ascending');
+
+        loadScores();
+    }
+
+    // Dynamic sort headers (click + Enter/Space for keyboard users)
     headers.forEach(th => {
-        th.addEventListener('click', () => {
-            const orderBy = th.getAttribute('data-order-by');
-            
-            // Toggle directions
-            if (currentOrderBy === orderBy) {
-                currentSortOrder = (currentSortOrder === 'DESC') ? 'ASC' : 'DESC';
-            } else {
-                currentOrderBy = orderBy;
-                currentSortOrder = 'DESC'; // Default to DESC on new column click
+        th.addEventListener('click', () => triggerSort(th));
+        th.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                triggerSort(th);
             }
-
-            // Update header classes for sorting arrows UI
-            headers.forEach(h => {
-                h.classList.remove('sorted', 'asc', 'desc');
-            });
-            th.classList.add('sorted', currentSortOrder.toLowerCase());
-
-            loadScores();
         });
     });
 
-    // Initial load
-    loadScores();
-
-    function updateLoggedUser() {
-        let cookies = document.cookie.split(";");
-        let username = "";
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.indexOf("username=") === 0) {
-                username = cookie.substring("username=".length);
-            }
-        }
-        if (username) {
-            const navUserText = document.getElementById("nav-user-text");
-            if (navUserText) {
-                navUserText.innerText = username;
-            }
-        }
-    }
-    updateLoggedUser();
-
-    window.copySeed = function(seed) {
+    // Seed copy via delegation (no inline onclick → no attribute-injection XSS)
+    scoresBody.addEventListener('click', (e) => {
+        const btn = e.target.closest('.seed-badge');
+        if (!btn || !btn.dataset.seed) return;
+        const seed = btn.dataset.seed;
         navigator.clipboard.writeText(seed).then(() => {
             showToast('🌱 Seed copied: ' + seed);
         }).catch(err => {
             console.error('Failed to copy seed: ', err);
         });
-    };
+    });
+
+    // Initial load
+    loadScores();
 
     function showToast(message) {
         let toast = document.getElementById('scoreboard-toast');

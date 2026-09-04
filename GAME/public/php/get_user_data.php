@@ -1,18 +1,20 @@
 <?php
 declare(strict_types=1);
 
-session_start();
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/session.php';
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
+
+sr_session_start();
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Not authenticated.']);
     exit();
 }
-
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/db.php';
 
 try {
     $conn   = db_connect();
@@ -42,9 +44,9 @@ try {
 
     echo json_encode([
         'success'  => true,
-        'user_id'  => $user['u_id'],
-        'username' => $user['u_username'],
-        'email'    => $user['u_email'],
+        'user_id'  => (int) $user['u_id'],
+        'username' => (string) $user['u_username'],
+        'email'    => (string) $user['u_email'],
     ]);
 
 } catch (RuntimeException $e) {
