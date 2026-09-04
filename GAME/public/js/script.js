@@ -1483,6 +1483,20 @@ function victory() {
     }
 }
 
+// Shift all visible level geometry horizontally. World-scroll bookkeeping
+// keeps (platform shift + scrollOffset) == 0 at all times, so shifting by
+// +scrollOffset exactly restores the level-start layout. Used by normal-mode
+// respawn: zeroing scrollOffset alone would leave every platform shifted.
+function shiftWorld(dx) {
+    if (!dx) return;
+    [game.getCurrentLevel(), game.levels[1]].forEach(lvl => {
+        if (!lvl) return;
+        lvl.platforms.forEach(p => { p.position.x += dx; });
+        lvl.items.forEach(i => { i.position.x += dx; });
+        if (lvl.texts) lvl.texts.forEach(t => { t.position.x += dx; });
+    });
+}
+
 function gameOver() {
     // Generate a new random seed for next attempt if custom seed was not specified and NOT in multiplayer
     if (localStorage.getItem('customSeedUsed') !== 'true' && localStorage.getItem('multiplayer') !== 'true') {
@@ -1504,6 +1518,10 @@ function gameOver() {
         game.attempts++;
     }
     if (game.difficulty == 'normal') {
+        // True reset to the beginning of the level: undo the world scroll
+        // BEFORE zeroing it, otherwise every platform stays shifted and the
+        // respawned player faces a broken level.
+        shiftWorld(game.scrollOffset);
         players.forEach(player => {
             player.position.x = 120;
             player.position.y = 100;
