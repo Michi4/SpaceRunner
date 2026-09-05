@@ -269,6 +269,7 @@ form p a{
 	text-decoration: underline;
 	text-underline-offset: 2px;
 	color: #7cc4ff;
+	white-space: nowrap;
 }
 
 form p a:hover {

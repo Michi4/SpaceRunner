@@ -141,9 +141,13 @@ def main():
     code, _, _ = a.req("/php/get_user_data.php")
     check("session cleared", code == 401, f"got {code}")
 
-    # --- cleanup throwaway rows -------------------------------------------
-    code, body, _ = a.req("/php/csrf.php")
-    print(f"(cleanup: delete user {user} + scores from DB)")
+    # --- cleanup ------------------------------------------------------
+    # There is intentionally no delete-account endpoint, so the throwaway
+    # `smoke_*` user + score must be removed manually after a live run:
+    #   DELETE FROM sr_score WHERE s_user_id IN
+    #     (SELECT u_id FROM sr_user WHERE u_username LIKE 'smoke\_%');
+    #   DELETE FROM sr_user WHERE u_username LIKE 'smoke\_%';
+    print(f"(cleanup: manually delete user {user} + scores from DB, see comment in smoke.py)")
 
     print()
     if FAILURES:

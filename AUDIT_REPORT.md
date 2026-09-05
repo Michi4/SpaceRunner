@@ -115,3 +115,23 @@ Driven in headless Chromium as a real user (forms, clicks, keyboard, two browser
 ## Verdict: GO
 
 Blockers cleared: **credentials rotated + purged from history (verified 0 residual values), backups live + restore-tested, HSTS on, deps at 0 vulns, E2E + unit + smoke suites green.** Remaining items are non-blocking hardening: CSP `report-only` rollout, CI running `npm test` + `php -l`, uptime monitoring on `/php/health.php`, README expansion.
+
+## Re-audit 2026-09-05 (delta since close-out)
+
+Scope: 4 feature commits (normal-mode level reset + item respawn, leaderboard pagination + ISO-8601 dates, UI polish pass) plus cloud-settings endpoints. No staging exists; live checks used throwaway data only, real leaderboard rows untouched (one leftover `smoke_*` test row found and deleted).
+
+Re-verified with evidence:
+- `npm test` 12/12, `npm audit` 0 vulns, socket protocol suite 9/9, `smoke.py` all-pass.
+- Frontend sweep 6 pages × 3 breakpoints: 0 page-errors, 0 overflow, alts/labels complete, link crawl all 200.
+- Settings sync E2E (pull on fresh profile, push, server round-trip) + reset buttons + SCORE badge states + pagination pager + HOST tag — all observed live, no page errors.
+- Secrets: no `.env` tracked, 0 password values in history, nightly cron dump ran 2026-09-05.
+- Headers complete (HSTS/nosniff/SAMEORIGIN/Referrer/Permissions-Policy), no mixed content, injection probes neutralized, `GET save_settings` → 405.
+
+### [LOW] Smoke test cleanup note was misleading — FIXED
+**Where:** `GAME/tests/e2e/smoke.py` (before fix)
+**Evidence:** a `smoke_1788645260` row sat at rank 1 of the live leaderboard after a suite run; the script only printed "(cleanup…)" without deleting (no delete endpoint exists by design).
+**Fix:** removed the row via SQL, rewrote the note into explicit manual-delete SQL instructions.
+
+No new CRITICAL/HIGH/MEDIUM findings. Standing open items from the first audit (CSP rollout, CI/monitoring, README, score idempotency, unmeasured Web Vitals) are unchanged.
+
+## Verdict (reaffirmed): GO
