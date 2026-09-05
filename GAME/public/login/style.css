@@ -54,7 +54,7 @@ body {
 .form-wrapper {
 	display: flex;
 	justify-content: center;
-	width: 50vmax;
+	width: min(440px, calc(100vw - 32px));
 	border-radius: 2vmin;
 	box-shadow: 0 0 1.5vmax rgba(0, 0, 0, 0.2);
 	background-color: #202124fa;
@@ -213,9 +213,9 @@ button[type="submit"]:disabled {
 button[type="submit"] {
 	margin-top: 1vmin;
 	padding: 1vmin;
-	border: none;
+	border: 1px solid rgba(224, 123, 255, 0.35);
 	border-radius: 2vmin;
-	background-color: #6b1681;
+	background: linear-gradient(180deg, #7c1d99 0%, #6b1681 60%, #57126a 100%);
 	color: #ffffff;
 	font-size: 1.2em;
 	font-weight: 600;
@@ -223,11 +223,19 @@ button[type="submit"] {
 	transition: all 0.3s ease;
 	width: 100%;
 	font-family: "Space Mono", monospace;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 button[type="submit"]:hover {
-	background-color: #7c1d99;
+	background: linear-gradient(180deg, #9330ad 0%, #7c1d99 60%, #6b1681 100%);
+	border-color: rgba(224, 123, 255, 0.6);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 0 14px rgba(151, 0, 189, 0.45);
 	width: 95%;
+}
+
+button[type="submit"]:active {
+	transform: scale(0.98);
+	box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
 #logout-btn{
@@ -277,7 +285,7 @@ form p a:hover {
 		padding: .5vmin;
 	}
 
-	h2 {
+	h1, h2 {
 		font-size: 1.8em;
 	}
 
@@ -487,6 +495,8 @@ main.container {
     overflow-y: auto;
     height: auto;
     min-height: 100vh;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 /* ── v2 exact-match: nav buttons identical to main theme ── */

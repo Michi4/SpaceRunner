@@ -503,6 +503,24 @@ th.sortable {
 }
 
 @media (max-width: 560px) {
+    body {
+        padding: 24px 12px;
+    }
+
+    .wrapper {
+        padding: 20px 14px;
+        margin-top: 56px;
+    }
+
+    .glow-title {
+        font-size: 1.6rem;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 0.85rem;
+    }
+
     .nav-label {
         display: none;
     }
